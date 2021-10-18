@@ -1,0 +1,3 @@
+plots/*
+.pyenv/*
+__pycache__/*
