@@ -206,8 +206,8 @@ def getVBytes_AliasOutput(weight_key,
         vbytes.addField(field_byte_size_min=38+64,  field_byte_size_max=38+64, weight=weight_data)                              # Native Tokens (TokenID+Amount)
 
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=21, weight=weight_key+weight_data)                             # Alias ID
-    vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_data)                                        # State Controller
-    vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_data)                                        # Governance Controller
+    vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_key+weight_data)                             # State Controller
+    vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_key+weight_data)                             # Governance Controller
     vbytes.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=weight_data)                                        # State Index
     vbytes.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=weight_data)                                        # State Metadata Length
     vbytes.addField(field_byte_size_min=0,   field_byte_size_max=0,  weight=weight_data)                                        # State Metadata (zero for now, the remaining space will be taken into account in the metadata block)
