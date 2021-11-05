@@ -35,8 +35,9 @@ def getOutputSizeMax(transaction_size_max, inputs=1):
 #===============================================================================
 class Output_VBytes(object):
     #---------------------------------------------------------------------------
-    def __init__(self, name, max_byte_size, plot_row_index=0, plot_column_index=0):
+    def __init__(self, name, name_plot, max_byte_size, plot_row_index=0, plot_column_index=0):
         self.name               = name
+        self.name_plot          = name_plot
         self.max_byte_size      = max_byte_size     # maximum available bytes
 
         self.plot_row_index     = plot_row_index
@@ -76,10 +77,14 @@ class Output_VBytes(object):
     def vBytesMax(self):
         return self.v_bytes_max
 
+    #---------------------------------------------------------------------------
+    def totalOutputsPossible(self, db_size_bytes_max):
+        return int(db_size_bytes_max / self.byte_size_max)
+
 #===============================================================================
 def getVBytes_Byte():
 
-    vbytes = Output_VBytes(name="byte", max_byte_size=1)
+    vbytes = Output_VBytes(name="byte", name_plot="byte", max_byte_size=1)
     vbytes.addField(field_byte_size_min=1,  field_byte_size_max=1, weight=1.0)
     
     return vbytes
@@ -90,11 +95,13 @@ def getVBytes_SimpleOutput(weight_key,
                            additional_name,
                            output_size_max):
 
-    name = "SimpleOutput"
+    name        = "SimpleOutput"
+    name_plot   = name
     if additional_name != None:
-        name = "%s (%s)" % (name, additional_name)
+        name        = "%s (%s)" %  (name, additional_name)
+        name_plot   = "%s\n(%s)" % (name_plot, additional_name)
     
-    vbytes = Output_VBytes(name=name, max_byte_size=output_size_max)
+    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max)
     vbytes.addField(field_byte_size_min=34,  field_byte_size_max=34, weight=weight_key)                  # Output ID
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_data)                 # Output Type
     vbytes.addField(field_byte_size_min=8,   field_byte_size_max=8,  weight=weight_data)                 # Amount
@@ -117,11 +124,13 @@ def getVBytes_ExtendedOutput(weight_key,
                              indexation_block=True,
                              metadata_block=True):
 
-    name = "ExtendedOutput"
+    name        = "ExtendedOutput"
+    name_plot   = name
     if additional_name != None:
-        name = "%s (%s)" % (name, additional_name)
-
-    vbytes = Output_VBytes(name=name, max_byte_size=output_size_max)
+        name        = "%s (%s)" %  (name, additional_name)
+        name_plot   = "%s\n(%s)" % (name_plot, additional_name)
+    
+    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max)
 
     vbytes.addField(field_byte_size_min=34,  field_byte_size_max=34, weight=weight_key)                                         # Output ID
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_data)                                        # Output Type
@@ -191,11 +200,13 @@ def getVBytes_AliasOutput(weight_key,
                           native_token_count, 
                           metadata_block=True):
 
-    name = "AliasOutput"
+    name        = "AliasOutput"
+    name_plot   = name
     if additional_name != None:
-        name = "%s (%s)" % (name, additional_name)
-
-    vbytes = Output_VBytes(name=name, max_byte_size=output_size_max)
+        name        = "%s (%s)" %  (name, additional_name)
+        name_plot   = "%s\n(%s)" % (name_plot, additional_name)
+    
+    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max)
 
     vbytes.addField(field_byte_size_min=34,  field_byte_size_max=34, weight=weight_key)                                         # Output ID
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_data)                                        # Output Type
@@ -229,11 +240,13 @@ def getVBytes_FoundryOutput(weight_key,
                             native_token_count, 
                             metadata_block=True):
 
-    name = "FoundryOutput"
+    name        = "FoundryOutput"
+    name_plot   = name
     if additional_name != None:
-        name = "%s (%s)" % (name, additional_name)
-
-    vbytes = Output_VBytes(name=name, max_byte_size=output_size_max)
+        name        = "%s (%s)" %  (name, additional_name)
+        name_plot   = "%s\n(%s)" % (name_plot, additional_name)
+    
+    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max)
 
     vbytes.addField(field_byte_size_min=34,  field_byte_size_max=34, weight=weight_key)                                         # Output ID
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_data)                                        # Output Type
@@ -275,11 +288,13 @@ def getVBytes_NFTOutput(weight_key,
                         indexation_block=True,
                         metadata_block=True):
 
-    name = "NFTOutput"
+    name        = "NFTOutput"
+    name_plot   = name
     if additional_name != None:
-        name = "%s (%s)" % (name, additional_name)
-
-    vbytes = Output_VBytes(name=name, max_byte_size=output_size_max)
+        name        = "%s (%s)" %  (name, additional_name)
+        name_plot   = "%s\n(%s)" % (name_plot, additional_name)
+    
+    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max)
 
     vbytes.addField(field_byte_size_min=34,  field_byte_size_max=34, weight=weight_key)                                         # Output ID
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_data)                                        # Output Type
