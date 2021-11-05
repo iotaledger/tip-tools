@@ -18,8 +18,8 @@ if __name__ == '__main__':
     weight_key                  = 10.0
     weight_data                 = 1.0
 
-    maximum_db_sizes_GB         = [50.0, 100.0, 150.0, 200.0, 400.0, 1000.0]
-    fund_sparsity_percentages   = [20.0, 100.0]
+    maximum_db_sizes_GB         = [500.0, 1000.0, 2000.0]
+    fund_sparsity_percentages   = [20.0, 50.0]
 
     print("Current market cap: %s" % (getDollarFormat((total_supply / 1000000.0) * price_per_miota_dollar)))
     
@@ -145,12 +145,14 @@ if __name__ == '__main__':
         plot_lines  = []
         sub_plots   = []
     
-        sub_plots.append(plot.Subplot(row_index=vbytes.plot_row_index, column_index=vbytes.plot_column_index, x_label='fund sparsity percentage', y_label='cost per %s [MIOTA]' % (vbytes.name)))
+        sub_plots.append(plot.Subplot(row_index=vbytes.plot_row_index, column_index=vbytes.plot_column_index, x_label='assumed fund sparsity percentage',   y1_label='cost per %s [MIOTA]' % (vbytes.name_plot)))
+        sub_plots.append(plot.Subplot(row_index=vbytes.plot_row_index+1, column_index=vbytes.plot_column_index, x_label='assumed fund sparsity percentage', y1_label='actual max. DB size at\n 100% fund sparsity perc. [GB]', legend_y1_loc='upper right'))
 
         for maximum_db_size_GB in maximum_db_sizes_GB:
             
-            x = []
-            y = []
+            x  = []
+            y1 = []
+            y2 = []
             for fund_sparsity_percentage in fund_sparsity_percentages:
                 db_size_bytes           = maximum_db_size_GB * 1e9
                 sparsity_factor         = (fund_sparsity_percentage / 100.0)
@@ -158,11 +160,15 @@ if __name__ == '__main__':
 
                 cost_per_output_iota    = cost_per_byte_iota * vbytes.vBytesMax()
                 cost_per_output_dollar  = (cost_per_output_iota / 1000000.0) * price_per_miota_dollar
+                
+                total_outputs_size_GB   = (int(total_supply / cost_per_output_iota) * vbytes.byteSizeMax()) / 1e9
 
                 x.append(fund_sparsity_percentage)
-                y.append(cost_per_output_iota / float(1e6))
-                print("Costs per %-25s              (%6s fund sparsity, Max %7sGB DB): %11sMi, %11s$ (at %0.2f$/Mi price)" % (vbytes.name, "%0.1f%%" % fund_sparsity_percentage, "%0.2f" % maximum_db_size_GB, "%4.6f" % (cost_per_output_iota / 1000000.0), "%4.6f" % cost_per_output_dollar,      price_per_miota_dollar))
+                y1.append(cost_per_output_iota / float(1e6))
+                y2.append(total_outputs_size_GB)
+                print("Costs per %-25s              (%6s fund sparsity, Max %7sGB DB, Actual %7sGB DB): %11sMi, %11s$ (at %0.2f$/Mi price)" % (vbytes.name, "%0.1f%%" % fund_sparsity_percentage, "%0.2f" % maximum_db_size_GB, "%0.2f" % total_outputs_size_GB, "%4.6f" % (cost_per_output_iota / 1000000.0), "%4.6f" % cost_per_output_dollar,      price_per_miota_dollar))
                 
-            plot_lines.append(plot.PlotLine(subplot_nr=0, x=x, y=y, name="%0.2f GB" % (maximum_db_size_GB)))
+            plot_lines.append(plot.PlotLine(subplot_nr=0, x=x, y=y1, name="%0.2f GB" % (maximum_db_size_GB)))
+            plot_lines.append(plot.PlotLine(subplot_nr=1, x=x, y=y2, name="%0.2f GB" % (maximum_db_size_GB)))
 
         plot.plot(sub_plots, plot_lines, show_plot=True, file_path="plots/deposit_miota_%s.jpg" % (vbytes.name.replace(" ", "_")))
