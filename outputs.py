@@ -138,7 +138,7 @@ def getVBytes_ExtendedOutput(weight_key,
     vbytes.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=weight_data)                                        # Native Tokens Count
     
     for i in range(native_token_count):
-        vbytes.addField(field_byte_size_min=38+64,  field_byte_size_max=38+64, weight=weight_data)                              # Native Tokens (TokenID+Amount)
+        vbytes.addField(field_byte_size_min=38+32,  field_byte_size_max=38+32, weight=weight_data)                              # Native Tokens (TokenID+Amount)
     
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_key+weight_data)                             # Address
 
@@ -214,7 +214,7 @@ def getVBytes_AliasOutput(weight_key,
     vbytes.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=weight_data)                                        # Native Tokens Count
     
     for i in range(native_token_count):
-        vbytes.addField(field_byte_size_min=38+64,  field_byte_size_max=38+64, weight=weight_data)                              # Native Tokens (TokenID+Amount)
+        vbytes.addField(field_byte_size_min=38+32,  field_byte_size_max=38+32, weight=weight_data)                              # Native Tokens (TokenID+Amount)
 
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=21, weight=weight_key+weight_data)                             # Alias ID
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_key+weight_data)                             # State Controller
@@ -254,14 +254,14 @@ def getVBytes_FoundryOutput(weight_key,
     vbytes.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=weight_data)                                        # Native Tokens Count
     
     for i in range(native_token_count):
-        vbytes.addField(field_byte_size_min=38+64,  field_byte_size_max=38+64, weight=weight_data)                              # Native Tokens (TokenID+Amount)
+        vbytes.addField(field_byte_size_min=38+32,  field_byte_size_max=38+32, weight=weight_data)                              # Native Tokens (TokenID+Amount)
 
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=21, weight=weight_key+weight_data)                             # Address
     vbytes.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=weight_key+weight_data)                             # SerialNumber
 
     vbytes.addField(field_byte_size_min=12,  field_byte_size_max=12, weight=weight_data)                                        # Token Tag
-    vbytes.addField(field_byte_size_min=64,  field_byte_size_max=64, weight=weight_data)                                        # Circulating Supply
-    vbytes.addField(field_byte_size_min=64,  field_byte_size_max=64, weight=weight_data)                                        # Maximum Supply
+    vbytes.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=weight_data)                                        # Circulating Supply
+    vbytes.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=weight_data)                                        # Maximum Supply
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_key+weight_data)                             # Token Scheme
 
     # Metadata Block
@@ -302,7 +302,7 @@ def getVBytes_NFTOutput(weight_key,
     vbytes.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=weight_data)                                        # Native Tokens Count
     
     for i in range(native_token_count):
-        vbytes.addField(field_byte_size_min=38+64,  field_byte_size_max=38+64, weight=weight_data)                              # Native Tokens (TokenID+Amount)
+        vbytes.addField(field_byte_size_min=38+32,  field_byte_size_max=38+32, weight=weight_data)                              # Native Tokens (TokenID+Amount)
 
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=33, weight=weight_key+weight_data)                             # Address
     vbytes.addField(field_byte_size_min=21,  field_byte_size_max=21, weight=weight_key+weight_data)                             # NFT ID
