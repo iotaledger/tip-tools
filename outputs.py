@@ -92,6 +92,12 @@ class Output_VBytes(object):
         self.addField(field_byte_size_min=32+2, field_byte_size_max=32+2, weight=self.weight_key)               # Output ID (Transaction ID + Transaction Output Index)
     
     #---------------------------------------------------------------------------
+    def addField_OutputMetadataOffsets(self):
+        self.addField(field_byte_size_min=32,   field_byte_size_max=32, weight=self.weight_data)               # MessageID Included
+        self.addField(field_byte_size_min=4,    field_byte_size_max=4,  weight=self.weight_data)               # Milestone Index Booked
+        self.addField(field_byte_size_min=4,    field_byte_size_max=4,  weight=self.weight_data)               # Milestone Timestamp Booked
+    
+    #---------------------------------------------------------------------------
     def addField_OutputType(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Output Type
 
@@ -293,6 +299,7 @@ def getVBytes_ExtendedOutput(weight_key,
     vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
 
     vbytes.addField_OutputID()
+    vbytes.addField_OutputMetadataOffsets()
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)
@@ -346,6 +353,7 @@ def getVBytes_AliasOutput(weight_key,
     vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
 
     vbytes.addField_OutputID()
+    vbytes.addField_OutputMetadataOffsets()
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
@@ -394,6 +402,7 @@ def getVBytes_FoundryOutput(weight_key,
     vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
 
     vbytes.addField_OutputID()
+    vbytes.addField_OutputMetadataOffsets()
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
@@ -440,6 +449,7 @@ def getVBytes_NFTOutput(weight_key,
     vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
 
     vbytes.addField_OutputID()
+    vbytes.addField_OutputMetadataOffsets()
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
