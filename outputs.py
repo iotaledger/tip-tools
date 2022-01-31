@@ -107,7 +107,7 @@ class Output_VBytes(object):
 
     #---------------------------------------------------------------------------
     def addField_NativeTokens(self, native_token_count):
-        self.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=self.weight_data)                 # Native Tokens Count
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Native Tokens Count
         for i in range(native_token_count):
             self.addField(field_byte_size_min=38+32,  field_byte_size_max=38+32, weight=self.weight_data)       # Native Tokens (TokenID+Amount)
 
