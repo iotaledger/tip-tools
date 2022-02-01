@@ -14,6 +14,8 @@ if __name__ == '__main__':
     PRICE_PER_MIOTA_DOLLAR      = 1.35
 
     MSG_SIZE_MAX                = 32768
+    METADATA_LENGTH_MAX         = 8192
+    NATIVE_TOKEN_COUNT_MAX      = 8
     
     WEIGHT_KEY                  = 10.0
     WEIGHT_DATA                 = 1.0
@@ -26,9 +28,11 @@ if __name__ == '__main__':
     payload_size_max    = outputs.getPayloadSizeMax(message_size_max=MSG_SIZE_MAX)
     output_size_max     = outputs.getOutputSizeMax(transaction_size_max=payload_size_max, inputs=1)
     
-    print("MessageSizeMax: %d" % (MSG_SIZE_MAX))
-    print("PayloadSizeMax: %d" % (payload_size_max))
-    print("OutputSizeMax:  %d" % (output_size_max))
+    print("MessageSizeMax:      %5d" % (MSG_SIZE_MAX))
+    print("PayloadSizeMax:      %5d" % (payload_size_max))
+    print("OutputSizeMax:       %5d" % (output_size_max))
+    print("MetadataLengthMax:   %5d" % (METADATA_LENGTH_MAX))
+    print("NativeTokenCountMax: %5d" % (NATIVE_TOKEN_COUNT_MAX))
 
     for maximum_db_size_GB in MAXIMUM_DB_SIZES_GB:
         for fund_sparsity_percentage in FUND_SPARSITY_PERCENTAGES:
@@ -54,15 +58,22 @@ if __name__ == '__main__':
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "min functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = True,
-            native_token_count                      = 0, 
+            metadata_length_max                     = METADATA_LENGTH_MAX,
+            native_token_count                      = 0,
+            dust_deposit_return_unlock_condition    = False,
+            timelock_unlock_condition               = False,
+            expiration_unlock_condition             = False,
+            sender_block                            = False,
+            tag_block                               = False,
+            metadata_block                          = False,
+            metadata_length                         = 0,
         ),
         outputs.getVBytes_ExtendedOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "1000 byte metadata",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
             native_token_count                      = 0,
             dust_deposit_return_unlock_condition    = False,
             timelock_unlock_condition               = False,
@@ -70,14 +81,14 @@ if __name__ == '__main__':
             sender_block                            = False,
             tag_block                               = False,
             metadata_block                          = True,
-            metadata_data_length                    = 1000,
+            metadata_length                         = 1000,
         ),
         outputs.getVBytes_ExtendedOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "1 native token, dust return",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
             native_token_count                      = 1,
             dust_deposit_return_unlock_condition    = True,
             timelock_unlock_condition               = False,
@@ -85,14 +96,14 @@ if __name__ == '__main__':
             sender_block                            = False,
             tag_block                               = False,
             metadata_block                          = False,
-            metadata_data_length                    = None,
+            metadata_length                         = 0,
         ),
         outputs.getVBytes_ExtendedOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "typical ISC request",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
             native_token_count                      = 0,
             dust_deposit_return_unlock_condition    = True,
             timelock_unlock_condition               = False,
@@ -100,63 +111,104 @@ if __name__ == '__main__':
             sender_block                            = True,
             tag_block                               = False,
             metadata_block                          = True,
-            metadata_data_length                    = 64,
+            metadata_length                         = 64,
         ),
         outputs.getVBytes_ExtendedOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "max functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
-            native_token_count                      = 0,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
+            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+            dust_deposit_return_unlock_condition    = True,
+            timelock_unlock_condition               = True,
+            expiration_unlock_condition             = True,
+            sender_block                            = True,
+            tag_block                               = True,
+            metadata_block                          = True,
+            metadata_length                         = METADATA_LENGTH_MAX,
         ),
         outputs.getVBytes_AliasOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "min functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = True,
-            native_token_count                      = 0
+            metadata_length_max                     = METADATA_LENGTH_MAX,
+            native_token_count                      = 0,
+            state_metadata_length                   = 0,
+            governor_address_unlock_condition       = False,
+            sender_block                            = False,
+            issuer_block                            = False,
+            metadata_block                          = False,
+            metadata_length                         = 0,
         ),
         outputs.getVBytes_AliasOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "max functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
-            native_token_count                      = 0,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
+            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+            state_metadata_length                   = METADATA_LENGTH_MAX,
+            governor_address_unlock_condition       = True,
+            sender_block                            = True,
+            issuer_block                            = True,
+            metadata_block                          = True,
+            metadata_length                         = METADATA_LENGTH_MAX,
         ),
         outputs.getVBytes_FoundryOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "min functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = True,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
             native_token_count                      = 0,
+            metadata_block                          = False,
+            metadata_length                         = 0,
         ),
         outputs.getVBytes_FoundryOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "max functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
-            native_token_count                      = 0,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
+            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+            metadata_block                          = True,
+            metadata_length                         = METADATA_LENGTH_MAX,
         ),
         outputs.getVBytes_NFTOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "min functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = True,
+            metadata_length_max                     = METADATA_LENGTH_MAX,
             native_token_count                      = 0,
+            immutable_metadata_length               = 0,
+            dust_deposit_return_unlock_condition    = False,
+            timelock_unlock_condition               = False,
+            expiration_unlock_condition             = False,
+            sender_block                            = False,
+            issuer_block                            = False,
+            tag_block                               = False,
+            metadata_block                          = False,
+            metadata_length                         = 0,
         ),
         outputs.getVBytes_NFTOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "max functionality",
             output_size_max                         = output_size_max,
-            required_fields_only                    = False,
-            native_token_count                      = 0
+            metadata_length_max                     = METADATA_LENGTH_MAX,
+            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+            immutable_metadata_length               = METADATA_LENGTH_MAX,
+            dust_deposit_return_unlock_condition    = True,
+            timelock_unlock_condition               = True,
+            expiration_unlock_condition             = True,
+            sender_block                            = True,
+            issuer_block                            = True,
+            tag_block                               = True,
+            metadata_block                          = True,
+            metadata_length                         = METADATA_LENGTH_MAX,
         ),
     ]):
         print()

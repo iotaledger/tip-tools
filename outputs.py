@@ -35,25 +35,26 @@ def getOutputSizeMax(transaction_size_max, inputs=1):
 #===============================================================================
 class Output_VBytes(object):
     #---------------------------------------------------------------------------
-    def __init__(self, name, name_plot, max_byte_size, weight_key, weight_data, plot_row_index=0, plot_column_index=0):
-        self.name               = name
-        self.name_plot          = name_plot
-        self.max_byte_size      = max_byte_size     # maximum available bytes
-        self.weight_key         = weight_key
-        self.weight_data        = weight_data
+    def __init__(self, name, name_plot, max_byte_size, weight_key, weight_data, metadata_length_max, plot_row_index=0, plot_column_index=0):
+        self.name                   = name
+        self.name_plot              = name_plot
+        self.max_byte_size          = max_byte_size     # maximum available bytes
+        self.weight_key             = weight_key
+        self.weight_data            = weight_data
+        self.metadata_length_max    = metadata_length_max
 
-        self.plot_row_index     = plot_row_index
-        self.plot_column_index  = plot_column_index 
+        self.plot_row_index         = plot_row_index
+        self.plot_column_index      = plot_column_index 
         
-        self.byte_size_max      = 0                 # currently used bytes max
-        self.v_bytes_min        = 0
-        self.v_bytes_max        = 0 
+        self.byte_size_max          = 0                 # currently used bytes max
+        self.v_bytes_min            = 0
+        self.v_bytes_max            = 0 
 
-        self.plot_y_values      = []
+        self.plot_y_values          = []
 
     #---------------------------------------------------------------------------
     def summary(self):
-        print("Name: %s, v_byte_min: %d, v_byte_max: %d" % (self.name, self.v_bytes_min, self.v_bytes_max))
+        print("\nName: %s\n\tbytes_max:  %6d\n\tv_byte_min: %6d\n\tv_byte_max: %6d" % (self.name, self.byte_size_max, self.v_bytes_min, self.v_bytes_max))
     
     #---------------------------------------------------------------------------
     def addField(self, field_byte_size_min, field_byte_size_max, weight):
@@ -125,22 +126,41 @@ class Output_VBytes(object):
     
     #---------------------------------------------------------------------------
     def addField_StateMetadata(self, max_data_length):
-        self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # State Metadata Length
+        self.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=self.weight_data)                 # State Metadata Length
         
         if max_data_length == None:
             max_data_length = 0       # zero for now, the remaining space will be taken into account in the metadata block
+        
+        if (self.metadata_length_max != None) and (max_data_length > self.metadata_length_max):
+            max_data_length = self.metadata_length_max
         
         self.addField(field_byte_size_min=0,   field_byte_size_max=max_data_length,  weight=self.weight_data)
     
     #---------------------------------------------------------------------------
     def addField_ImmutableMetadata(self, max_data_length):
-        self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Immutable Metadata Length
+        self.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=self.weight_data)                 # Immutable Metadata Length
         
         if max_data_length == None:
             max_data_length = 0       # zero for now, the remaining space will be taken into account in the metadata block
         
+        if (self.metadata_length_max != None) and (max_data_length > self.metadata_length_max):
+            max_data_length = self.metadata_length_max
+
         self.addField(field_byte_size_min=0,   field_byte_size_max=max_data_length,  weight=self.weight_data)   # Immutable Metadata
     
+    #---------------------------------------------------------------------------
+    def addField_MetadataBlock(self, max_data_length):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Block Type
+        self.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=self.weight_data)                 # Metadata Data Length
+        
+        if max_data_length == None:
+            max_data_length = self.bytesRemaining()       # we can just use the remaining size here since every other dynamic field has the same weight
+        
+        if (self.metadata_length_max != None) and (max_data_length > self.metadata_length_max):
+            max_data_length = self.metadata_length_max
+        
+        self.addField(field_byte_size_min=1,   field_byte_size_max=max_data_length, weight=self.weight_data)    # Metadata Data 
+
     #---------------------------------------------------------------------------
     def addField_FoundryCounter(self):
         self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Foundry Counter
@@ -236,16 +256,6 @@ class Output_VBytes(object):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Tag Length
         self.addField(field_byte_size_min=1,   field_byte_size_max=255, weight=self.weight_data)                # Tag
 
-    #---------------------------------------------------------------------------
-    def addField_MetadataBlock(self, max_data_length):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Block Type
-        self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Metadata Data Length
-        
-        if max_data_length == None:
-            max_data_length = self.bytesRemaining()       # we can just use the remaining size here since every other dynamic field has the same weight
-        
-        self.addField(field_byte_size_min=1,   field_byte_size_max=max_data_length, weight=self.weight_data)    # Metadata Data 
-
 #===============================================================================
 def getVBytes_SingleByte():
 
@@ -266,7 +276,13 @@ def getVBytes_SigLockedSingleOutput(weight_key,
         name        = "%s (%s)" %  (name, additional_name)
         name_plot   = "%s\n(%s)" % (name_plot, additional_name)
     
-    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
+    vbytes = Output_VBytes(name                = name,
+                           name_plot           = name_plot,
+                           max_byte_size       = output_size_max,
+                           weight_key          = weight_key,
+                           weight_data         = weight_data,
+                           metadata_length_max = None)
+
     vbytes.addField_OutputID()
     vbytes.addField_OutputType()
     vbytes.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=weight_data)                 # Address Type
@@ -280,15 +296,15 @@ def getVBytes_ExtendedOutput(weight_key,
                              weight_data,
                              additional_name,
                              output_size_max,
-                             required_fields_only,
+                             metadata_length_max,
                              native_token_count, 
-                             dust_deposit_return_unlock_condition=True,
-                             timelock_unlock_condition=True,
-                             expiration_unlock_condition=True,
-                             sender_block=True,
-                             tag_block=True,
-                             metadata_block=True,
-                             metadata_data_length=None):
+                             dust_deposit_return_unlock_condition,
+                             timelock_unlock_condition,
+                             expiration_unlock_condition,
+                             sender_block,
+                             tag_block,
+                             metadata_block,
+                             metadata_length):
 
     name        = "ExtendedOutput"
     name_plot   = name
@@ -296,7 +312,12 @@ def getVBytes_ExtendedOutput(weight_key,
         name        = "%s (%s)" %  (name, additional_name)
         name_plot   = "%s\n(%s)" % (name_plot, additional_name)
     
-    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
+    vbytes = Output_VBytes(name                = name,
+                           name_plot           = name_plot,
+                           max_byte_size       = output_size_max,
+                           weight_key          = weight_key,
+                           weight_data         = weight_data,
+                           metadata_length_max = metadata_length_max)
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
@@ -308,26 +329,26 @@ def getVBytes_ExtendedOutput(weight_key,
     vbytes.addField_UnlockConditionsCount()
     vbytes.addField_AddressUnlockCondition()
     
-    if not required_fields_only and dust_deposit_return_unlock_condition:
+    if dust_deposit_return_unlock_condition:
         vbytes.addField_DustDepositReturnUnlockCondition()
 
-    if not required_fields_only and timelock_unlock_condition:
+    if timelock_unlock_condition:
         vbytes.addField_TimelockUnlockCondition()
     
-    if not required_fields_only and expiration_unlock_condition:
+    if expiration_unlock_condition:
         vbytes.addField_ExpirationUnlockCondition()
     
     # Feature blocks
     vbytes.addField_FeatureBlocksCount()
     
-    if not required_fields_only and sender_block:
+    if sender_block:
         vbytes.addField_SenderBlock()
 
-    if not required_fields_only and tag_block:
+    if tag_block:
         vbytes.addField_TagBlock()
     
-    if not required_fields_only and metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_data_length)
+    if metadata_block:
+        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
     
     return vbytes
 
@@ -336,13 +357,14 @@ def getVBytes_AliasOutput(weight_key,
                           weight_data,
                           additional_name,
                           output_size_max,
-                          required_fields_only,
+                          metadata_length_max,
                           native_token_count, 
-                          governor_address_unlock_condition=True,
-                          sender_block=True,
-                          issuer_block=True,
-                          metadata_block=True,
-                          metadata_data_length=None):
+                          state_metadata_length,
+                          governor_address_unlock_condition,
+                          sender_block,
+                          issuer_block,
+                          metadata_block,
+                          metadata_length):
 
     name        = "AliasOutput"
     name_plot   = name
@@ -350,7 +372,12 @@ def getVBytes_AliasOutput(weight_key,
         name        = "%s (%s)" %  (name, additional_name)
         name_plot   = "%s\n(%s)" % (name_plot, additional_name)
     
-    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
+    vbytes = Output_VBytes(name                = name,
+                           name_plot           = name_plot,
+                           max_byte_size       = output_size_max,
+                           weight_key          = weight_key,
+                           weight_data         = weight_data,
+                           metadata_length_max = metadata_length_max)
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
@@ -359,27 +386,27 @@ def getVBytes_AliasOutput(weight_key,
     vbytes.addField_NativeTokens(native_token_count)    
     vbytes.addField_AliasID()
     vbytes.addField_StateIndex()
-    vbytes.addField_StateMetadata(max_data_length=None)
+    vbytes.addField_StateMetadata(max_data_length=state_metadata_length)
     vbytes.addField_FoundryCounter()
 
     # Unlock conditions
     vbytes.addField_UnlockConditionsCount()
     vbytes.addField_StateControllerAddressUnlockCondition()
     
-    if not required_fields_only and governor_address_unlock_condition:
+    if governor_address_unlock_condition:
         vbytes.addField_GovernorAddressUnlockCondition()
     
     # Feature blocks
     vbytes.addField_FeatureBlocksCount()
     
-    if not required_fields_only and sender_block:
+    if sender_block:
         vbytes.addField_SenderBlock()
 
-    if not required_fields_only and issuer_block:
+    if issuer_block:
         vbytes.addField_IssuerBlock()
     
-    if not required_fields_only and metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_data_length)
+    if metadata_block:
+        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
     
     return vbytes
 
@@ -388,10 +415,10 @@ def getVBytes_FoundryOutput(weight_key,
                             weight_data,
                             additional_name,
                             output_size_max,
-                            required_fields_only,
+                            metadata_length_max,
                             native_token_count, 
-                            metadata_block=True,
-                            metadata_data_length=None):
+                            metadata_block,
+                            metadata_length):
 
     name        = "FoundryOutput"
     name_plot   = name
@@ -399,7 +426,12 @@ def getVBytes_FoundryOutput(weight_key,
         name        = "%s (%s)" %  (name, additional_name)
         name_plot   = "%s\n(%s)" % (name_plot, additional_name)
     
-    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
+    vbytes = Output_VBytes(name                = name,
+                           name_plot           = name_plot,
+                           max_byte_size       = output_size_max,
+                           weight_key          = weight_key,
+                           weight_data         = weight_data,
+                           metadata_length_max = metadata_length_max)
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
@@ -419,8 +451,8 @@ def getVBytes_FoundryOutput(weight_key,
     # Feature blocks
     vbytes.addField_FeatureBlocksCount()
     
-    if not required_fields_only and metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_data_length)
+    if metadata_block:
+        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
     
     return vbytes
 
@@ -429,16 +461,17 @@ def getVBytes_NFTOutput(weight_key,
                         weight_data,
                         additional_name,
                         output_size_max,
-                        required_fields_only,
-                        native_token_count, 
-                        dust_deposit_return_unlock_condition=True,
-                        timelock_unlock_condition=True,
-                        expiration_unlock_condition=True,
-                        sender_block=True,
-                        issuer_block=True,
-                        tag_block=True,
-                        metadata_block=True,
-                        metadata_data_length=None):
+                        metadata_length_max,
+                        native_token_count,
+                        immutable_metadata_length,
+                        dust_deposit_return_unlock_condition,
+                        timelock_unlock_condition,
+                        expiration_unlock_condition,
+                        sender_block,
+                        issuer_block,
+                        tag_block,
+                        metadata_block,
+                        metadata_length):
 
     name        = "NFTOutput"
     name_plot   = name
@@ -446,7 +479,12 @@ def getVBytes_NFTOutput(weight_key,
         name        = "%s (%s)" %  (name, additional_name)
         name_plot   = "%s\n(%s)" % (name_plot, additional_name)
     
-    vbytes = Output_VBytes(name=name, name_plot=name_plot, max_byte_size=output_size_max, weight_key=weight_key, weight_data=weight_data)
+    vbytes = Output_VBytes(name                = name,
+                           name_plot           = name_plot,
+                           max_byte_size       = output_size_max,
+                           weight_key          = weight_key,
+                           weight_data         = weight_data,
+                           metadata_length_max = metadata_length_max)
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
@@ -454,119 +492,173 @@ def getVBytes_NFTOutput(weight_key,
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
     vbytes.addField_NFTID()
-    vbytes.addField_ImmutableMetadata(max_data_length=None)
+    vbytes.addField_ImmutableMetadata(max_data_length=immutable_metadata_length)
     
     # Unlock conditions
     vbytes.addField_UnlockConditionsCount()
     vbytes.addField_AddressUnlockCondition()
     
-    if not required_fields_only and dust_deposit_return_unlock_condition:
+    if dust_deposit_return_unlock_condition:
         vbytes.addField_DustDepositReturnUnlockCondition()
 
-    if not required_fields_only and timelock_unlock_condition:
+    if timelock_unlock_condition:
         vbytes.addField_TimelockUnlockCondition()
     
-    if not required_fields_only and expiration_unlock_condition:
+    if expiration_unlock_condition:
         vbytes.addField_ExpirationUnlockCondition()
         
     # Feature blocks
     vbytes.addField_FeatureBlocksCount()
     
-    if not required_fields_only and sender_block:
+    if sender_block:
         vbytes.addField_SenderBlock()
 
-    if not required_fields_only and issuer_block:
+    if issuer_block:
         vbytes.addField_IssuerBlock()
     
-    if not required_fields_only and tag_block:
+    if tag_block:
         vbytes.addField_TagBlock()
     
-    if not required_fields_only and metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_data_length)
+    if metadata_block:
+        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
     
     return vbytes
 
 #===============================================================================
 if __name__ == '__main__':
-    MSG_SIZE_MAX        = 32768
-    WEIGHT_KEY          = 10.0
-    WEIGHT_DATA         = 1.0
-    payload_size_max    = getPayloadSizeMax(message_size_max=MSG_SIZE_MAX)
-    output_size_max     = getOutputSizeMax(transaction_size_max=payload_size_max, inputs=1)
+    MSG_SIZE_MAX            = 32768
+    METADATA_LENGTH_MAX     = 8192
+    NATIVE_TOKEN_COUNT_MAX  = 8
+
+    WEIGHT_KEY              = 10.0
+    WEIGHT_DATA             = 1.0
+
+    payload_size_max        = getPayloadSizeMax(message_size_max=MSG_SIZE_MAX)
+    output_size_max         = getOutputSizeMax(transaction_size_max=payload_size_max, inputs=1)
     
-    print("MessageSizeMax: %d" % (MSG_SIZE_MAX))
-    print("PayloadSizeMax: %d" % (payload_size_max))
-    print("OutputSizeMax: %d" % (output_size_max))
+    print("MessageSizeMax:      %5d" % (MSG_SIZE_MAX))
+    print("PayloadSizeMax:      %5d" % (payload_size_max))
+    print("OutputSizeMax:       %5d" % (output_size_max))
+    print("MetadataLengthMax:   %5d" % (METADATA_LENGTH_MAX))
+    print("NativeTokenCountMax: %5d" % (NATIVE_TOKEN_COUNT_MAX))
 
     for vbytes in [getVBytes_SigLockedSingleOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = None,
-                        output_size_max         = output_size_max,
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = None,
+                        output_size_max                         = output_size_max,
                    ), 
                    getVBytes_ExtendedOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "min functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = True,
-                        native_token_count      = 0, 
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "min functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = 0,
+                        dust_deposit_return_unlock_condition    = False,
+                        timelock_unlock_condition               = False,
+                        expiration_unlock_condition             = False,
+                        sender_block                            = False,
+                        tag_block                               = False,
+                        metadata_block                          = False,
+                        metadata_length                         = 0,
                     ),
                    getVBytes_ExtendedOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "max functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = False,
-                        native_token_count      = 0,
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "max functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+                        dust_deposit_return_unlock_condition    = True,
+                        timelock_unlock_condition               = True,
+                        expiration_unlock_condition             = True,
+                        sender_block                            = True,
+                        tag_block                               = True,
+                        metadata_block                          = True,
+                        metadata_length                         = METADATA_LENGTH_MAX,
                    ),
                    getVBytes_AliasOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "min functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = True,
-                        native_token_count      = 0
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "min functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = 0,
+                        state_metadata_length                   = 0,
+                        governor_address_unlock_condition       = False,
+                        sender_block                            = False,
+                        issuer_block                            = False,
+                        metadata_block                          = False,
+                        metadata_length                         = 0,
                    ),
                    getVBytes_AliasOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "max functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = False,
-                        native_token_count      = 0,
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "max functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+                        state_metadata_length                   = METADATA_LENGTH_MAX,
+                        governor_address_unlock_condition       = True,
+                        sender_block                            = True,
+                        issuer_block                            = True,
+                        metadata_block                          = True,
+                        metadata_length                         = METADATA_LENGTH_MAX,
                    ),
                    getVBytes_FoundryOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "min functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = True,
-                        native_token_count      = 0,
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "min functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = 0,
+                        metadata_block                          = False,
+                        metadata_length                         = 0,
                    ),
                    getVBytes_FoundryOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "max functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = False,
-                        native_token_count      = 0,
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "max functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+                        metadata_block                          = True,
+                        metadata_length                         = METADATA_LENGTH_MAX,
                    ),
                    getVBytes_NFTOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "min functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = True,
-                        native_token_count      = 0,
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "min functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = 0,
+                        immutable_metadata_length               = 0,
+                        dust_deposit_return_unlock_condition    = False,
+                        timelock_unlock_condition               = False,
+                        expiration_unlock_condition             = False,
+                        sender_block                            = False,
+                        issuer_block                            = False,
+                        tag_block                               = False,
+                        metadata_block                          = False,
+                        metadata_length                         = 0,
                    ),
                    getVBytes_NFTOutput(
-                        weight_key              = WEIGHT_KEY,
-                        weight_data             = WEIGHT_DATA,
-                        additional_name         = "max functionality",
-                        output_size_max         = output_size_max,
-                        required_fields_only    = False,
-                        native_token_count      = 0
+                        weight_key                              = WEIGHT_KEY,
+                        weight_data                             = WEIGHT_DATA,
+                        additional_name                         = "max functionality",
+                        output_size_max                         = output_size_max,
+                        metadata_length_max                     = METADATA_LENGTH_MAX,
+                        native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
+                        immutable_metadata_length               = METADATA_LENGTH_MAX,
+                        dust_deposit_return_unlock_condition    = True,
+                        timelock_unlock_condition               = True,
+                        expiration_unlock_condition             = True,
+                        sender_block                            = True,
+                        issuer_block                            = True,
+                        tag_block                               = True,
+                        metadata_block                          = True,
+                        metadata_length                         = METADATA_LENGTH_MAX,
                    ),                   
     ]:
         vbytes.summary()
