@@ -528,7 +528,7 @@ def getVBytes_NFTOutput(weight_key,
 if __name__ == '__main__':
     MSG_SIZE_MAX            = 32768
     METADATA_LENGTH_MAX     = 8192
-    NATIVE_TOKEN_COUNT_MAX  = 8
+    NATIVE_TOKEN_COUNT_MAX  = 64
 
     WEIGHT_KEY              = 10.0
     WEIGHT_DATA             = 1.0
