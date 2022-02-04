@@ -4,7 +4,7 @@
 # returns the maximum possible size of a payload
 def getPayloadSizeMax(message_size_max):
     payload_size_max = message_size_max
-    payload_size_max -= 8               # NetworkID
+    payload_size_max -= 1               # ProtocolVersion
     payload_size_max -= 1               # ParentCount
     payload_size_max -= 32              # Parent
     payload_size_max -= 4               # PayloadLength
@@ -19,9 +19,11 @@ def getOutputSizeMax(transaction_size_max, inputs=1):
     output_size_max = transaction_size_max
     output_size_max -= 4                # Payload Type
     output_size_max -= 1                # Transaction Type
+    output_size_max -= 8                # NetworkID
     output_size_max -= 2                # Inputs Count
     for i in range(inputs):
         output_size_max -= (1+32+2)     # 1x UTXO Input (Input Type + Transaction ID + Transaction Output Index)
+    output_size_max -= 32               # Inputs Commitment
     output_size_max -= 2                # Outputs Count
                                         # Placeholder for Outputs
     output_size_max -= 4                # Payload Length
