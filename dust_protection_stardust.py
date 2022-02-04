@@ -53,7 +53,7 @@ if __name__ == '__main__':
             additional_name                         = None,
             output_size_max                         = output_size_max,
         ), 
-        outputs.getVBytes_ExtendedOutput(
+        outputs.getVBytes_BasicOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "min functionality",
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             metadata_block                          = False,
             metadata_length                         = 0,
         ),
-        outputs.getVBytes_ExtendedOutput(
+        outputs.getVBytes_BasicOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "1000 byte metadata",
@@ -83,7 +83,7 @@ if __name__ == '__main__':
             metadata_block                          = True,
             metadata_length                         = 1000,
         ),
-        outputs.getVBytes_ExtendedOutput(
+        outputs.getVBytes_BasicOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "1 native token, dust return",
@@ -98,7 +98,7 @@ if __name__ == '__main__':
             metadata_block                          = False,
             metadata_length                         = 0,
         ),
-        outputs.getVBytes_ExtendedOutput(
+        outputs.getVBytes_BasicOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "typical ISC request",
@@ -113,7 +113,7 @@ if __name__ == '__main__':
             metadata_block                          = True,
             metadata_length                         = 64,
         ),
-        outputs.getVBytes_ExtendedOutput(
+        outputs.getVBytes_BasicOutput(
             weight_key                              = WEIGHT_KEY,
             weight_data                             = WEIGHT_DATA,
             additional_name                         = "max functionality",

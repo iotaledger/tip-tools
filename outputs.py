@@ -292,21 +292,21 @@ def getVBytes_SigLockedSingleOutput(weight_key,
     return vbytes
 
 #===============================================================================
-def getVBytes_ExtendedOutput(weight_key,
-                             weight_data,
-                             additional_name,
-                             output_size_max,
-                             metadata_length_max,
-                             native_token_count, 
-                             dust_deposit_return_unlock_condition,
-                             timelock_unlock_condition,
-                             expiration_unlock_condition,
-                             sender_block,
-                             tag_block,
-                             metadata_block,
-                             metadata_length):
+def getVBytes_BasicOutput(weight_key,
+                          weight_data,
+                          additional_name,
+                          output_size_max,
+                          metadata_length_max,
+                          native_token_count, 
+                          dust_deposit_return_unlock_condition,
+                          timelock_unlock_condition,
+                          expiration_unlock_condition,
+                          sender_block,
+                          tag_block,
+                          metadata_block,
+                          metadata_length):
 
-    name        = "ExtendedOutput"
+    name        = "BasicOutput"
     name_plot   = name
     if additional_name != None:
         name        = "%s (%s)" %  (name, additional_name)
@@ -548,7 +548,7 @@ if __name__ == '__main__':
                         additional_name                         = None,
                         output_size_max                         = output_size_max,
                    ), 
-                   getVBytes_ExtendedOutput(
+                   getVBytes_BasicOutput(
                         weight_key                              = WEIGHT_KEY,
                         weight_data                             = WEIGHT_DATA,
                         additional_name                         = "min functionality",
@@ -563,7 +563,7 @@ if __name__ == '__main__':
                         metadata_block                          = False,
                         metadata_length                         = 0,
                     ),
-                   getVBytes_ExtendedOutput(
+                   getVBytes_BasicOutput(
                         weight_key                              = WEIGHT_KEY,
                         weight_data                             = WEIGHT_DATA,
                         additional_name                         = "max functionality",
