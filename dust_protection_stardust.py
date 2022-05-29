@@ -11,9 +11,9 @@ def getDollarFormat(value):
 def calculateDustProtectionCostsStardust(print_summary, create_plots, show_plots):
 
     TOTAL_SUPPLY                = 2779530283277761
-    PRICE_PER_MIOTA_DOLLAR      = 1.35
+    PRICE_PER_MIOTA_DOLLAR      = 0.35
 
-    MSG_SIZE_MAX                = 32768
+    BLOCK_SIZE_MAX              = 32768
     METADATA_LENGTH_MAX         = 8192
     NATIVE_TOKEN_COUNT_MAX      = 64
     
@@ -22,14 +22,13 @@ def calculateDustProtectionCostsStardust(print_summary, create_plots, show_plots
 
     MAXIMUM_DB_SIZES_GB         = [500.0, 1000.0, 2000.0]
     FUND_SPARSITY_PERCENTAGES   = [20.0, 50.0]
-
     
-    payload_size_max    = outputs.getPayloadSizeMax(message_size_max=MSG_SIZE_MAX)
+    payload_size_max    = outputs.getPayloadSizeMax(block_size_max=BLOCK_SIZE_MAX)
     output_size_max     = outputs.getOutputSizeMax(transaction_size_max=payload_size_max, inputs=1)
 
     if print_summary:    
         print("Current market cap: %s" % (getDollarFormat((TOTAL_SUPPLY / 1000000.0) * PRICE_PER_MIOTA_DOLLAR)))
-        print("MessageSizeMax:      %5d" % (MSG_SIZE_MAX))
+        print("BlockSizeMax:        %5d" % (BLOCK_SIZE_MAX))
         print("PayloadSizeMax:      %5d" % (payload_size_max))
         print("OutputSizeMax:       %5d" % (output_size_max))
         print("MetadataLengthMax:   %5d" % (METADATA_LENGTH_MAX))

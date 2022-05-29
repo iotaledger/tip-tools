@@ -2,8 +2,8 @@
 
 #===============================================================================
 # returns the maximum possible size of a payload
-def getPayloadSizeMax(message_size_max):
-    payload_size_max = message_size_max
+def getPayloadSizeMax(block_size_max):
+    payload_size_max = block_size_max
     payload_size_max -= 1               # ProtocolVersion
     payload_size_max -= 1               # ParentCount
     payload_size_max -= 32              # Parent
@@ -96,9 +96,9 @@ class Output_VBytes(object):
     
     #---------------------------------------------------------------------------
     def addField_OutputMetadataOffsets(self):
-        self.addField(field_byte_size_min=32,   field_byte_size_max=32, weight=self.weight_data)               # MessageID Included
-        self.addField(field_byte_size_min=4,    field_byte_size_max=4,  weight=self.weight_data)               # Milestone Index Booked
-        self.addField(field_byte_size_min=4,    field_byte_size_max=4,  weight=self.weight_data)               # Milestone Timestamp Booked
+        self.addField(field_byte_size_min=32,   field_byte_size_max=32, weight=self.weight_data)               # BlockID Included
+        self.addField(field_byte_size_min=4,    field_byte_size_max=4,  weight=self.weight_data)               # Confirmation Milestone Index
+        self.addField(field_byte_size_min=4,    field_byte_size_max=4,  weight=self.weight_data)               # Confirmation Unix Timestamp
     
     #---------------------------------------------------------------------------
     def addField_OutputType(self):
@@ -116,11 +116,11 @@ class Output_VBytes(object):
 
     #---------------------------------------------------------------------------
     def addField_AliasID(self):
-        self.addField(field_byte_size_min=20,  field_byte_size_max=20, weight=self.weight_data)                 # Alias ID
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Alias ID
 
     #---------------------------------------------------------------------------
     def addField_NFTID(self):
-        self.addField(field_byte_size_min=20,  field_byte_size_max=20, weight=self.weight_data)                 # NFT ID
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # NFT ID
 
     #---------------------------------------------------------------------------
     def addField_StateIndex(self):
@@ -136,7 +136,7 @@ class Output_VBytes(object):
         if (self.metadata_length_max != None) and (max_data_length > self.metadata_length_max):
             max_data_length = self.metadata_length_max
         
-        self.addField(field_byte_size_min=0,   field_byte_size_max=max_data_length,  weight=self.weight_data)
+        self.addField(field_byte_size_min=0,   field_byte_size_max=max_data_length,  weight=self.weight_data)   # State Metadata
     
     #---------------------------------------------------------------------------
     def addField_FoundryCounter(self):
@@ -147,21 +147,21 @@ class Output_VBytes(object):
         self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Serial Number
 
     #---------------------------------------------------------------------------
-    def addField_TokenTag(self):
-        self.addField(field_byte_size_min=12,  field_byte_size_max=12, weight=self.weight_data)                 # Token Tag
+    def addField_TokenScheme(self):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Token Scheme
 
     #---------------------------------------------------------------------------
-    def addField_CirculatingSupply(self):
-        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Circulating Supply
+    def addField_MintedTokens(self):
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Minted Tokens
+
+    #---------------------------------------------------------------------------
+    def addField_MeltedTokens(self):
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Melted Tokens
 
     #---------------------------------------------------------------------------
     def addField_MaximumSupply(self):
         self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Maximum Supply
 
-    #---------------------------------------------------------------------------
-    def addField_TokenScheme(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Token Scheme
-        
     #---------------------------------------------------------------------------
     def addField_UnlockConditionsCount(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Conditions Count
@@ -170,31 +170,25 @@ class Output_VBytes(object):
     def addField_AddressUnlockCondition(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
-    
-    #---------------------------------------------------------------------------
-    def addField_AddressUnlockCondition_AliasOnly(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=20, weight=self.weight_data)                 # Address (Alias Address)
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
     
     #---------------------------------------------------------------------------
     def addField_StateControllerAddressUnlockCondition(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
     
     #---------------------------------------------------------------------------
     def addField_GovernorAddressUnlockCondition(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
     
     #---------------------------------------------------------------------------
-    def addField_DustDepositReturnUnlockCondition(self):
+    def addField_StorageDepositReturnUnlockCondition(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Return Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Return Address (Alias Address, NFT Address, Ed25519 Address)
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Return Address (Alias Address, NFT Address, Ed25519 Address)
         self.addField(field_byte_size_min=8,   field_byte_size_max=8,  weight=self.weight_data)                 # Return Amount
 
     #---------------------------------------------------------------------------
@@ -207,29 +201,23 @@ class Output_VBytes(object):
     def addField_ExpirationUnlockCondition(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
         self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Milestone Index
         self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Unix Time
 
     #---------------------------------------------------------------------------
-    def addField_FeatureBlocksCount(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Blocks Count
+    def addField_FeaturesCount(self):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Features Count
     
     #---------------------------------------------------------------------------
-    def addField_SenderBlock(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Block Type
+    def addField_SenderFeature(self):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Feature Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
 
     #---------------------------------------------------------------------------
-    def addField_TagBlock(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Block Type
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Tag Length
-        self.addField(field_byte_size_min=1,   field_byte_size_max=255, weight=self.weight_data)                # Tag
-
-    #---------------------------------------------------------------------------
-    def addField_MetadataBlock(self, max_data_length):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Block Type
+    def addField_MetadataFeature(self, max_data_length):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Feature Type
         self.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=self.weight_data)                 # Metadata Data Length
         
         if max_data_length == None:
@@ -241,17 +229,24 @@ class Output_VBytes(object):
         self.addField(field_byte_size_min=1,   field_byte_size_max=max_data_length, weight=self.weight_data)    # Metadata Data 
 
     #---------------------------------------------------------------------------
-    def addField_ImmutableBlocksCount(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Immutable Blocks Count
-    
-    #---------------------------------------------------------------------------
-    def addField_ImmutableIssuerBlock(self):
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Immutable Block Type
-        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
-        self.addField(field_byte_size_min=20,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
+    def addField_TagFeature(self):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Feature Type
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Tag Length
+        self.addField(field_byte_size_min=1,   field_byte_size_max=255, weight=self.weight_data)                # Tag
 
     #---------------------------------------------------------------------------
-    def addField_ImmutableMetadata(self, max_data_length):
+    def addField_ImmutableFeaturesCount(self):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Immutable Features Count
+
+    #---------------------------------------------------------------------------
+    def addField_ImmutableIssuerFeature(self):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Immutable Feature Type
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
+        self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
+
+    #---------------------------------------------------------------------------
+    def addField_ImmutableMetadataFeature(self, max_data_length):
+        self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Immutable Feature Type
         self.addField(field_byte_size_min=2,   field_byte_size_max=2,  weight=self.weight_data)                 # Immutable Metadata Length
         
         if max_data_length == None:
@@ -260,7 +255,7 @@ class Output_VBytes(object):
         if (self.metadata_length_max != None) and (max_data_length > self.metadata_length_max):
             max_data_length = self.metadata_length_max
 
-        self.addField(field_byte_size_min=0,   field_byte_size_max=max_data_length,  weight=self.weight_data)   # Immutable Metadata
+        self.addField(field_byte_size_min=1,   field_byte_size_max=max_data_length,  weight=self.weight_data)   # Immutable Metadata
     
 #===============================================================================
 def getVBytes_SingleByte():
@@ -305,13 +300,13 @@ def getVBytes_BasicOutput(weight_key,
                           output_size_max,
                           metadata_length_max,
                           native_token_count, 
-                          dust_deposit_return_unlock_condition,
+                          storage_deposit_return_unlock_condition,
                           timelock_unlock_condition,
                           expiration_unlock_condition,
-                          sender_block,
-                          metadata_block,
+                          sender_feature,
+                          metadata_feature,
                           metadata_length,
-                          tag_block,
+                          tag_feature,
                          ):
 
     name        = "BasicOutput"
@@ -329,6 +324,7 @@ def getVBytes_BasicOutput(weight_key,
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
+
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)
@@ -337,8 +333,8 @@ def getVBytes_BasicOutput(weight_key,
     vbytes.addField_UnlockConditionsCount()
     vbytes.addField_AddressUnlockCondition()
     
-    if dust_deposit_return_unlock_condition:
-        vbytes.addField_DustDepositReturnUnlockCondition()
+    if storage_deposit_return_unlock_condition:
+        vbytes.addField_StorageDepositReturnUnlockCondition()
 
     if timelock_unlock_condition:
         vbytes.addField_TimelockUnlockCondition()
@@ -347,16 +343,16 @@ def getVBytes_BasicOutput(weight_key,
         vbytes.addField_ExpirationUnlockCondition()
     
     # Feature blocks
-    vbytes.addField_FeatureBlocksCount()
+    vbytes.addField_FeaturesCount()
     
-    if sender_block:
-        vbytes.addField_SenderBlock()
+    if sender_feature:
+        vbytes.addField_SenderFeature()
 
-    if metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
+    if metadata_feature:
+        vbytes.addField_MetadataFeature(max_data_length=metadata_length)
     
-    if tag_block:
-        vbytes.addField_TagBlock()
+    if tag_feature:
+        vbytes.addField_TagFeature()
     
     return vbytes
 
@@ -369,11 +365,11 @@ def getVBytes_AliasOutput(weight_key,
                           native_token_count, 
                           state_metadata_length,
                           governor_address_unlock_condition,
-                          sender_block,
-                          metadata_block,
+                          sender_feature,
+                          metadata_feature,
                           metadata_length,
-                          immutable_issuer_block,
-                          immutable_metadata_block,
+                          immutable_issuer_feature,
+                          immutable_metadata_feature,
                           immutable_metadata_length,
                          ):
 
@@ -392,6 +388,7 @@ def getVBytes_AliasOutput(weight_key,
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
+
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
@@ -408,22 +405,22 @@ def getVBytes_AliasOutput(weight_key,
         vbytes.addField_GovernorAddressUnlockCondition()
     
     # Feature blocks
-    vbytes.addField_FeatureBlocksCount()
+    vbytes.addField_FeaturesCount()
     
-    if sender_block:
-        vbytes.addField_SenderBlock()
+    if sender_feature:
+        vbytes.addField_SenderFeature()
 
-    if metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
+    if metadata_feature:
+        vbytes.addField_MetadataFeature(max_data_length=metadata_length)
     
     # Immutable blocks
-    vbytes.addField_ImmutableBlocksCount()
+    vbytes.addField_ImmutableFeaturesCount()
     
-    if immutable_issuer_block:
-        vbytes.addField_ImmutableIssuerBlock()
+    if immutable_issuer_feature:
+        vbytes.addField_ImmutableIssuerFeature()
     
-    if immutable_metadata_block:
-        vbytes.addField_ImmutableMetadata(max_data_length=immutable_metadata_length)
+    if immutable_metadata_feature:
+        vbytes.addField_ImmutableMetadataFeature(max_data_length=immutable_metadata_length)
     
     return vbytes
 
@@ -434,9 +431,9 @@ def getVBytes_FoundryOutput(weight_key,
                             output_size_max,
                             metadata_length_max,
                             native_token_count, 
-                            metadata_block,
+                            metadata_feature,
                             metadata_length,
-                            immutable_metadata_block,
+                            immutable_metadata_feature,
                             immutable_metadata_length,
                            ):
 
@@ -455,30 +452,31 @@ def getVBytes_FoundryOutput(weight_key,
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
+
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
     vbytes.addField_SerialNumber()
-    vbytes.addField_TokenTag()
-    vbytes.addField_CirculatingSupply()
-    vbytes.addField_MaximumSupply()
     vbytes.addField_TokenScheme()
+    vbytes.addField_MintedTokens()
+    vbytes.addField_MeltedTokens()
+    vbytes.addField_MaximumSupply()
 
     # Unlock conditions
     vbytes.addField_UnlockConditionsCount()
-    vbytes.addField_AddressUnlockCondition_AliasOnly()
+    vbytes.addField_AddressUnlockCondition()
 
     # Feature blocks
-    vbytes.addField_FeatureBlocksCount()
+    vbytes.addField_FeaturesCount()
     
-    if metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
+    if metadata_feature:
+        vbytes.addField_MetadataFeature(max_data_length=metadata_length)
     
     # Immutable blocks
-    vbytes.addField_ImmutableBlocksCount()
+    vbytes.addField_ImmutableFeaturesCount()
     
-    if immutable_metadata_block:
-        vbytes.addField_ImmutableMetadata(max_data_length=immutable_metadata_length)
+    if immutable_metadata_feature:
+        vbytes.addField_ImmutableMetadataFeature(max_data_length=immutable_metadata_length)
     
     return vbytes
 
@@ -489,15 +487,15 @@ def getVBytes_NFTOutput(weight_key,
                         output_size_max,
                         metadata_length_max,
                         native_token_count,
-                        dust_deposit_return_unlock_condition,
+                        storage_deposit_return_unlock_condition,
                         timelock_unlock_condition,
                         expiration_unlock_condition,
-                        sender_block,
-                        metadata_block,
+                        sender_feature,
+                        metadata_feature,
                         metadata_length,
-                        tag_block,
-                        immutable_issuer_block,
-                        immutable_metadata_block,
+                        tag_feature,
+                        immutable_issuer_feature,
+                        immutable_metadata_feature,
                         immutable_metadata_length):
 
     name        = "NFTOutput"
@@ -515,6 +513,7 @@ def getVBytes_NFTOutput(weight_key,
 
     vbytes.addField_OutputID()
     vbytes.addField_OutputMetadataOffsets()
+
     vbytes.addField_OutputType()
     vbytes.addField_IotaAmount()
     vbytes.addField_NativeTokens(native_token_count)    
@@ -524,8 +523,8 @@ def getVBytes_NFTOutput(weight_key,
     vbytes.addField_UnlockConditionsCount()
     vbytes.addField_AddressUnlockCondition()
     
-    if dust_deposit_return_unlock_condition:
-        vbytes.addField_DustDepositReturnUnlockCondition()
+    if storage_deposit_return_unlock_condition:
+        vbytes.addField_StorageDepositReturnUnlockCondition()
 
     if timelock_unlock_condition:
         vbytes.addField_TimelockUnlockCondition()
@@ -534,25 +533,25 @@ def getVBytes_NFTOutput(weight_key,
         vbytes.addField_ExpirationUnlockCondition()
         
     # Feature blocks
-    vbytes.addField_FeatureBlocksCount()
+    vbytes.addField_FeaturesCount()
     
-    if sender_block:
-        vbytes.addField_SenderBlock()
+    if sender_feature:
+        vbytes.addField_SenderFeature()
 
-    if metadata_block:
-        vbytes.addField_MetadataBlock(max_data_length=metadata_length)
+    if metadata_feature:
+        vbytes.addField_MetadataFeature(max_data_length=metadata_length)
     
-    if tag_block:
-        vbytes.addField_TagBlock()
+    if tag_feature:
+        vbytes.addField_TagFeature()
     
     # Immutable blocks
-    vbytes.addField_ImmutableBlocksCount()
+    vbytes.addField_ImmutableFeaturesCount()
     
-    if immutable_issuer_block:
-        vbytes.addField_ImmutableIssuerBlock()
+    if immutable_issuer_feature:
+        vbytes.addField_ImmutableIssuerFeature()
     
-    if immutable_metadata_block:
-        vbytes.addField_ImmutableMetadata(max_data_length=immutable_metadata_length)
+    if immutable_metadata_feature:
+        vbytes.addField_ImmutableMetadataFeature(max_data_length=immutable_metadata_length)
     
     return vbytes
 
@@ -565,193 +564,193 @@ def GetExampleOutputs(output_size_max,
                      ):
 
     return [getVBytes_SigLockedSingleOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = None,
-                        output_size_max                         = output_size_max,
-                   ), 
-                   getVBytes_BasicOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "min functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 0,
-                        dust_deposit_return_unlock_condition    = False,
-                        timelock_unlock_condition               = False,
-                        expiration_unlock_condition             = False,
-                        sender_block                            = False,
-                        metadata_block                          = False,
-                        metadata_length                         = 0,
-                        tag_block                               = False,
-                    ),
-                   getVBytes_BasicOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "max functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = native_token_count_max,
-                        dust_deposit_return_unlock_condition    = True,
-                        timelock_unlock_condition               = True,
-                        expiration_unlock_condition             = True,
-                        sender_block                            = True,
-                        metadata_block                          = True,
-                        metadata_length                         = metadata_length_max,
-                        tag_block                               = True,
-                   ),
-                    getVBytes_BasicOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "1000 byte metadata",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 0,
-                        dust_deposit_return_unlock_condition    = False,
-                        timelock_unlock_condition               = False,
-                        expiration_unlock_condition             = False,
-                        sender_block                            = False,
-                        metadata_block                          = True,
-                        metadata_length                         = 1000,
-                        tag_block                               = False,
-                    ),
-                    getVBytes_BasicOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "1 native token, dust return",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 1,
-                        dust_deposit_return_unlock_condition    = True,
-                        timelock_unlock_condition               = False,
-                        expiration_unlock_condition             = False,
-                        sender_block                            = False,
-                        metadata_block                          = False,
-                        metadata_length                         = 0,
-                        tag_block                               = False,
-                    ),
-                    getVBytes_BasicOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "typical ISC request",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 0,
-                        dust_deposit_return_unlock_condition    = True,
-                        timelock_unlock_condition               = False,
-                        expiration_unlock_condition             = True,
-                        sender_block                            = True,
-                        metadata_block                          = True,
-                        metadata_length                         = 64,
-                        tag_block                               = False,
-                    ),
-                   getVBytes_AliasOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "min functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 0,
-                        state_metadata_length                   = 0,
-                        governor_address_unlock_condition       = False,
-                        sender_block                            = False,
-                        metadata_block                          = False,
-                        metadata_length                         = 0,
-                        immutable_issuer_block                  = False,
-                        immutable_metadata_block                = False,
-                        immutable_metadata_length               = 0,
-                   ),
-                   getVBytes_AliasOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "max functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = native_token_count_max,
-                        state_metadata_length                   = metadata_length_max,
-                        governor_address_unlock_condition       = True,
-                        sender_block                            = True,
-                        metadata_block                          = True,
-                        metadata_length                         = metadata_length_max,
-                        immutable_issuer_block                  = True,
-                        immutable_metadata_block                = True,
-                        immutable_metadata_length               = metadata_length_max,
-                   ),
-                   getVBytes_FoundryOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "min functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 0,
-                        metadata_block                          = False,
-                        metadata_length                         = 0,
-                        immutable_metadata_block                = False,
-                        immutable_metadata_length               = 0,
-                   ),
-                   getVBytes_FoundryOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "max functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = native_token_count_max,
-                        metadata_block                          = True,
-                        metadata_length                         = metadata_length_max,
-                        immutable_metadata_block                = True,
-                        immutable_metadata_length               = metadata_length_max,
-                   ),
-                   getVBytes_NFTOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "min functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = 0,
-                        dust_deposit_return_unlock_condition    = False,
-                        timelock_unlock_condition               = False,
-                        expiration_unlock_condition             = False,
-                        sender_block                            = False,
-                        metadata_block                          = False,
-                        metadata_length                         = 0,
-                        tag_block                               = False,
-                        immutable_issuer_block                  = False,
-                        immutable_metadata_block                = False,
-                        immutable_metadata_length               = 0,
-                   ),
-                   getVBytes_NFTOutput(
-                        weight_key                              = weight_key,
-                        weight_data                             = weight_data,
-                        additional_name                         = "max functionality",
-                        output_size_max                         = output_size_max,
-                        metadata_length_max                     = metadata_length_max,
-                        native_token_count                      = native_token_count_max,
-                        dust_deposit_return_unlock_condition    = True,
-                        timelock_unlock_condition               = True,
-                        expiration_unlock_condition             = True,
-                        sender_block                            = True,
-                        metadata_block                          = True,
-                        metadata_length                         = metadata_length_max,
-                        tag_block                               = True,
-                        immutable_issuer_block                  = True,
-                        immutable_metadata_block                = True,
-                        immutable_metadata_length               = metadata_length_max,
-                   ),                   
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = None,
+                output_size_max                         = output_size_max,
+            ), 
+            getVBytes_BasicOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "min functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                storage_deposit_return_unlock_condition = False,
+                timelock_unlock_condition               = False,
+                expiration_unlock_condition             = False,
+                sender_feature                          = False,
+                metadata_feature                        = False,
+                metadata_length                         = 0,
+                tag_feature                             = False,
+            ),
+            getVBytes_BasicOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "max functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = native_token_count_max,
+                storage_deposit_return_unlock_condition = True,
+                timelock_unlock_condition               = True,
+                expiration_unlock_condition             = True,
+                sender_feature                          = True,
+                metadata_feature                        = True,
+                metadata_length                         = metadata_length_max,
+                tag_feature                             = True,
+            ),
+            getVBytes_BasicOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "1000 byte metadata",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                storage_deposit_return_unlock_condition = False,
+                timelock_unlock_condition               = False,
+                expiration_unlock_condition             = False,
+                sender_feature                          = False,
+                metadata_feature                        = True,
+                metadata_length                         = 1000,
+                tag_feature                             = False,
+            ),
+            getVBytes_BasicOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "1 native token, storage deposit return, expiration",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 1,
+                storage_deposit_return_unlock_condition = True,
+                timelock_unlock_condition               = False,
+                expiration_unlock_condition             = True,
+                sender_feature                          = False,
+                metadata_feature                        = False,
+                metadata_length                         = 0,
+                tag_feature                             = False,
+            ),
+            getVBytes_BasicOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "typical ISC request",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                storage_deposit_return_unlock_condition = True,
+                timelock_unlock_condition               = False,
+                expiration_unlock_condition             = True,
+                sender_feature                          = True,
+                metadata_feature                        = True,
+                metadata_length                         = 64,
+                tag_feature                             = False,
+            ),
+            getVBytes_AliasOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "min functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                state_metadata_length                   = 0,
+                governor_address_unlock_condition       = False,
+                sender_feature                          = False,
+                metadata_feature                        = False,
+                metadata_length                         = 0,
+                immutable_issuer_feature                = False,
+                immutable_metadata_feature              = False,
+                immutable_metadata_length               = 0,
+            ),
+            getVBytes_AliasOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "max functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = native_token_count_max,
+                state_metadata_length                   = metadata_length_max,
+                governor_address_unlock_condition       = True,
+                sender_feature                          = True,
+                metadata_feature                        = True,
+                metadata_length                         = metadata_length_max,
+                immutable_issuer_feature                = True,
+                immutable_metadata_feature              = True,
+                immutable_metadata_length               = metadata_length_max,
+            ),
+            getVBytes_FoundryOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "min functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                metadata_feature                        = False,
+                metadata_length                         = 0,
+                immutable_metadata_feature              = False,
+                immutable_metadata_length               = 0,
+            ),
+            getVBytes_FoundryOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "max functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = native_token_count_max,
+                metadata_feature                        = True,
+                metadata_length                         = metadata_length_max,
+                immutable_metadata_feature              = True,
+                immutable_metadata_length               = metadata_length_max,
+            ),
+            getVBytes_NFTOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "min functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                storage_deposit_return_unlock_condition = False,
+                timelock_unlock_condition               = False,
+                expiration_unlock_condition             = False,
+                sender_feature                          = False,
+                metadata_feature                        = False,
+                metadata_length                         = 0,
+                tag_feature                             = False,
+                immutable_issuer_feature                = False,
+                immutable_metadata_feature              = False,
+                immutable_metadata_length               = 0,
+            ),
+            getVBytes_NFTOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "max functionality",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = native_token_count_max,
+                storage_deposit_return_unlock_condition = True,
+                timelock_unlock_condition               = True,
+                expiration_unlock_condition             = True,
+                sender_feature                          = True,
+                metadata_feature                        = True,
+                metadata_length                         = metadata_length_max,
+                tag_feature                             = True,
+                immutable_issuer_feature                = True,
+                immutable_metadata_feature              = True,
+                immutable_metadata_length               = metadata_length_max,
+            ),                   
     ]
 
 #===============================================================================
 if __name__ == '__main__':
-    MSG_SIZE_MAX            = 32768
+    BLOCK_SIZE_MAX          = 32768
     METADATA_LENGTH_MAX     = 8192
     NATIVE_TOKEN_COUNT_MAX  = 64
 
     WEIGHT_KEY              = 10.0
     WEIGHT_DATA             = 1.0
 
-    payload_size_max        = getPayloadSizeMax(message_size_max=MSG_SIZE_MAX)
+    payload_size_max        = getPayloadSizeMax(block_size_max=BLOCK_SIZE_MAX)
     output_size_max         = getOutputSizeMax(transaction_size_max=payload_size_max, inputs=1)
     
-    print("MessageSizeMax:      %5d" % (MSG_SIZE_MAX))
+    print("BlockSizeMax:        %5d" % (BLOCK_SIZE_MAX))
     print("PayloadSizeMax:      %5d" % (payload_size_max))
     print("OutputSizeMax:       %5d" % (output_size_max))
     print("MetadataLengthMax:   %5d" % (METADATA_LENGTH_MAX))
