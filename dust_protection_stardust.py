@@ -8,7 +8,7 @@ def getDollarFormat(value):
     return "%s$" % (locale.currency(value, symbol=False, grouping=True))
 
 #===============================================================================
-if __name__ == '__main__':
+def calculateDustProtectionCostsStardust(print_summary, create_plots, show_plots):
 
     TOTAL_SUPPLY                = 2779530283277761
     PRICE_PER_MIOTA_DOLLAR      = 1.35
@@ -23,197 +23,45 @@ if __name__ == '__main__':
     MAXIMUM_DB_SIZES_GB         = [500.0, 1000.0, 2000.0]
     FUND_SPARSITY_PERCENTAGES   = [20.0, 50.0]
 
-    print("Current market cap: %s" % (getDollarFormat((TOTAL_SUPPLY / 1000000.0) * PRICE_PER_MIOTA_DOLLAR)))
     
     payload_size_max    = outputs.getPayloadSizeMax(message_size_max=MSG_SIZE_MAX)
     output_size_max     = outputs.getOutputSizeMax(transaction_size_max=payload_size_max, inputs=1)
-    
-    print("MessageSizeMax:      %5d" % (MSG_SIZE_MAX))
-    print("PayloadSizeMax:      %5d" % (payload_size_max))
-    print("OutputSizeMax:       %5d" % (output_size_max))
-    print("MetadataLengthMax:   %5d" % (METADATA_LENGTH_MAX))
-    print("NativeTokenCountMax: %5d" % (NATIVE_TOKEN_COUNT_MAX))
 
-    for maximum_db_size_GB in MAXIMUM_DB_SIZES_GB:
-        for fund_sparsity_percentage in FUND_SPARSITY_PERCENTAGES:
-            db_size_bytes                       = maximum_db_size_GB * 1e9
-            sparsity_factor                     = (fund_sparsity_percentage / 100.0)
-            sparsity_db_size_increase_GB        = maximum_db_size_GB * sparsity_factor
-            cost_per_byte_iota                  = (TOTAL_SUPPLY / float(db_size_bytes)) * sparsity_factor
-            sparsity_distribution_costs_iota    = cost_per_byte_iota * db_size_bytes
-            sparsity_distribution_costs_dollar  = (sparsity_distribution_costs_iota / 1000000.0) * PRICE_PER_MIOTA_DOLLAR
+    if print_summary:    
+        print("Current market cap: %s" % (getDollarFormat((TOTAL_SUPPLY / 1000000.0) * PRICE_PER_MIOTA_DOLLAR)))
+        print("MessageSizeMax:      %5d" % (MSG_SIZE_MAX))
+        print("PayloadSizeMax:      %5d" % (payload_size_max))
+        print("OutputSizeMax:       %5d" % (output_size_max))
+        print("MetadataLengthMax:   %5d" % (METADATA_LENGTH_MAX))
+        print("NativeTokenCountMax: %5d" % (NATIVE_TOKEN_COUNT_MAX))
+            
+        for maximum_db_size_GB in MAXIMUM_DB_SIZES_GB:
+            for fund_sparsity_percentage in FUND_SPARSITY_PERCENTAGES:
+                db_size_bytes                       = maximum_db_size_GB * 1e9
+                sparsity_factor                     = (fund_sparsity_percentage / 100.0)
+                sparsity_db_size_increase_GB        = maximum_db_size_GB * sparsity_factor
+                cost_per_byte_iota                  = (TOTAL_SUPPLY / float(db_size_bytes)) * sparsity_factor
+                sparsity_distribution_costs_iota    = cost_per_byte_iota * db_size_bytes 
+                sparsity_distribution_costs_dollar  = (sparsity_distribution_costs_iota / 1000000.0) * PRICE_PER_MIOTA_DOLLAR
+                print()
+                print("Maximum database size: %0.2fGB, fund sparsity percentage: %0.1f%%, database size increase: %0.2fGB" % (maximum_db_size_GB, fund_sparsity_percentage, maximum_db_size_GB*sparsity_factor))
+                print("Costs for the fund sparsity (%0.2f GB database increase): %0.2fMi, %s (at %0.2f$/Mi price)" % (sparsity_db_size_increase_GB, sparsity_distribution_costs_iota / 1000000.0, getDollarFormat(sparsity_distribution_costs_dollar), PRICE_PER_MIOTA_DOLLAR))
+
+    vbytes_outputs = outputs.GetExampleOutputs(output_size_max         = output_size_max,
+                                               native_token_count_max  = NATIVE_TOKEN_COUNT_MAX,
+                                               weight_key              = WEIGHT_KEY,
+                                               weight_data             = WEIGHT_DATA,
+                                               metadata_length_max     = METADATA_LENGTH_MAX,
+                                              )
+
+    for i, vbytes in enumerate(vbytes_outputs):
+        if print_summary:
             print()
-            print("Maximum database size: %0.2fGB, fund sparsity percentage: %0.1f%%, database size increase: %0.2fGB" % (maximum_db_size_GB, fund_sparsity_percentage, maximum_db_size_GB*sparsity_factor))
-            print("Costs for the fund sparsity (%0.2f GB database increase): %0.2fMi, %s (at %0.2f$/Mi price)" % (sparsity_db_size_increase_GB, sparsity_distribution_costs_iota / 1000000.0, getDollarFormat(sparsity_distribution_costs_dollar), PRICE_PER_MIOTA_DOLLAR))
+            vbytes.summary()
 
-    for i, vbytes in enumerate([
-        outputs.getVBytes_SigLockedSingleOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = None,
-            output_size_max                         = output_size_max,
-        ), 
-        outputs.getVBytes_BasicOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "min functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 0,
-            dust_deposit_return_unlock_condition    = False,
-            timelock_unlock_condition               = False,
-            expiration_unlock_condition             = False,
-            sender_block                            = False,
-            tag_block                               = False,
-            metadata_block                          = False,
-            metadata_length                         = 0,
-        ),
-        outputs.getVBytes_BasicOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "1000 byte metadata",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 0,
-            dust_deposit_return_unlock_condition    = False,
-            timelock_unlock_condition               = False,
-            expiration_unlock_condition             = False,
-            sender_block                            = False,
-            tag_block                               = False,
-            metadata_block                          = True,
-            metadata_length                         = 1000,
-        ),
-        outputs.getVBytes_BasicOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "1 native token, dust return",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 1,
-            dust_deposit_return_unlock_condition    = True,
-            timelock_unlock_condition               = False,
-            expiration_unlock_condition             = False,
-            sender_block                            = False,
-            tag_block                               = False,
-            metadata_block                          = False,
-            metadata_length                         = 0,
-        ),
-        outputs.getVBytes_BasicOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "typical ISC request",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 0,
-            dust_deposit_return_unlock_condition    = True,
-            timelock_unlock_condition               = False,
-            expiration_unlock_condition             = True,
-            sender_block                            = True,
-            tag_block                               = False,
-            metadata_block                          = True,
-            metadata_length                         = 64,
-        ),
-        outputs.getVBytes_BasicOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "max functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
-            dust_deposit_return_unlock_condition    = True,
-            timelock_unlock_condition               = True,
-            expiration_unlock_condition             = True,
-            sender_block                            = True,
-            tag_block                               = True,
-            metadata_block                          = True,
-            metadata_length                         = METADATA_LENGTH_MAX,
-        ),
-        outputs.getVBytes_AliasOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "min functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 0,
-            state_metadata_length                   = 0,
-            governor_address_unlock_condition       = False,
-            sender_block                            = False,
-            issuer_block                            = False,
-            metadata_block                          = False,
-            metadata_length                         = 0,
-        ),
-        outputs.getVBytes_AliasOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "max functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
-            state_metadata_length                   = METADATA_LENGTH_MAX,
-            governor_address_unlock_condition       = True,
-            sender_block                            = True,
-            issuer_block                            = True,
-            metadata_block                          = True,
-            metadata_length                         = METADATA_LENGTH_MAX,
-        ),
-        outputs.getVBytes_FoundryOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "min functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 0,
-            metadata_block                          = False,
-            metadata_length                         = 0,
-        ),
-        outputs.getVBytes_FoundryOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "max functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
-            metadata_block                          = True,
-            metadata_length                         = METADATA_LENGTH_MAX,
-        ),
-        outputs.getVBytes_NFTOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "min functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = 0,
-            immutable_metadata_length               = 0,
-            dust_deposit_return_unlock_condition    = False,
-            timelock_unlock_condition               = False,
-            expiration_unlock_condition             = False,
-            sender_block                            = False,
-            issuer_block                            = False,
-            tag_block                               = False,
-            metadata_block                          = False,
-            metadata_length                         = 0,
-        ),
-        outputs.getVBytes_NFTOutput(
-            weight_key                              = WEIGHT_KEY,
-            weight_data                             = WEIGHT_DATA,
-            additional_name                         = "max functionality",
-            output_size_max                         = output_size_max,
-            metadata_length_max                     = METADATA_LENGTH_MAX,
-            native_token_count                      = NATIVE_TOKEN_COUNT_MAX,
-            immutable_metadata_length               = METADATA_LENGTH_MAX,
-            dust_deposit_return_unlock_condition    = True,
-            timelock_unlock_condition               = True,
-            expiration_unlock_condition             = True,
-            sender_block                            = True,
-            issuer_block                            = True,
-            tag_block                               = True,
-            metadata_block                          = True,
-            metadata_length                         = METADATA_LENGTH_MAX,
-        ),
-    ]):
-        print()
-        vbytes.summary()
-
+        if not create_plots:
+            continue
+        
         plot_lines  = []
         sub_plots   = []
     
@@ -238,9 +86,15 @@ if __name__ == '__main__':
                 x.append(fund_sparsity_percentage)
                 y1.append(cost_per_output_iota / float(1e6))
                 y2.append(total_outputs_size_GB)
-                print("Costs per %-25s     (%6s fund sparsity, Max %7sGB DB, Actual %7sGB DB): %11sMi, %11s$ (at %0.2f$/Mi price), VByteCost: %d" % (vbytes.name, "%0.1f%%" % fund_sparsity_percentage, "%0.2f" % maximum_db_size_GB, "%0.2f" % total_outputs_size_GB, "%4.6f" % (cost_per_output_iota / 1000000.0), "%4.6f" % cost_per_output_dollar, PRICE_PER_MIOTA_DOLLAR, cost_per_byte_iota))
+                if print_summary:
+                    print("Costs per %-25s     (%6s fund sparsity, Max %7sGB DB, Actual %7sGB DB): %11sMi, %11s$ (at %0.2f$/Mi price), VByteCost: %d" % (vbytes.name, "%0.1f%%" % fund_sparsity_percentage, "%0.2f" % maximum_db_size_GB, "%0.2f" % total_outputs_size_GB, "%4.6f" % (cost_per_output_iota / 1000000.0), "%4.6f" % cost_per_output_dollar, PRICE_PER_MIOTA_DOLLAR, cost_per_byte_iota))
                 
             plot_lines.append(plot.PlotLine(subplot_nr=0, x=x, y=y1, name="%0.2f GB" % (maximum_db_size_GB)))
             plot_lines.append(plot.PlotLine(subplot_nr=1, x=x, y=y2, name="%0.2f GB" % (maximum_db_size_GB)))
 
-        plot.plot(sub_plots, plot_lines, show_plot=True, file_path="plots/deposit_miota_%s.jpg" % (vbytes.name.replace(" ", "_")))
+        plot.plot(sub_plots, plot_lines, show_plot=show_plots, file_path="plots/deposit_miota_%s.jpg" % (vbytes.name.replace(" ", "_")))
+    return vbytes_outputs
+
+#===============================================================================
+if __name__ == '__main__':
+    calculateDustProtectionCostsStardust(print_summary=True, create_plots=True, show_plots=True)
