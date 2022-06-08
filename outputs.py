@@ -735,7 +735,46 @@ def GetExampleOutputs(output_size_max,
                 immutable_issuer_feature                = True,
                 immutable_metadata_feature              = True,
                 immutable_metadata_length               = metadata_length_max,
-            ),                   
+            ),
+            getVBytes_NFTOutput(
+                weight_key                              = weight_key,
+                weight_data                             = weight_data,
+                additional_name                         = "typical NFT",
+                output_size_max                         = output_size_max,
+                metadata_length_max                     = metadata_length_max,
+                native_token_count                      = 0,
+                storage_deposit_return_unlock_condition = False,
+                timelock_unlock_condition               = False,
+                expiration_unlock_condition             = False,
+                sender_feature                          = False,
+                metadata_feature                        = False,
+                metadata_length                         = 0,
+                tag_feature                             = False,
+                immutable_issuer_feature                = True,
+                immutable_metadata_feature              = True,
+                immutable_metadata_length               = len('''{
+  "standard" : "IRC27",
+  "type": "image",
+  "version": "v1.0",
+  "nftId": "vt7rye8tgvr7e89w",
+  "tokenURI": "https://mywebsite.com/myfile.png",
+  "tokenName": "My NFT #0001",
+  "collectionId": "7f9e0rwf7e90w",
+  "collectionName": "My Collection of Art",
+  "royalties": {
+    "atoi1qptd4dlt2870zsa9fn5t98mnt2zsstlert0wd20uesk0h4thzavmgrld8kk": 0.025,
+    "atoi1qptd4dlt2870zsa9fn5t98mnt2zsstlert0wd20uesk0h4thzavmgrld8kk": 0.025
+  },
+  "issuerName": "My Artist Name",
+  "description": "A little information about my NFT collection",
+  "attributes": {
+    "Background": "Purple",
+    "Element": "Water",
+    "Attack": "150",
+    "Health": "500"
+  }
+}'''),
+            ),            
     ]
 
 #===============================================================================
