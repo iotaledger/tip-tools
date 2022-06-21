@@ -194,7 +194,6 @@ class Output_VBytes(object):
     #---------------------------------------------------------------------------
     def addField_TimelockUnlockCondition(self):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
-        self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Milestone Index
         self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Unix Time
 
     #---------------------------------------------------------------------------
@@ -202,7 +201,6 @@ class Output_VBytes(object):
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Unlock Condition Type
         self.addField(field_byte_size_min=1,   field_byte_size_max=1,  weight=self.weight_data)                 # Address Type
         self.addField(field_byte_size_min=32,  field_byte_size_max=32, weight=self.weight_data)                 # Address (Alias Address, NFT Address, Ed25519 Address)
-        self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Milestone Index
         self.addField(field_byte_size_min=4,   field_byte_size_max=4,  weight=self.weight_data)                 # Unix Time
 
     #---------------------------------------------------------------------------
