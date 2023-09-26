@@ -24,4 +24,12 @@ Then run the tool to generate the table for a given schema:
 python3 cli.py schema "Ed25519 Address"
 ```
 
+or the deposit table for a given schema:
+
+```
+python3 cli.py deposit "Basic Output"
+```
+
+This command only really makes sense to be called on outputs, as it automatically adds the offset for outputs.
+
 Hint: When passing an unknown schema name, the cli lists all available schemas.
