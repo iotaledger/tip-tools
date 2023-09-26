@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from typedefs.deposit_weight import RentStructure
 from yattag.doc import Doc
 from yattag.indentation import indent
 from schemas.common import OutputOffset
@@ -109,8 +110,10 @@ def generateComplexField(field: ComplexField):
 
 
 def generateVByteMinMax(schema: Schema):
-    offsetMinSize, offsetMaxSize = calculateDeposit(OutputOffset, debug=False)
-    minSize, maxSize = calculateDeposit(schema, debug=False)
+    offsetMinSize, offsetMaxSize = calculateDeposit(
+        OutputOffset, RentStructure(), debug=False
+    )
+    minSize, maxSize = calculateDeposit(schema, RentStructure(), debug=False)
 
     minSize += offsetMinSize
     maxSize += offsetMaxSize
@@ -127,14 +130,27 @@ def generateVByteMinMax(schema: Schema):
             asis(str(maxSize))
 
 
-def calculateDeposit(schema: Schema, debug=False) -> Tuple[int, int]:
+def calculateOutputDeposit(
+    schema: Schema, rent_structure: RentStructure, debug: bool = False
+) -> Tuple[int, int]:
+    offsetSize = calculateDeposit(OutputOffset, rent_structure, debug=debug)
+    schemaSize = calculateDeposit(schema, rent_structure, debug=debug)
+
+    minSize = offsetSize[0] + schemaSize[0]
+    maxSize = offsetSize[1] + schemaSize[1]
+
+    return minSize, maxSize
+
+def calculateDeposit(
+    schema: Schema, rent_structure: RentStructure, debug=False
+) -> Tuple[int, int]:
     minSize = 0
     maxSize = 0
 
     for field in schema.fields:
         match field:
             case SimpleField():
-                min, max = fieldSize(field)
+                min, max = fieldSize(field, rent_structure)
                 minSize += min
                 maxSize += max
                 if debug:
@@ -143,7 +159,9 @@ def calculateDeposit(schema: Schema, debug=False) -> Tuple[int, int]:
                 match field.subschema:
                     case OptAnyOf():
                         # minSize unaffected, since its optional
-                        min, max = anyOfSchemaDeposit(field.subschema, field.schemas)
+                        min, max = anyOfSchemaDeposit(
+                            field.subschema, field.schemas, rent_structure
+                        )
                         maxSize += max
                         if debug:
                             print(
@@ -151,14 +169,14 @@ def calculateDeposit(schema: Schema, debug=False) -> Tuple[int, int]:
                             )
                     case OptOneOf():
                         # minSize unaffected, since its optional
-                        min, max = oneOfSchemaDeposit(field.schemas)
+                        min, max = oneOfSchemaDeposit(field.schemas, rent_structure)
                         maxSize += max
                         if debug:
                             print(
                                 f"Added {field.name} with minLength={min}, maxLength={max}"
                             )
                     case OneOf():
-                        min, max = oneOfSchemaDeposit(field.schemas)
+                        min, max = oneOfSchemaDeposit(field.schemas, rent_structure)
                         minSize += min
                         maxSize += max
                         if debug:
@@ -166,7 +184,9 @@ def calculateDeposit(schema: Schema, debug=False) -> Tuple[int, int]:
                                 f"Added {field.name} with minLength={min}, maxLength={max}"
                             )
                     case AtMostOneOfEach():
-                        min, max = atMostOneOfEachSchemaDeposit(field.schemas)
+                        min, max = atMostOneOfEachSchemaDeposit(
+                            field.schemas, rent_structure
+                        )
                         minSize += min
                         maxSize += max
                         if debug:
@@ -174,7 +194,9 @@ def calculateDeposit(schema: Schema, debug=False) -> Tuple[int, int]:
                                 f"Added {field.name} with minLength={min}, maxLength={max}"
                             )
                     case AnyOf():
-                        min, max = anyOfSchemaDeposit(field.subschema, field.schemas)
+                        min, max = anyOfSchemaDeposit(
+                            field.subschema, field.schemas, rent_structure
+                        )
                         minSize += min
                         maxSize += max
                         if debug:
@@ -188,8 +210,8 @@ def calculateDeposit(schema: Schema, debug=False) -> Tuple[int, int]:
     return minSize, maxSize
 
 
-def fieldSize(field: SimpleField) -> Tuple[int, int]:
-    weight = field.deposit_weight.weight()
+def fieldSize(field: SimpleField, rent_structure: RentStructure) -> Tuple[int, int]:
+    weight = rent_structure.weight(field.deposit_weight)
 
     minSize = field.type.min_size()
     maxSize = field.type.max_size()
@@ -197,14 +219,20 @@ def fieldSize(field: SimpleField) -> Tuple[int, int]:
     return weight * minSize, weight * maxSize
 
 
-def atMostOneOfEachSchemaDeposit(schemas: List[Schema]) -> Tuple[int, int]:
+def atMostOneOfEachSchemaDeposit(
+    schemas: List[Schema], rent_structure: RentStructure
+) -> Tuple[int, int]:
     """Calculates the minimum and maximum size for an atMostOneOfEach Subschema."""
     # Only include schemas that are mandatory.
     minimallySizedSchemas = [
-        calculateDeposit(schema)[0] for schema in schemas if schema.mandatory
+        calculateDeposit(schema, rent_structure)[0]
+        for schema in schemas
+        if schema.mandatory
     ]
     # Include all schemas.
-    maximallySizedSchemas = [calculateDeposit(schema)[1] for schema in schemas]
+    maximallySizedSchemas = [
+        calculateDeposit(schema, rent_structure)[1] for schema in schemas
+    ]
 
     # The sum of deposits of all minimally-sized (mandatory) schemas.
     minSize = sum(minimallySizedSchemas)
@@ -215,10 +243,16 @@ def atMostOneOfEachSchemaDeposit(schemas: List[Schema]) -> Tuple[int, int]:
     return minSize, maxSize
 
 
-def oneOfSchemaDeposit(schemas: List[Schema]) -> Tuple[int, int]:
+def oneOfSchemaDeposit(
+    schemas: List[Schema], rent_structure: RentStructure
+) -> Tuple[int, int]:
     """Calculates the minimum and maximum size for a oneOf Subschema."""
-    minimallySizedSchemas = [calculateDeposit(schema)[0] for schema in schemas]
-    maximallySizedSchemas = [calculateDeposit(schema)[1] for schema in schemas]
+    minimallySizedSchemas = [
+        calculateDeposit(schema, rent_structure)[0] for schema in schemas
+    ]
+    maximallySizedSchemas = [
+        calculateDeposit(schema, rent_structure)[1] for schema in schemas
+    ]
 
     # The minimum of all the minimally-sized schemas.
     minSize = min(minimallySizedSchemas)
@@ -230,11 +264,11 @@ def oneOfSchemaDeposit(schemas: List[Schema]) -> Tuple[int, int]:
 
 
 def anyOfSchemaDeposit(
-    subschema: AnyOf | OptAnyOf, schemas: List[Schema]
+    subschema: AnyOf | OptAnyOf, schemas: List[Schema], rent_structure: RentStructure
 ) -> Tuple[int, int]:
     """Calculates the minimum and maximum size for an anyOf Subschema."""
 
-    minSize, maxSize = oneOfSchemaDeposit(schemas)
+    minSize, maxSize = oneOfSchemaDeposit(schemas, rent_structure)
 
     minSize *= subschema.minLength
     maxSize *= subschema.maxLength

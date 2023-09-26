@@ -100,4 +100,4 @@ foundry_fields: List[Field] = [
     foundry_immutable_features,
 ]
 
-NftOutput = Schema(foundry_name, foundry_summary, foundry_fields)
+FoundryOutput = Schema(foundry_name, foundry_summary, foundry_fields)

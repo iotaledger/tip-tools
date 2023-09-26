@@ -1,16 +1,19 @@
 import argparse
 from enum import Enum
 
+
 # Star import needed for all the structures to be initialized.
 from schemas import *
 from generation.deposit import generateSchemaDeposit
 from generation.schema import GenerationType, generateSchemaWithSummary
+from generation.deposit_test import RunDepositCalculationTests
 from typedefs.field import ALL_SCHEMAS
 
 
 class Commands(Enum):
     SCHEMA = "schema"
     DEPOSIT = "deposit"
+    TEST = "test"
 
 
 def main():
@@ -63,6 +66,8 @@ def main():
         required=False,
     )
 
+    subparsers.add_parser(Commands.TEST.value, help="Run tests.")
+
     args = parser.parse_args()
     operation = args.operation
     args = vars(args)
@@ -72,6 +77,8 @@ def main():
             generateSchema(args["schema_name"], args["type"], dry_run=args["dry_run"])
         case Commands.DEPOSIT.value:
             generateDeposit(args["schema_name"], dry_run=args["dry_run"])
+        case Commands.TEST.value:
+            RunDepositCalculationTests()
         case _:
             parser.print_help()
 
