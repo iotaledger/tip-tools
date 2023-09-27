@@ -1,7 +1,7 @@
 from typing import List
 from typedefs.datatype import (
     ByteArray,
-    LengthPrefixedByteArray,
+    LengthPrefixedArray,
     UInt8,
 )
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -100,7 +100,7 @@ address_restricted_name = "Restricted Address"
 address_restricted_description = "Defines a container for other addresses which can restrict the capabilities of the underlying address."
 address_restricted_capabilities = SimpleField(
     "Allowed Capabilities",
-    LengthPrefixedByteArray(UInt8(), 0, 1),
+    LengthPrefixedArray(UInt8(), minLength=0, maxLength=1),
     "Bitflags expressed as a series of bytes. A leading <code>uint8</code> denotes its length.",
 )
 address_restricted_nested_addresses = ComplexField(

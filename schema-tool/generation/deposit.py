@@ -4,7 +4,7 @@ from yattag.doc import Doc
 from yattag.indentation import indent
 from schemas.common import OutputOffset
 from typedefs.datatype import (
-    LengthPrefixedByteArray,
+    LengthPrefixedArray,
 )
 from typedefs.field import ComplexField, Schema, SimpleField
 from typedefs.generation_type import GenerationType
@@ -78,7 +78,7 @@ def generateSimpleField(field: SimpleField):
     # Add an extra field for the length prefix and subtract that from the field itself.
     lengthPrefixMin = 0
     lengthPrefixMax = 0
-    if isinstance(field.type, LengthPrefixedByteArray):
+    if isinstance(field.type, LengthPrefixedArray):
         generateSimpleField(
             SimpleField(
                 field.name + " Length",
