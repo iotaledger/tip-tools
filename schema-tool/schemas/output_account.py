@@ -1,4 +1,4 @@
-from typedefs.datatype import ByteArray, LengthPrefixedByteArray, UInt16, UInt32
+from typedefs.datatype import ByteArray, LengthPrefixedArray, UInt16, UInt32
 from typedefs.field import ComplexField, Schema, SimpleField
 from schemas.feature import (
     MAX_METADATA_LENGTH,
@@ -37,8 +37,8 @@ account_state_index = SimpleField(
 )
 account_state_metadata = SimpleField(
     "State Metadata",
-    LengthPrefixedByteArray(
-        UInt16(), MIN_STATE_METADATA_LENGTH, MAX_STATE_METADATA_LENGTH
+    LengthPrefixedArray(
+        UInt16(), minLength=MIN_STATE_METADATA_LENGTH, maxLength=MAX_STATE_METADATA_LENGTH
     ),
     "Metadata that can only be changed by the state controller. A leading uint16 denotes its length.",
 )

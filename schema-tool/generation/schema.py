@@ -1,15 +1,6 @@
-from enum import Enum
 from yattag.doc import Doc
 from yattag.indentation import indent
-from typedefs.datatype import (
-    ByteArray,
-    LengthPrefixedByteArray,
-    UInt16,
-    UInt32,
-    UInt64,
-    UInt8,
-)
-from typedefs.field import ComplexField, Field, Schema, SimpleField
+from typedefs.field import ComplexField, Schema, SimpleField
 from typedefs.generation_type import GenerationType
 
 doc, tag, _ = Doc().tagtext()

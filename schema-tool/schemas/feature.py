@@ -2,7 +2,7 @@ from typing import List, Optional
 from schemas.block_issuer_key import (
     BlockIssuerKeyEd25519PublicKey,
 )
-from typedefs.datatype import LengthPrefixedByteArray, UInt16, UInt64, UInt8
+from typedefs.datatype import LengthPrefixedArray, UInt16, UInt64, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from schemas.address import AccountAddress, Ed25519Address, NftAddress
@@ -85,7 +85,9 @@ metadata_feature_fields: List[Field] = [
     feature_type_field(2, metadata_feature_name),
     SimpleField(
         "Data",
-        LengthPrefixedByteArray(UInt16(), MIN_METADATA_LENGTH, MAX_METADATA_LENGTH),
+        LengthPrefixedArray(
+            UInt16(), minLength=MIN_METADATA_LENGTH, maxLength=MAX_METADATA_LENGTH
+        ),
         "Binary data. A leading uint16 denotes its length.",
     ),
 ]
@@ -103,7 +105,7 @@ tag_feature_fields: List[Field] = [
     feature_type_field(3, tag_feature_name),
     SimpleField(
         "Tag",
-        LengthPrefixedByteArray(UInt8(), 1, MAX_TAG_LENGTH),
+        LengthPrefixedArray(UInt8(), minLength=1, maxLength=MAX_TAG_LENGTH),
         "Binary indexation data. A leading uint8 denotes its length.",
     ),
 ]

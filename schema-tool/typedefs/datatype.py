@@ -83,16 +83,38 @@ class ByteArray(DataType):
         return self.byteSize
 
 
-@dataclass
-class LengthPrefixedByteArray(DataType):
+@dataclass(init=False)
+class LengthPrefixedArray(DataType):
     typePrefix: UInt8 | UInt16 | UInt32
-    "The minimum size in bytes for the storage deposit calculation"
+    """The type of the length prefix"""
+    typeElement: DataType
+    """The type of the array elements"""
     minLength: int
-    "The maximum size in bytes for the storage deposit calculation"
+    "The minimum size in bytes for the storage deposit calculation"
     maxLength: int
+    "The maximum size in bytes for the storage deposit calculation"
+
+    def __init__(
+        self,
+        typePrefix: UInt8 | UInt16 | UInt32,
+        typeElement: DataType = UInt8(),
+        minLength: int = 0,
+        maxLength: int = 0,
+    ) -> None:
+        self.typePrefix = typePrefix
+        self.typeElement = typeElement
+        self.minLength = minLength
+        self.maxLength = maxLength
 
     def __str__(self) -> str:
-        return f"({self.typePrefix})ByteArray"
+        match self.typeElement:
+            case UInt8():
+                # Stick with the convention of using "Byte" instead of "Uint8".
+                typeName = "Byte"
+            case _:
+                typeName = str(self.typeElement).capitalize()
+
+        return f"({self.typePrefix}){typeName}Array"
 
     def min_size(self) -> int:
         return self.typePrefix.min_size() + self.minLength
