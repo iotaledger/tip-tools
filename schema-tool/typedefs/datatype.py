@@ -69,6 +69,19 @@ class UInt256(DataType):
         return 32
 
 
+class UInt32Array(DataType):
+    minLength: int
+    maxLength: int
+
+    def __str__(self) -> str:
+        return "uint32Array"
+
+    def min_size(self) -> int:
+        return self.min_size
+
+    def max_size(self) -> int:
+        return self.max_size
+    
 @dataclass
 class ByteArray(DataType):
     byteSize: int
