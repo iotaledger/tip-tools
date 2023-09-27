@@ -1,7 +1,7 @@
 from typing import List
 from schemas.output import output_type_field
 from typedefs.field import ComplexField, Field, Schema, SimpleField
-from typedefs.datatype import  UInt64, UInt32, UInt16, UInt8, LengthPrefixedByteArray, UInt32Array
+from typedefs.datatype import  UInt64, UInt32, UInt16, UInt8, LengthPrefixedArray
 from typedefs.subschema import OneOf
 
 
@@ -19,13 +19,13 @@ version = SimpleField(
 
 network_name = SimpleField(
     "Network Name",
-    LengthPrefixedByteArray(UInt8(), 0, 0),
+    LengthPrefixedArray(UInt8()),
     "The name of the network the node is running on.",
 )
 
 bech32HRP = SimpleField(
     "Bech32HRP",
-    LengthPrefixedByteArray(UInt8(), 0, 0),
+    LengthPrefixedArray(UInt8()),
     "Bech32HRP defines the HRP prefix used for Bech32 addresses in the network.",
 )
 
@@ -177,7 +177,7 @@ decay_factors_length = SimpleField(
     "Decay Factors Length", UInt16(), "The length of Mana Decay Factors."
 )
 decay_factors = SimpleField(
-    "Decay Factors", UInt32Array(), "Decay Factors is the number of decay factors used to calculate the decay of Mana."
+    "Decay Factors", LengthPrefixedArray(UInt16(), UInt32()), "Decay Factors is the number of decay factors used to calculate the decay of Mana."
 )
 decay_factors_exponent = SimpleField(
     "Decay Factors Exponent", UInt8(), "Decay Factors Exponent is the scaling of ManaDecayFactors expressed as an exponent of 2."
