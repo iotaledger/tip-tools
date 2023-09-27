@@ -14,3 +14,4 @@ from .output_foundry import *
 from .output_delegation import *
 from .unlock_condition import *
 from .unlock import *
+from .protocol_parameters import *

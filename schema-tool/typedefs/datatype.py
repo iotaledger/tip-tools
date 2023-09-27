@@ -68,7 +68,6 @@ class UInt256(DataType):
     def max_size(self) -> int:
         return 32
 
-
 @dataclass
 class ByteArray(DataType):
     byteSize: int
