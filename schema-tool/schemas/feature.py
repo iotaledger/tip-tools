@@ -1,7 +1,5 @@
-from typing import List, Optional
-from schemas.block_issuer_key import (
-    BlockIssuerKeyEd25519PublicKey,
-)
+from typing import List
+from schemas.block_issuer_key import (Ed25519PublicKeyBlockIssuerKey)
 from typedefs.datatype import LengthPrefixedArray, UInt16, UInt64, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -132,7 +130,7 @@ block_issuer_feature_keys_count = SimpleField(
 block_issuer_feature_keys = ComplexField(
     "Block Issuer Keys",
     AnyOf(MIN_BLOCK_ISSUER_KEYS, MAX_BLOCK_ISSUER_KEYS),
-    [BlockIssuerKeyEd25519PublicKey],
+    [Ed25519PublicKeyBlockIssuerKey],
 )
 
 block_issuer_feature_fields: List[Field] = [
