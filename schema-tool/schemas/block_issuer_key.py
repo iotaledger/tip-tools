@@ -16,9 +16,11 @@ def block_issuer_key_type_field(type_value: int, name: str, article="a") -> Simp
 
 # Block Issuer Key Types
 
-block_issuer_key_ed25519_public_key_name = "Ed25519 Public Key Block Issuer Key"
-block_issuer_key_ed25519_public_key_fields: List[Field] = [
-    block_issuer_key_type_field(0, block_issuer_key_ed25519_public_key_name, article="an"),
+ed25519_public_key_block_issuer_key_name = "Ed25519 Public Key Block Issuer Key"
+ed25519_public_key_block_issuer_key_fields: List[Field] = [
+    block_issuer_key_type_field(
+        0, ed25519_public_key_block_issuer_key_name, article="an"
+    ),
     SimpleField(
         "Public Key",
         ByteArray(32),
@@ -26,18 +28,22 @@ block_issuer_key_ed25519_public_key_fields: List[Field] = [
         deposit_weight=DepositWeight.BlockIssuerKey,
     ),
 ]
-BlockIssuerKeyEd25519PublicKey = Schema(
-    block_issuer_key_ed25519_public_key_name,
+Ed25519PublicKeyBlockIssuerKey = Schema(
+    ed25519_public_key_block_issuer_key_name,
     None,
-    block_issuer_key_ed25519_public_key_fields,
+    ed25519_public_key_block_issuer_key_fields,
 )
 
-block_issuer_key_ed25519_address_name = "Ed25519 Address Block Issuer Key"
-block_issuer_key_ed25519_address_description = (
+ed25519_public_key_hash_block_issuer_key_name = (
+    "Ed25519 Public Key Hash Block Issuer Key"
+)
+ed25519_public_key_hash_block_issuer_key_description = (
     "A block issuer key for issuing blocks from implicit accounts."
 )
-block_issuer_key_ed25519_address_fields: List[Field] = [
-    block_issuer_key_type_field(1, block_issuer_key_ed25519_address_name, article="an"),
+ed25519_public_key_hash_block_issuer_key_fields: List[Field] = [
+    block_issuer_key_type_field(
+        1, ed25519_public_key_hash_block_issuer_key_name, article="an"
+    ),
     SimpleField(
         "PubKeyHash",
         ByteArray(32),
@@ -45,8 +51,8 @@ block_issuer_key_ed25519_address_fields: List[Field] = [
         deposit_weight=DepositWeight.BlockIssuerKey,
     ),
 ]
-BlockIssuerKeyEd25519Address = Schema(
-    block_issuer_key_ed25519_address_name,
-    block_issuer_key_ed25519_address_description,
-    block_issuer_key_ed25519_address_fields,
+Ed25519PublicKeyHashBlockIssuerKey = Schema(
+    ed25519_public_key_hash_block_issuer_key_name,
+    ed25519_public_key_hash_block_issuer_key_description,
+    ed25519_public_key_hash_block_issuer_key_fields,
 )
