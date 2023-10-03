@@ -156,8 +156,8 @@ address_multi_nested_addresses = ComplexField(
         NftAddress(omitFields=True),
     ],
 )
-address_with_weight = Schema(
-    "Address with Weight",
+address_weighted = Schema(
+    "Weighted Address",
     "An Address with an assigned weight.",
     [address_multi_nested_addresses, weight],
 )
@@ -165,7 +165,7 @@ address_multi_address_count = SimpleField(
     "Addresses Count", UInt8(), "The number of addresses following."
 )
 address_multi_addresses = ComplexField(
-    "Addresses", AnyOf(MIN_MULTI_ADDRESSES, MAX_MULTI_ADDRESSES), [address_with_weight]
+    "Addresses", AnyOf(MIN_MULTI_ADDRESSES, MAX_MULTI_ADDRESSES), [address_weighted]
 )
 address_multi_threshold = SimpleField(
     "Threshold",

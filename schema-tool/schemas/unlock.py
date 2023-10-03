@@ -1,4 +1,5 @@
 from typing import List
+from schemas.common import AVAILABLE_SCHEMAS
 
 from schemas.signature import Ed25519Signature
 from typedefs.datatype import UInt16, UInt8
@@ -22,12 +23,21 @@ signature_unlock_fields: List[Field] = [
     unlock_type_field(0, signature_unlock_name),
     ComplexField("Signature", OneOf(), [Ed25519Signature()]),
 ]
-SignatureUnlock = Schema(
-    signature_unlock_name,
-    "Unlocks the address derived from the contained Public Key in the transaction in which it is contained in.",
-    signature_unlock_fields,
-    tipReference=45,
-)
+
+
+def SignatureUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        signature_unlock_name,
+        "Unlocks the address derived from the contained Public Key in the transaction in which it is contained in.",
+        signature_unlock_fields,
+        tipReference=45,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(SignatureUnlock())
 
 # Reference Unlock
 
@@ -36,12 +46,21 @@ reference_unlock_fields: List[Field] = [
     unlock_type_field(1, reference_unlock_name),
     SimpleField("Reference", UInt16(), "Represents the index of a previous unlock."),
 ]
-ReferenceUnlock = Schema(
-    reference_unlock_name,
-    "References a previous unlock to support unlocking multiple inputs owned by the same address.",
-    reference_unlock_fields,
-    tipReference=45,
-)
+
+
+def ReferenceUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        reference_unlock_name,
+        "References a previous unlock to support unlocking multiple inputs owned by the same address.",
+        reference_unlock_fields,
+        tipReference=45,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(ReferenceUnlock())
 
 # Account Unlock
 
@@ -54,12 +73,21 @@ account_unlock_fields: List[Field] = [
         "Index of input and unlock corresponding to an Account Output.",
     ),
 ]
-AccountUnlock = Schema(
-    account_unlock_name,
-    "Points to the unlock of a consumed Account Output.",
-    account_unlock_fields,
-    tipReference=45,
-)
+
+
+def AccountUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        account_unlock_name,
+        "Points to the unlock of a consumed Account Output.",
+        account_unlock_fields,
+        tipReference=45,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(AccountUnlock())
 
 # NFT Unlock
 
@@ -72,12 +100,21 @@ nft_unlock_fields: List[Field] = [
         "Index of input and unlock corresponding to an NFT Output.",
     ),
 ]
-NFTUnlock = Schema(
-    nft_unlock_name,
-    "Points to the unlock of a consumed NFT Output.",
-    nft_unlock_fields,
-    tipReference=45,
-)
+
+
+def NFTUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        nft_unlock_name,
+        "Points to the unlock of a consumed NFT Output.",
+        nft_unlock_fields,
+        tipReference=45,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(NFTUnlock())
 
 # Empty Unlock
 
@@ -85,12 +122,21 @@ empty_unlock_name = "Empty Unlock"
 empty_unlock_fields: List[Field] = [
     unlock_type_field(5, empty_unlock_name, article="an"),
 ]
-EmptyUnlock = Schema(
-    empty_unlock_name,
-    "Used to maintain correct index relationship between addresses and signatures when unlocking a Multi Address where not all addresses are unlocked.",
-    empty_unlock_fields,
-    tipReference=52,
-)
+
+
+def EmptyUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        empty_unlock_name,
+        "Used to maintain correct index relationship between addresses and signatures when unlocking a Multi Address where not all addresses are unlocked.",
+        empty_unlock_fields,
+        tipReference=52,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(EmptyUnlock())
 
 # Multi Unlock
 
@@ -101,12 +147,27 @@ multi_unlock_fields: List[Field] = [
     ComplexField(
         "Unlocks",
         AnyOf(MIN_MULTI_ADDRESSES, MAX_MULTI_ADDRESSES),
-        [SignatureUnlock, ReferenceUnlock, AccountUnlock, NFTUnlock, EmptyUnlock],
+        [
+            SignatureUnlock(omitFields=True),
+            ReferenceUnlock(omitFields=True),
+            AccountUnlock(omitFields=True),
+            NFTUnlock(omitFields=True),
+            EmptyUnlock(omitFields=True),
+        ],
     ),
 ]
-MultiUnlock = Schema(
-    multi_unlock_name,
-    "Unlocks a Multi Address with a list of other unlocks.",
-    multi_unlock_fields,
-    tipReference=52,
-)
+
+
+def MultiUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        multi_unlock_name,
+        "Unlocks a Multi Address with a list of other unlocks.",
+        multi_unlock_fields,
+        tipReference=52,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(MultiUnlock())
