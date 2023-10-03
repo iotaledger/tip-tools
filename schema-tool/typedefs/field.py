@@ -18,6 +18,12 @@ class Schema:
     fields: List[Field]
     mandatory: bool
     """Whether this schema is mandatory to be present when it is embedded."""
+    omitFields: bool
+    """Whether to omit the fields and only render the description."""
+    detailsOpen: bool
+    """Whether the details of the schema are visible by default or not."""
+    tip: Optional[int]
+    """The TIP number in which this schema is defined."""
 
     def __init__(
         self,
@@ -25,11 +31,17 @@ class Schema:
         summary: Optional[str],
         fields: List[Field],
         mandatory: bool = False,
+        omitFields: bool = False,
+        detailsOpen: bool = False,
+        tip: Optional[int] = None,
     ):
         self.name = name
         self.summary = summary
         self.fields = fields
         self.mandatory = mandatory
+        self.omitFields = omitFields
+        self.detailsOpen = detailsOpen
+        self.tip = tip
 
         ALL_SCHEMAS.append(self)
 

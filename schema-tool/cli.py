@@ -7,7 +7,6 @@ from schemas import *
 from generation.deposit import generateSchemaDeposit
 from generation.schema import GenerationType, generateSchemaWithSummary
 from generation.deposit_test import RunDepositCalculationTests
-from typedefs.field import ALL_SCHEMAS
 
 
 class Commands(Enum):
@@ -85,7 +84,7 @@ def main():
 
 def get_schema(schema_name: str) -> Schema | None:
     def find_schema(structure_name):
-        for struct in ALL_SCHEMAS:
+        for struct in AVAILABLE_SCHEMAS:
             if struct.name == structure_name:
                 return struct
         return None
@@ -94,7 +93,7 @@ def get_schema(schema_name: str) -> Schema | None:
     if schema is None:
         print(f"No schema with name `{schema_name}` exists.")
         print("Available schemas:")
-        for schema in ALL_SCHEMAS:
+        for schema in AVAILABLE_SCHEMAS:
             print(f'"{schema.name}"')
         return None
     else:

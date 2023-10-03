@@ -8,7 +8,7 @@ from schemas.feature import (
     TagFeature,
 )
 from schemas.output import output_type_field
-from schemas.common import AmountField, ManaField
+from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from schemas.native_token import NativeTokensCountField, NativeTokens
 from typedefs.datatype import ByteArray
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -67,4 +67,11 @@ nft_fields: List[Field] = [
     nft_immutable_features,
 ]
 
-NftOutput = Schema(nft_name, nft_summary, nft_fields)
+
+def NftOutput(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(nft_name, nft_summary, nft_fields, omitFields=omitFields)
+
+
+AVAILABLE_SCHEMAS.append(NftOutput())

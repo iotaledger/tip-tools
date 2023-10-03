@@ -1,5 +1,6 @@
 from typing import List
-from schemas.block_issuer_key import (Ed25519PublicKeyBlockIssuerKey)
+from schemas.block_issuer_key import Ed25519PublicKeyBlockIssuerKey
+from schemas.common import AVAILABLE_SCHEMAS
 from typedefs.datatype import LengthPrefixedArray, UInt16, UInt64, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -42,17 +43,33 @@ ImmutableFeaturesCountField = SimpleField(
 sender_feature_name = "Sender Feature"
 sender_feature_description = "Identifies the validated sender of the output."
 sender_feature_sender = ComplexField(
-    "Sender", OneOf(), [Ed25519Address, AccountAddress, NftAddress]
+    "Sender",
+    OneOf(),
+    [
+        Ed25519Address(omitFields=True),
+        AccountAddress(omitFields=True),
+        NftAddress(omitFields=True),
+    ],
 )
 sender_feature_fields: List[Field] = [
     feature_type_field(0, sender_feature_name),
     sender_feature_sender,
 ]
-SenderFeature = Schema(
-    sender_feature_name,
-    sender_feature_description,
-    sender_feature_fields,
-)
+
+
+def SenderFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        sender_feature_name,
+        sender_feature_description,
+        sender_feature_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(SenderFeature())
+
 
 # Issuer Feature
 
@@ -61,17 +78,32 @@ issuer_feature_description = (
     "Identifies the validated issuer of the UTXO state machine."
 )
 issuer_feature_issuer = ComplexField(
-    "Issuer", OneOf(), [Ed25519Address, AccountAddress, NftAddress]
+    "Issuer",
+    OneOf(),
+    [
+        Ed25519Address(omitFields=True),
+        AccountAddress(omitFields=True),
+        NftAddress(omitFields=True),
+    ],
 )
 issuer_feature_fields: List[Field] = [
     feature_type_field(1, issuer_feature_name),
     issuer_feature_issuer,
 ]
-IssuerFeature = Schema(
-    issuer_feature_name,
-    issuer_feature_description,
-    issuer_feature_fields,
-)
+
+
+def IssuerFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        issuer_feature_name,
+        issuer_feature_description,
+        issuer_feature_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(IssuerFeature())
 
 # Metadata Feature
 
@@ -89,11 +121,20 @@ metadata_feature_fields: List[Field] = [
         "Binary data. A leading uint16 denotes its length.",
     ),
 ]
-MetadataFeature = Schema(
-    metadata_feature_name,
-    metadata_feature_description,
-    metadata_feature_fields,
-)
+
+
+def MetadataFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        metadata_feature_name,
+        metadata_feature_description,
+        metadata_feature_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(MetadataFeature())
 
 # Tag Feature
 
@@ -107,11 +148,21 @@ tag_feature_fields: List[Field] = [
         "Binary indexation data. A leading uint8 denotes its length.",
     ),
 ]
-TagFeature = Schema(
-    tag_feature_name,
-    tag_feature_description,
-    tag_feature_fields,
-)
+
+
+def TagFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        tag_feature_name,
+        tag_feature_description,
+        tag_feature_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(TagFeature())
+
 
 # Block Issuer Feature
 
@@ -130,7 +181,7 @@ block_issuer_feature_keys_count = SimpleField(
 block_issuer_feature_keys = ComplexField(
     "Block Issuer Keys",
     AnyOf(MIN_BLOCK_ISSUER_KEYS, MAX_BLOCK_ISSUER_KEYS),
-    [Ed25519PublicKeyBlockIssuerKey],
+    [Ed25519PublicKeyBlockIssuerKey()],
 )
 
 block_issuer_feature_fields: List[Field] = [
@@ -140,11 +191,19 @@ block_issuer_feature_fields: List[Field] = [
     block_issuer_feature_keys,
 ]
 
-BlockIssuerFeature = Schema(
-    block_issuer_feature_name,
-    block_issuer_feature_description,
-    block_issuer_feature_fields,
-)
+
+def BlockIssuerFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        block_issuer_feature_name,
+        block_issuer_feature_description,
+        block_issuer_feature_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(BlockIssuerFeature())
 
 # Staking Feature
 
@@ -177,8 +236,17 @@ staking_feature_fields: List[Field] = [
         deposit_weight=DepositWeight.Staking,
     ),
 ]
-StakingFeature = Schema(
-    staking_feature_name,
-    staking_feature_description,
-    staking_feature_fields,
-)
+
+
+def StakingFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        staking_feature_name,
+        staking_feature_description,
+        staking_feature_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(StakingFeature())

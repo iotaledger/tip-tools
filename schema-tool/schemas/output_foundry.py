@@ -2,23 +2,16 @@ from typing import List
 from schemas.feature import (
     FeaturesCountField,
     ImmutableFeaturesCountField,
-    IssuerFeature,
     MetadataFeature,
-    SenderFeature,
-    TagFeature,
 )
 from schemas.output import output_type_field
-from schemas.common import AmountField, ManaField
+from schemas.common import AVAILABLE_SCHEMAS, AmountField
 from schemas.native_token import NativeTokensCountField, NativeTokens
-from typedefs.datatype import ByteArray, UInt256, UInt32, UInt8
+from typedefs.datatype import UInt256, UInt32, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.subschema import AtMostOneOfEach, OneOf
 from schemas.unlock_condition import (
-    AddressUnlockCondition,
-    ExpirationUnlockCondition,
     ImmutableAccountAddressUnlockCondition,
-    StorageDepositReturnUnlockCondition,
-    TimelockUnlock,
     UnlockConditionsCountField,
 )
 
@@ -49,7 +42,20 @@ simple_token_scheme_fields: List[Field] = [
     simple_token_scheme_melted_tokens,
     simple_token_scheme_maximum_supply,
 ]
-SimpleTokenScheme = Schema(simple_token_scheme_name, None, simple_token_scheme_fields)
+
+
+def SimpleTokenScheme(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        simple_token_scheme_name,
+        None,
+        simple_token_scheme_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(SimpleTokenScheme())
 
 foundry_name = "Foundry Output"
 foundry_summary = "Describes a foundry output that is controlled by an account."
@@ -63,26 +69,26 @@ foundry_serial = SimpleField(
 foundry_token_scheme = ComplexField(
     "Token Scheme",
     OneOf(),
-    [SimpleTokenScheme],
+    [SimpleTokenScheme()],
 )
 
 foundry_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        ImmutableAccountAddressUnlockCondition,
+        ImmutableAccountAddressUnlockCondition(),
     ],
 )
 foundry_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [MetadataFeature],
+    [MetadataFeature(omitFields=True)],
 )
 
 foundry_immutable_features = ComplexField(
     "Immutable Features",
     AtMostOneOfEach(),
-    [MetadataFeature],
+    [MetadataFeature(omitFields=True)],
 )
 
 foundry_fields: List[Field] = [
@@ -100,4 +106,11 @@ foundry_fields: List[Field] = [
     foundry_immutable_features,
 ]
 
-FoundryOutput = Schema(foundry_name, foundry_summary, foundry_fields)
+
+def FoundryOutput(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(foundry_name, foundry_summary, foundry_fields, omitFields=omitFields)
+
+
+AVAILABLE_SCHEMAS.append(FoundryOutput())

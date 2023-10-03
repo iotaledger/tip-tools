@@ -6,13 +6,12 @@ from schemas.feature import (
     TagFeature,
 )
 from schemas.output import output_type_field
-from schemas.common import AmountField, ManaField
+from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from schemas.native_token import NativeTokensCountField, NativeTokens
 from typedefs.field import ComplexField, Field, Schema
 from typedefs.subschema import AtMostOneOfEach
 from schemas.unlock_condition import (
     AddressUnlockCondition,
-    AddressUnlockConditionWithImplicitAccount,
     ExpirationUnlockCondition,
     StorageDepositReturnUnlockCondition,
     TimelockUnlock,
@@ -25,16 +24,20 @@ basic_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockConditionWithImplicitAccount,
-        StorageDepositReturnUnlockCondition,
-        TimelockUnlock,
-        ExpirationUnlockCondition,
+        AddressUnlockCondition(includeImplicitAccountCreationAddress=True, omitFields=True),
+        StorageDepositReturnUnlockCondition(omitFields=True),
+        TimelockUnlock(omitFields=True),
+        ExpirationUnlockCondition(omitFields=True),
     ],
 )
 basic_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [SenderFeature, MetadataFeature, TagFeature],
+    [
+        SenderFeature(omitFields=True),
+        MetadataFeature(omitFields=True),
+        TagFeature(omitFields=True)
+    ],
 )
 
 basic_fields: List[Field] = [
@@ -49,4 +52,11 @@ basic_fields: List[Field] = [
     basic_features,
 ]
 
-BasicOutput = Schema(basic_name, basic_summary, basic_fields)
+
+def BasicOutput(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(basic_name, basic_summary, basic_fields, omitFields=omitFields)
+
+
+AVAILABLE_SCHEMAS.append(BasicOutput())

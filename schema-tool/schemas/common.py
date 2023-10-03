@@ -1,7 +1,17 @@
 from typing import List
-from typedefs.datatype import ByteArray, UInt64
+from typedefs.datatype import ByteArray, UInt64, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import Field, Schema, SimpleField
+
+AVAILABLE_SCHEMAS = []
+
+def payload_type_field(type_value: int, name: str, article="a") -> SimpleField:
+    return SimpleField(
+        "Payload Type",
+        UInt8(),
+        f"Set to <strong>value {type_value}</strong> to denote {article} <i>{name}</i>.",
+    )
+
 
 AmountField = SimpleField(
     "Amount", UInt64(), "The amount of IOTA coins held by the output."

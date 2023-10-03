@@ -1,4 +1,5 @@
 from typing import List
+from schemas.common import AVAILABLE_SCHEMAS
 from typedefs.datatype import UInt64, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from schemas.address import (
@@ -24,28 +25,21 @@ UnlockConditionsCountField = SimpleField(
     "Unlock Conditions Count", UInt8(), "The number of unlock conditions following."
 )
 
-regular_addresses_plus_multi: List[Schema] = [
-    Ed25519Address,
-    AccountAddress,
-    NftAddress,
-    MultiAddress,
-]
-
 regular_addresses_plus_multi_and_restricted: List[Schema] = [
-    Ed25519Address,
-    AccountAddress,
-    NftAddress,
-    MultiAddress,
-    RestrictedAddress,
+    Ed25519Address(omitFields=True),
+    AccountAddress(omitFields=True),
+    NftAddress(omitFields=True),
+    MultiAddress(omitFields=True),
+    RestrictedAddress(omitFields=True),
 ]
 
 regular_addresses_plus_multi_and_restricted_and_implicit_account: List[Schema] = [
-    Ed25519Address,
-    AccountAddress,
-    NftAddress,
-    MultiAddress,
-    RestrictedAddress,
-    ImplicitAccountCreationAddress,
+    Ed25519Address(omitFields=True),
+    AccountAddress(omitFields=True),
+    NftAddress(omitFields=True),
+    MultiAddress(omitFields=True),
+    RestrictedAddress(omitFields=True),
+    ImplicitAccountCreationAddress(omitFields=True),
 ]
 
 # Address Unlock Condition
@@ -55,29 +49,31 @@ address_unlock_condition_description = "Defines the Address that owns this outpu
 address_unlock_condition_type = unlock_condition_type_field(
     0, address_unlock_condition_name, article="an"
 )
-AddressUnlockCondition = Schema(
-    address_unlock_condition_name,
-    address_unlock_condition_description,
-    [
-        address_unlock_condition_type,
-        ComplexField("Address", OneOf(), regular_addresses_plus_multi_and_restricted),
-    ],
-    mandatory=True,
-)
 
-AddressUnlockConditionWithImplicitAccount = Schema(
-    address_unlock_condition_name,
-    address_unlock_condition_description,
-    [
-        address_unlock_condition_type,
-        ComplexField(
-            "Address",
-            OneOf(),
-            regular_addresses_plus_multi_and_restricted_and_implicit_account,
-        ),
-    ],
-    mandatory=True,
-)
+
+def AddressUnlockCondition(
+    omitFields: bool = False, includeImplicitAccountCreationAddress: bool = False
+) -> Schema:
+    address_schema = regular_addresses_plus_multi_and_restricted
+    if includeImplicitAccountCreationAddress:
+        address_schema = (
+            regular_addresses_plus_multi_and_restricted_and_implicit_account
+        )
+
+    return Schema(
+        address_unlock_condition_name,
+        address_unlock_condition_description,
+        [
+            address_unlock_condition_type,
+            ComplexField("Address", OneOf(), address_schema),
+        ],
+        mandatory=True,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(AddressUnlockCondition())
+
 
 # Storage Deposit Return Unlock Condition
 
@@ -96,11 +92,21 @@ storage_deposit_return_unlock_condition_fields: List[Field] = [
     storage_deposit_return_unlock_condition_return_address,
     storage_deposit_return_unlock_condition_return_amount,
 ]
-StorageDepositReturnUnlockCondition = Schema(
-    storage_deposit_return_unlock_condition_name,
-    storage_deposit_return_unlock_condition_description,
-    storage_deposit_return_unlock_condition_fields,
-)
+
+
+def StorageDepositReturnUnlockCondition(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        storage_deposit_return_unlock_condition_name,
+        storage_deposit_return_unlock_condition_description,
+        storage_deposit_return_unlock_condition_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(StorageDepositReturnUnlockCondition())
+
 
 # Timelock Unlock Condition
 
@@ -116,11 +122,20 @@ timelock_unlock_condition_fields: List[Field] = [
         "Slot index starting from which the output can be consumed.",
     ),
 ]
-TimelockUnlock = Schema(
-    timelock_unlock_condition_name,
-    timelock_unlock_condition_description,
-    timelock_unlock_condition_fields,
-)
+
+
+def TimelockUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        timelock_unlock_condition_name,
+        timelock_unlock_condition_description,
+        timelock_unlock_condition_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(TimelockUnlock())
 
 # Expiration Unlock Condition
 
@@ -139,11 +154,20 @@ expiration_unlock_condition_fields: List[Field] = [
         "Before this slot index, <i>Address Unlock Condition</i> is allowed to unlock the output, after that only the address defined in <i>Return Address</i>.",
     ),
 ]
-ExpirationUnlockCondition = Schema(
-    expiration_unlock_condition_name,
-    expiration_unlock_condition_description,
-    expiration_unlock_condition_fields,
-)
+
+
+def ExpirationUnlockCondition(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        expiration_unlock_condition_name,
+        expiration_unlock_condition_description,
+        expiration_unlock_condition_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(ExpirationUnlockCondition())
 
 # State Controller Address Unlock Condition
 
@@ -153,12 +177,21 @@ state_controller_unlock_condition_fields: List[Field] = [
     unlock_condition_type_field(4, state_controller_unlock_condition_name),
     ComplexField("Address", OneOf(), regular_addresses_plus_multi_and_restricted),
 ]
-StateControllerUnlockCondition = Schema(
-    state_controller_unlock_condition_name,
-    state_controller_unlock_condition_description,
-    state_controller_unlock_condition_fields,
-    mandatory=True,
-)
+
+
+def StateControllerUnlockCondition(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        state_controller_unlock_condition_name,
+        state_controller_unlock_condition_description,
+        state_controller_unlock_condition_fields,
+        mandatory=True,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(StateControllerUnlockCondition())
 
 # Governor Address Unlock Condition
 
@@ -168,12 +201,21 @@ governor_unlock_condition_fields: List[Field] = [
     unlock_condition_type_field(5, governor_unlock_condition_name),
     ComplexField("Address", OneOf(), regular_addresses_plus_multi_and_restricted),
 ]
-GovernorUnlockCondition = Schema(
-    governor_unlock_condition_name,
-    governor_unlock_condition_description,
-    governor_unlock_condition_fields,
-    mandatory=True,
-)
+
+
+def GovernorUnlockCondition(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        governor_unlock_condition_name,
+        governor_unlock_condition_description,
+        governor_unlock_condition_fields,
+        mandatory=True,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(GovernorUnlockCondition())
 
 # Immutable Account Address Unlock Condition
 
@@ -187,11 +229,20 @@ immutable_account_address_unlock_condition_fields: List[Field] = [
     unlock_condition_type_field(
         6, immutable_account_address_unlock_condition_name, article="an"
     ),
-    ComplexField("Address", OneOf(), [AccountAddress]),
+    ComplexField("Address", OneOf(), [AccountAddress()]),
 ]
-ImmutableAccountAddressUnlockCondition = Schema(
-    immutable_account_address_unlock_condition_name,
-    immutable_account_address_unlock_condition_description,
-    immutable_account_address_unlock_condition_fields,
-    mandatory=True,
-)
+
+
+def ImmutableAccountAddressUnlockCondition(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        immutable_account_address_unlock_condition_name,
+        immutable_account_address_unlock_condition_description,
+        immutable_account_address_unlock_condition_fields,
+        mandatory=True,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(ImmutableAccountAddressUnlockCondition())

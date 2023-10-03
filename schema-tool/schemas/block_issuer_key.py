@@ -1,4 +1,5 @@
 from typing import List
+from schemas.common import AVAILABLE_SCHEMAS
 from typedefs.datatype import ByteArray, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import Field, Schema, SimpleField
@@ -14,7 +15,7 @@ def block_issuer_key_type_field(type_value: int, name: str, article="a") -> Simp
     )
 
 
-# Block Issuer Key Types
+# Ed25519 Public Key Block Issuer Key
 
 ed25519_public_key_block_issuer_key_name = "Ed25519 Public Key Block Issuer Key"
 ed25519_public_key_block_issuer_key_fields: List[Field] = [
@@ -28,11 +29,23 @@ ed25519_public_key_block_issuer_key_fields: List[Field] = [
         deposit_weight=DepositWeight.BlockIssuerKey,
     ),
 ]
-Ed25519PublicKeyBlockIssuerKey = Schema(
-    ed25519_public_key_block_issuer_key_name,
-    None,
-    ed25519_public_key_block_issuer_key_fields,
-)
+
+
+def Ed25519PublicKeyBlockIssuerKey(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        ed25519_public_key_block_issuer_key_name,
+        None,
+        ed25519_public_key_block_issuer_key_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(Ed25519PublicKeyBlockIssuerKey())
+
+
+# Ed25519 Public Key Hash Block Issuer Key
 
 ed25519_public_key_hash_block_issuer_key_name = (
     "Ed25519 Public Key Hash Block Issuer Key"
@@ -51,8 +64,17 @@ ed25519_public_key_hash_block_issuer_key_fields: List[Field] = [
         deposit_weight=DepositWeight.BlockIssuerKey,
     ),
 ]
-Ed25519PublicKeyHashBlockIssuerKey = Schema(
-    ed25519_public_key_hash_block_issuer_key_name,
-    ed25519_public_key_hash_block_issuer_key_description,
-    ed25519_public_key_hash_block_issuer_key_fields,
-)
+
+
+def Ed25519PublicKeyHashBlockIssuerKey(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        ed25519_public_key_hash_block_issuer_key_name,
+        ed25519_public_key_hash_block_issuer_key_description,
+        ed25519_public_key_hash_block_issuer_key_fields,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(Ed25519PublicKeyHashBlockIssuerKey())

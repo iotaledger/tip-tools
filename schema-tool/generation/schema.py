@@ -11,13 +11,17 @@ asis = doc.asis
 def generateSchemaWithSummary(schema: Schema, genType: GenerationType) -> str:
     if genType == GenerationType.Standalone:
         if schema.summary is not None:
-          with tag("details"):
-            generateSummary(schema)
-        generateSchema(schema)
+            with tag("details"):
+                generateSummary(schema)
+            generateSchema(schema)
+
     elif genType == GenerationType.Embedded:
         with tag("details"):
+            if schema.detailsOpen:
+                doc.attr(open = "true")
             generateSummary(schema)
-            generateSchema(schema)
+            if not schema.omitFields:
+                generateSchema(schema)
 
     return indent(doc.getvalue())
 
