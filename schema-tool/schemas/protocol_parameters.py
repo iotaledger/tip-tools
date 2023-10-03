@@ -1,4 +1,5 @@
 from typing import List
+from schemas.common import AVAILABLE_SCHEMAS
 from schemas.output import output_type_field
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.datatype import UInt64, UInt32, UInt16, UInt8, LengthPrefixedArray
@@ -142,6 +143,7 @@ RentStructure = ComplexField(
                 vByte_factor_staking_feature,
                 vByte_factor_delegation,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -219,6 +221,7 @@ WorkScoreStructure = ComplexField(
                 signature_ed25519,
                 min_strong_parents_threshold,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -274,6 +277,7 @@ ManaStructure = ComplexField(
                 decay_factors_epochs_sum,
                 decay_factors_epochs_sum_exponent,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -343,6 +347,7 @@ CongestionControlParameters = ComplexField(
                 max_buffer_size,
                 max_validation_buffer_size,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -372,6 +377,7 @@ VersionSignaling = ComplexField(
             "Version Signaling",
             "Version Signaling defines the parameters used by signaling protocol parameters upgrade.",
             [window_size, window_target_ration, activation_offset],
+            detailsOpen=True,
         )
     ],
 )
@@ -430,6 +436,7 @@ RewardsParameters = ComplexField(
                 decay_balancing_constant,
                 pool_coefficient_exponent,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -460,3 +467,5 @@ protocol_parameters_fields: List[Field] = [
 ]
 
 ProtocolParameters = Schema(protocol_parameters_name, None, protocol_parameters_fields)
+
+AVAILABLE_SCHEMAS.append(ProtocolParameters)

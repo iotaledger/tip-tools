@@ -13,7 +13,7 @@ def generateSchemaWithSummary(schema: Schema, genType: GenerationType) -> str:
         if schema.summary is not None:
             with tag("details"):
                 generateSummary(schema)
-            generateSchema(schema)
+        generateSchema(schema)
 
     elif genType == GenerationType.Embedded:
         with tag("details"):
