@@ -64,6 +64,7 @@ def SenderFeature(
         sender_feature_name,
         sender_feature_description,
         sender_feature_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -99,6 +100,7 @@ def IssuerFeature(
         issuer_feature_name,
         issuer_feature_description,
         issuer_feature_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -130,6 +132,7 @@ def MetadataFeature(
         metadata_feature_name,
         metadata_feature_description,
         metadata_feature_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -157,6 +160,7 @@ def TagFeature(
         tag_feature_name,
         tag_feature_description,
         tag_feature_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -199,6 +203,7 @@ def BlockIssuerFeature(
         block_issuer_feature_name,
         block_issuer_feature_description,
         block_issuer_feature_fields,
+        tipReference=42,
         omitFields=omitFields,
     )
 
@@ -245,6 +250,7 @@ def StakingFeature(
         staking_feature_name,
         staking_feature_description,
         staking_feature_fields,
+        tipReference=42,
         omitFields=omitFields,
     )
 

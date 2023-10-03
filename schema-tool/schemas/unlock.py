@@ -26,6 +26,7 @@ SignatureUnlock = Schema(
     signature_unlock_name,
     "Unlocks the address derived from the contained Public Key in the transaction in which it is contained in.",
     signature_unlock_fields,
+    tipReference=45,
 )
 
 # Reference Unlock
@@ -39,6 +40,7 @@ ReferenceUnlock = Schema(
     reference_unlock_name,
     "References a previous unlock to support unlocking multiple inputs owned by the same address.",
     reference_unlock_fields,
+    tipReference=45,
 )
 
 # Account Unlock
@@ -56,6 +58,7 @@ AccountUnlock = Schema(
     account_unlock_name,
     "Points to the unlock of a consumed Account Output.",
     account_unlock_fields,
+    tipReference=45,
 )
 
 # NFT Unlock
@@ -73,6 +76,7 @@ NFTUnlock = Schema(
     nft_unlock_name,
     "Points to the unlock of a consumed NFT Output.",
     nft_unlock_fields,
+    tipReference=45,
 )
 
 # Empty Unlock
@@ -85,6 +89,7 @@ EmptyUnlock = Schema(
     empty_unlock_name,
     "Used to maintain correct index relationship between addresses and signatures when unlocking a Multi Address where not all addresses are unlocked.",
     empty_unlock_fields,
+    tipReference=52,
 )
 
 # Multi Unlock
@@ -103,4 +108,5 @@ MultiUnlock = Schema(
     multi_unlock_name,
     "Unlocks a Multi Address with a list of other unlocks.",
     multi_unlock_fields,
+    tipReference=52,
 )

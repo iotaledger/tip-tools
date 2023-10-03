@@ -24,7 +24,9 @@ basic_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockCondition(includeImplicitAccountCreationAddress=True, ),
+        AddressUnlockCondition(
+            includeImplicitAccountCreationAddress=True,
+        ),
         StorageDepositReturnUnlockCondition(),
         TimelockUnlock(),
         ExpirationUnlockCondition(),
@@ -33,11 +35,7 @@ basic_unlock_conditions = ComplexField(
 basic_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [
-        SenderFeature(),
-        MetadataFeature(),
-        TagFeature()
-    ],
+    [SenderFeature(), MetadataFeature(), TagFeature()],
 )
 
 basic_fields: List[Field] = [
@@ -56,7 +54,9 @@ basic_fields: List[Field] = [
 def BasicOutput(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(basic_name, basic_summary, basic_fields, omitFields=omitFields)
+    return Schema(
+        basic_name, basic_summary, basic_fields, tipReference=38, omitFields=omitFields
+    )
 
 
 AVAILABLE_SCHEMAS.append(BasicOutput())

@@ -51,6 +51,7 @@ def SimpleTokenScheme(
         simple_token_scheme_name,
         "A Token Scheme which allows for minting and melting Native Tokens up to the maximum supply.",
         simple_token_scheme_fields,
+        tipReference=44,
         omitFields=omitFields,
     )
 
@@ -110,7 +111,13 @@ foundry_fields: List[Field] = [
 def FoundryOutput(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(foundry_name, foundry_summary, foundry_fields, omitFields=omitFields)
+    return Schema(
+        foundry_name,
+        foundry_summary,
+        foundry_fields,
+        tipReference=44,
+        omitFields=omitFields,
+    )
 
 
 AVAILABLE_SCHEMAS.append(FoundryOutput())

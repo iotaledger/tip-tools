@@ -31,6 +31,7 @@ def CommitmentInput(
         commitment_input_name,
         "A Commitment Input allows referencing a commitment to a certain slot and is used to provide a notion of time for transaction execution that is linked to the containing Block's <code>Issuing Time</code>.",
         commitment_input_fields,
+        tipReference=45,
         omitFields=omitFields,
     )
 
@@ -57,6 +58,7 @@ def BlockIssuanceCreditInput(
         block_issuance_credit_input_name,
         "A Block Issuance Credit Input provides the BIC balance of a specific account as context to transaction execution.",
         block_issuance_credit_input_fields,
+        tipReference=45,
         omitFields=omitFields,
     )
 
@@ -83,6 +85,7 @@ def RewardInput(
         reward_input_name,
         "A Reward Input indicates which transaction Input is claiming Mana rewards.",
         reward_input_fields,
+        tipReference=45,
         omitFields=omitFields,
     )
 

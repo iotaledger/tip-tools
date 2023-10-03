@@ -12,26 +12,31 @@ def generateSchemaWithSummary(schema: Schema, genType: GenerationType) -> str:
     if genType == GenerationType.Standalone:
         if schema.summary is not None:
             with tag("details"):
-                generateSummary(schema)
+                generateSummary(schema, genType)
         generateSchema(schema)
 
     elif genType == GenerationType.Embedded:
         with tag("details"):
             if schema.detailsOpen:
-                doc.attr(open = "true")
-            generateSummary(schema)
+                doc.attr(open="true")
+            generateSummary(schema, genType)
             if not schema.omitFields:
                 generateSchema(schema)
 
     return indent(doc.getvalue())
 
 
-def generateSummary(schema: Schema):
+def generateSummary(schema: Schema, genType: GenerationType):
     with tag("summary"):
         asis(schema.name)
     if schema.summary is not None:
         with tag("blockquote"):
-            asis(schema.summary)
+            if schema.tipRef is not None and genType == GenerationType.Embedded:
+                summary = schema.summary + " " + schema.definedIn()
+            else:
+                summary = schema.summary
+
+            asis(summary)
 
 
 def generateSchema(schema: Schema):

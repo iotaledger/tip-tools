@@ -69,6 +69,7 @@ def AddressUnlockCondition(
         ],
         mandatory=True,
         omitFields=omitFields,
+        tipReference=38,
     )
 
 
@@ -101,6 +102,7 @@ def StorageDepositReturnUnlockCondition(
         storage_deposit_return_unlock_condition_name,
         storage_deposit_return_unlock_condition_description,
         storage_deposit_return_unlock_condition_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -131,6 +133,7 @@ def TimelockUnlock(
         timelock_unlock_condition_name,
         timelock_unlock_condition_description,
         timelock_unlock_condition_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -163,6 +166,7 @@ def ExpirationUnlockCondition(
         expiration_unlock_condition_name,
         expiration_unlock_condition_description,
         expiration_unlock_condition_fields,
+        tipReference=38,
         omitFields=omitFields,
     )
 
@@ -187,6 +191,7 @@ def StateControllerUnlockCondition(
         state_controller_unlock_condition_description,
         state_controller_unlock_condition_fields,
         mandatory=True,
+        tipReference=42,
         omitFields=omitFields,
     )
 
@@ -211,6 +216,7 @@ def GovernorUnlockCondition(
         governor_unlock_condition_description,
         governor_unlock_condition_fields,
         mandatory=True,
+        tipReference=42,
         omitFields=omitFields,
     )
 
@@ -241,6 +247,7 @@ def ImmutableAccountAddressUnlockCondition(
         immutable_account_address_unlock_condition_description,
         immutable_account_address_unlock_condition_fields,
         mandatory=True,
+        tipReference=44,
         omitFields=omitFields,
     )
 

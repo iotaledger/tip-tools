@@ -34,6 +34,7 @@ def UTXOInput(
         utxo_input_name,
         "Describes an input which references an unspent transaction output to consume.",
         utxo_input_fields,
+        tipReference=45,
         omitFields=omitFields,
     )
 

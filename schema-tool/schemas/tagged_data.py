@@ -6,7 +6,7 @@ from typedefs.datatype import (
     UInt32,
     UInt8,
 )
-from typedefs.field import Field, Schema, SimpleField
+from typedefs.field import Field, Schema, SimpleField, TipReference
 
 tagged_data_name = "Tagged Data"
 tagged_data_fields: List[Field] = [
@@ -31,6 +31,7 @@ def TaggedData(
         tagged_data_name,
         "Data with optional tag.",
         tagged_data_fields,
+        tipReference=TipReference(23, "specification"),
         omitFields=omitFields,
     )
 

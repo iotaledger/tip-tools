@@ -96,7 +96,13 @@ account_fields = [
 def AccountOutput(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(account_name, account_summary, account_fields, omitFields=omitFields)
+    return Schema(
+        account_name,
+        account_summary,
+        account_fields,
+        tipReference=42,
+        omitFields=omitFields,
+    )
 
 
 AVAILABLE_SCHEMAS.append(AccountOutput())

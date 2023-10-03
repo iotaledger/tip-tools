@@ -78,7 +78,9 @@ nft_fields: List[Field] = [
 def NftOutput(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(nft_name, nft_summary, nft_fields, omitFields=omitFields)
+    return Schema(
+        nft_name, nft_summary, nft_fields, tipReference=43, omitFields=omitFields
+    )
 
 
 AVAILABLE_SCHEMAS.append(NftOutput())

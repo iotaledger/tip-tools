@@ -71,6 +71,7 @@ fields: List[Field] = [
 def DelegationOutput(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(name, summary, fields, omitFields=omitFields)
+    return Schema(name, summary, fields, tipReference=40, omitFields=omitFields)
+
 
 AVAILABLE_SCHEMAS.append(DelegationOutput())

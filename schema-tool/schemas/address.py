@@ -41,7 +41,11 @@ def Ed25519Address(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        address_ed25519_name, address_ed25519_description, address_ed25519_fields, tip=38, omitFields=omitFields
+        address_ed25519_name,
+        address_ed25519_description,
+        address_ed25519_fields,
+        tipReference=38,
+        omitFields=omitFields,
     )
 
 
@@ -67,7 +71,11 @@ def AccountAddress(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        address_account_name, address_account_description, address_account_fields, omitFields=omitFields
+        address_account_name,
+        address_account_description,
+        address_account_fields,
+        tipReference=38,
+        omitFields=omitFields,
     )
 
 
@@ -92,7 +100,13 @@ address_nft_fields: List[Field] = [
 def NftAddress(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(address_nft_name, address_nft_description, address_nft_fields, omitFields=omitFields)
+    return Schema(
+        address_nft_name,
+        address_nft_description,
+        address_nft_fields,
+        tipReference=38,
+        omitFields=omitFields,
+    )
 
 
 AVAILABLE_SCHEMAS.append(NftAddress())
@@ -120,6 +134,7 @@ def ImplicitAccountCreationAddress(
         address_implicit_account_creation_name,
         address_implicit_account_creation_description,
         address_implicit_account_creation_fields,
+        tipReference=42,
         omitFields=omitFields,
     )
 
@@ -142,7 +157,9 @@ address_multi_nested_addresses = ComplexField(
     ],
 )
 address_with_weight = Schema(
-    "Address with Weight", address_multi_description, [address_multi_nested_addresses, weight]
+    "Address with Weight",
+    "An Address with an assigned weight.",
+    [address_multi_nested_addresses, weight],
 )
 address_multi_address_count = SimpleField(
     "Addresses Count", UInt8(), "The number of addresses following."
@@ -166,7 +183,13 @@ address_multi_fields: List[Field] = [
 def MultiAddress(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(address_multi_name, address_multi_description, address_multi_fields, omitFields=omitFields)
+    return Schema(
+        address_multi_name,
+        address_multi_description,
+        address_multi_fields,
+        tipReference=52,
+        omitFields=omitFields,
+    )
 
 
 AVAILABLE_SCHEMAS.append(MultiAddress())
@@ -174,7 +197,7 @@ AVAILABLE_SCHEMAS.append(MultiAddress())
 # Restricted Address
 
 address_restricted_name = "Restricted Address"
-address_restricted_description = "Defines a container for other addresses which can restrict the capabilities of the underlying address."
+address_restricted_description = "An address that contains another address and allows for configuring its capabilities."
 address_restricted_capabilities = SimpleField(
     "Allowed Capabilities",
     LengthPrefixedArray(UInt8(), minLength=0, maxLength=1),
@@ -196,7 +219,11 @@ def RestrictedAddress(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        address_restricted_name, address_restricted_description, address_restricted_fields, omitFields=omitFields
+        address_restricted_name,
+        address_restricted_description,
+        address_restricted_fields,
+        tipReference=50,
+        omitFields=omitFields,
     )
 
 

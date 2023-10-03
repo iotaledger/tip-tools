@@ -94,6 +94,7 @@ def Transaction(
         "A transaction.",
         transaction_fields,
         omitFields=omitFields,
+        tipReference=46,
         detailsOpen=detailsOpen,
     )
 
@@ -126,8 +127,9 @@ def SignedTransaction(
 ) -> Schema:
     return Schema(
         signed_transaction_name,
-        "A signed transaction.",
+        "A transaction with its unlocks.",
         signed_transaction_fields,
+        tipReference=46,
         omitFields=omitFields,
     )
 

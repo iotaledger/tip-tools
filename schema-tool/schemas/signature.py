@@ -1,7 +1,7 @@
 from typing import List
 from schemas.common import AVAILABLE_SCHEMAS
 from typedefs.datatype import ByteArray, UInt8
-from typedefs.field import Field, Schema, SimpleField
+from typedefs.field import Field, Schema, SimpleField, TipReference
 
 
 def signature_type_field(type_value: int, name: str, article="a") -> SimpleField:
@@ -22,7 +22,11 @@ signature_fields: List[Field] = [
         ByteArray(32),
         "The Ed25519 public key that verifies the signature.",
     ),
-    SimpleField("Signature", ByteArray(64), "The Ed25519 signature."),
+    SimpleField(
+        "Signature",
+        ByteArray(64),
+        "The Ed25519 signature that must be verified according to <a href='../TIP-0014/tip-0014.md'>TIP-14</a>.",
+    ),
 ]
 
 
@@ -31,8 +35,9 @@ def Ed25519Signature(
 ) -> Schema:
     return Schema(
         signature_name,
-        "An Ed25519 Signature",
+        "An Ed25519 Signature with the public key that verifies it.",
         signature_fields,
+        tipReference=46,
         omitFields=omitFields,
     )
 
