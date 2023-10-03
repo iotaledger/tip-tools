@@ -14,7 +14,7 @@ class Field:
 @dataclass(init=False)
 class Schema:
     name: str
-    summary: Optional[str]
+    summary: str
     fields: List[Field]
     mandatory: bool
     """Whether this schema is mandatory to be present when it is embedded."""
@@ -28,7 +28,7 @@ class Schema:
     def __init__(
         self,
         name: str,
-        summary: Optional[str],
+        summary: str,
         fields: List[Field],
         mandatory: bool = False,
         omitFields: bool = False,

@@ -49,7 +49,7 @@ def SimpleTokenScheme(
 ) -> Schema:
     return Schema(
         simple_token_scheme_name,
-        None,
+        "A Token Scheme which allows for minting and melting Native Tokens up to the maximum supply.",
         simple_token_scheme_fields,
         omitFields=omitFields,
     )
@@ -82,13 +82,13 @@ foundry_unlock_conditions = ComplexField(
 foundry_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [MetadataFeature(omitFields=True)],
+    [MetadataFeature()],
 )
 
 foundry_immutable_features = ComplexField(
     "Immutable Features",
     AtMostOneOfEach(),
-    [MetadataFeature(omitFields=True)],
+    [MetadataFeature()],
 )
 
 foundry_fields: List[Field] = [

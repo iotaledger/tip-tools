@@ -25,6 +25,7 @@ def address_type_field(type_value: int, name: str, article="a") -> SimpleField:
 # Ed25519 Address
 
 address_ed25519_name = "Ed25519 Address"
+address_ed25519_description = "An Address derived from an Ed25519 Public Key."
 address_ed25519_pubkeyhash = SimpleField(
     "PubKeyHash",
     ByteArray(32),
@@ -40,7 +41,7 @@ def Ed25519Address(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        address_ed25519_name, None, address_ed25519_fields, tip=38, omitFields=omitFields
+        address_ed25519_name, address_ed25519_description, address_ed25519_fields, tip=38, omitFields=omitFields
     )
 
 
@@ -50,6 +51,7 @@ AVAILABLE_SCHEMAS.append(Ed25519Address())
 # Account Address
 
 address_account_name = "Account Address"
+address_account_description = "An Address derived from an Account ID which can be unlocked by unlocking the corresponding Account."
 address_account_id = SimpleField(
     "Account ID",
     ByteArray(32),
@@ -65,7 +67,7 @@ def AccountAddress(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        address_account_name, None, address_account_fields, omitFields=omitFields
+        address_account_name, address_account_description, address_account_fields, omitFields=omitFields
     )
 
 
@@ -75,6 +77,7 @@ AVAILABLE_SCHEMAS.append(AccountAddress())
 # NFT Address
 
 address_nft_name = "NFT Address"
+address_nft_description = "An Address derived from an NFT ID which can be unlocked by unlocking the corresponding NFT."
 address_nft_id = SimpleField(
     "NFT ID",
     ByteArray(32),
@@ -89,7 +92,7 @@ address_nft_fields: List[Field] = [
 def NftAddress(
     omitFields: bool = False,
 ) -> Schema:
-    return Schema(address_nft_name, None, address_nft_fields, omitFields=omitFields)
+    return Schema(address_nft_name, address_nft_description, address_nft_fields, omitFields=omitFields)
 
 
 AVAILABLE_SCHEMAS.append(NftAddress())
@@ -139,7 +142,7 @@ address_multi_nested_addresses = ComplexField(
     ],
 )
 address_with_weight = Schema(
-    "Address with Weight", None, [address_multi_nested_addresses, weight]
+    "Address with Weight", address_multi_description, [address_multi_nested_addresses, weight]
 )
 address_multi_address_count = SimpleField(
     "Addresses Count", UInt8(), "The number of addresses following."
@@ -193,7 +196,7 @@ def RestrictedAddress(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        address_restricted_name, None, address_restricted_fields, omitFields=omitFields
+        address_restricted_name, address_restricted_description, address_restricted_fields, omitFields=omitFields
     )
 
 

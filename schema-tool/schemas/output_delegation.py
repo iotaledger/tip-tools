@@ -51,7 +51,7 @@ delegation_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockCondition,
+        AddressUnlockCondition(),
     ],
 )
 

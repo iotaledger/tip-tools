@@ -16,7 +16,7 @@ native_token_amount = SimpleField(
     "Amount", UInt256(), "Amount of native tokens of the given <i>Token ID</i>."
 )
 native_token_fields: List[Field] = [native_token_id, native_token_amount]
-native_token = Schema("Native Token", None, native_token_fields)
+native_token = Schema("Native Token", "A token that is stored natively on the ledger.", native_token_fields)
 
 NativeTokensCountField = SimpleField(
     "Native Tokens Count", UInt8(), "The number of different native tokens held by the output."

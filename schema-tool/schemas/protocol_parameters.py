@@ -466,6 +466,6 @@ protocol_parameters_fields: List[Field] = [
     RewardsParameters,
 ]
 
-ProtocolParameters = Schema(protocol_parameters_name, None, protocol_parameters_fields)
+ProtocolParameters = Schema(protocol_parameters_name, "The IOTA 2.0 Protocol Parameters.", protocol_parameters_fields)
 
 AVAILABLE_SCHEMAS.append(ProtocolParameters)

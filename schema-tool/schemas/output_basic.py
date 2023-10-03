@@ -24,19 +24,19 @@ basic_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockCondition(includeImplicitAccountCreationAddress=True, omitFields=True),
-        StorageDepositReturnUnlockCondition(omitFields=True),
-        TimelockUnlock(omitFields=True),
-        ExpirationUnlockCondition(omitFields=True),
+        AddressUnlockCondition(includeImplicitAccountCreationAddress=True, ),
+        StorageDepositReturnUnlockCondition(),
+        TimelockUnlock(),
+        ExpirationUnlockCondition(),
     ],
 )
 basic_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
     [
-        SenderFeature(omitFields=True),
-        MetadataFeature(omitFields=True),
-        TagFeature(omitFields=True)
+        SenderFeature(),
+        MetadataFeature(),
+        TagFeature()
     ],
 )
 

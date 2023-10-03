@@ -52,18 +52,26 @@ account_foundry_counter = SimpleField(
 account_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
-    [StateControllerUnlockCondition, GovernorUnlockCondition],
+    [
+        StateControllerUnlockCondition(),
+        GovernorUnlockCondition(),
+    ],
 )
 account_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [SenderFeature, MetadataFeature, BlockIssuerFeature, StakingFeature],
+    [
+        SenderFeature(),
+        MetadataFeature(),
+        BlockIssuerFeature(),
+        StakingFeature(),
+    ],
 )
 
 account_immutable_features = ComplexField(
     "Immutable Features",
     AtMostOneOfEach(),
-    [IssuerFeature, MetadataFeature],
+    [IssuerFeature(), MetadataFeature()],
 )
 
 account_fields = [

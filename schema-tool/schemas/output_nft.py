@@ -34,22 +34,29 @@ nft_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockCondition,
-        StorageDepositReturnUnlockCondition,
-        TimelockUnlock,
-        ExpirationUnlockCondition,
+        AddressUnlockCondition(),
+        StorageDepositReturnUnlockCondition(),
+        TimelockUnlock(),
+        ExpirationUnlockCondition(),
     ],
 )
 nft_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [SenderFeature, MetadataFeature, TagFeature],
+    [
+        SenderFeature(),
+        MetadataFeature(),
+        TagFeature(),
+    ],
 )
 
 nft_immutable_features = ComplexField(
     "Immutable Features",
     AtMostOneOfEach(),
-    [IssuerFeature, MetadataFeature],
+    [
+        IssuerFeature(),
+        MetadataFeature(),
+    ],
 )
 
 nft_fields: List[Field] = [

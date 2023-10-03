@@ -18,6 +18,7 @@ def block_issuer_key_type_field(type_value: int, name: str, article="a") -> Simp
 # Ed25519 Public Key Block Issuer Key
 
 ed25519_public_key_block_issuer_key_name = "Ed25519 Public Key Block Issuer Key"
+ed25519_public_key_block_issuer_key_description = "A Block Issuer Key derived from an Ed25519 Public Key."
 ed25519_public_key_block_issuer_key_fields: List[Field] = [
     block_issuer_key_type_field(
         0, ed25519_public_key_block_issuer_key_name, article="an"
@@ -36,7 +37,7 @@ def Ed25519PublicKeyBlockIssuerKey(
 ) -> Schema:
     return Schema(
         ed25519_public_key_block_issuer_key_name,
-        None,
+        ed25519_public_key_block_issuer_key_description,
         ed25519_public_key_block_issuer_key_fields,
         omitFields=omitFields,
     )

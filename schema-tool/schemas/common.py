@@ -5,6 +5,7 @@ from typedefs.field import Field, Schema, SimpleField
 
 AVAILABLE_SCHEMAS = []
 
+
 def payload_type_field(type_value: int, name: str, article="a") -> SimpleField:
     return SimpleField(
         "Payload Type",
@@ -47,4 +48,4 @@ offset_fields: List[Field] = [
     offset_output_slot_booked,
     offset_output_slot_created,
 ]
-OutputOffset = Schema("Offset", None, offset_fields)
+OutputOffset = Schema("Offset", "The storage offset for every output.", offset_fields)
