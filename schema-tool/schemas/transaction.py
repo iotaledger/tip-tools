@@ -84,7 +84,6 @@ transaction_fields: List[Field] = [
     ),
 ]
 
-
 def Transaction(
     omitFields: bool = False,
     detailsOpen: bool = False,
@@ -94,7 +93,7 @@ def Transaction(
         "A transaction.",
         transaction_fields,
         omitFields=omitFields,
-        tipReference=46,
+        tipReference=45,
         detailsOpen=detailsOpen,
     )
 
@@ -111,12 +110,11 @@ signed_transaction_fields: List[Field] = [
         "Unlocks",
         AnyOf(MIN_INPUTS_COUNT, MAX_INPUTS_COUNT),
         [
-            SignatureUnlock,
-            ReferenceUnlock,
-            AccountUnlock,
-            NFTUnlock,
-            MultiUnlock,
-            EmptyUnlock,
+            SignatureUnlock(omitFields=True),
+            ReferenceUnlock(omitFields=True),
+            AccountUnlock(omitFields=True),
+            NFTUnlock(omitFields=True),
+            MultiUnlock(omitFields=True),
         ],
     ),
 ]
@@ -129,7 +127,7 @@ def SignedTransaction(
         signed_transaction_name,
         "A transaction with its unlocks.",
         signed_transaction_fields,
-        tipReference=46,
+        tipReference=45,
         omitFields=omitFields,
     )
 

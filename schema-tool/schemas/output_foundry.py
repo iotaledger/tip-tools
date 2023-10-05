@@ -3,10 +3,10 @@ from schemas.feature import (
     FeaturesCountField,
     ImmutableFeaturesCountField,
     MetadataFeature,
+    NativeTokenFeature,
 )
 from schemas.output import output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField
-from schemas.native_token import NativeTokensCountField, NativeTokens
 from typedefs.datatype import UInt256, UInt32, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.subschema import AtMostOneOfEach, OneOf
@@ -83,7 +83,7 @@ foundry_unlock_conditions = ComplexField(
 foundry_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [MetadataFeature()],
+    [MetadataFeature(), NativeTokenFeature()],
 )
 
 foundry_immutable_features = ComplexField(
@@ -95,8 +95,6 @@ foundry_immutable_features = ComplexField(
 foundry_fields: List[Field] = [
     output_type_field(5, foundry_name),
     AmountField,
-    NativeTokensCountField,
-    NativeTokens,
     foundry_serial,
     foundry_token_scheme,
     UnlockConditionsCountField,

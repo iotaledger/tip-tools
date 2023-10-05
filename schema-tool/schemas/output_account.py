@@ -12,7 +12,6 @@ from schemas.feature import (
 )
 from schemas.output import output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
-from schemas.native_token import NativeTokensCountField, NativeTokens
 from typedefs.subschema import AtMostOneOfEach
 from schemas.unlock_condition import UnlockConditionsCountField
 from schemas.unlock_condition import (
@@ -78,8 +77,6 @@ account_fields = [
     output_type_field(4, account_name, article="an"),
     AmountField,
     ManaField,
-    NativeTokensCountField,
-    NativeTokens,
     account_id,
     account_state_index,
     account_state_metadata,

@@ -37,7 +37,7 @@ def Ed25519Signature(
         signature_name,
         "An Ed25519 Signature with the public key that verifies it.",
         signature_fields,
-        tipReference=46,
+        tipReference=38,
         omitFields=omitFields,
     )
 

@@ -1,13 +1,13 @@
-from typing import List, Optional
+from typing import List
 from schemas.feature import (
     FeaturesCountField,
     MetadataFeature,
+    NativeTokenFeature,
     SenderFeature,
     TagFeature,
 )
 from schemas.output import output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
-from schemas.native_token import NativeTokensCountField, NativeTokens
 from typedefs.field import ComplexField, Field, Schema
 from typedefs.subschema import AtMostOneOfEach
 from schemas.unlock_condition import (
@@ -35,15 +35,13 @@ basic_unlock_conditions = ComplexField(
 basic_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [SenderFeature(), MetadataFeature(), TagFeature()],
+    [SenderFeature(), MetadataFeature(), TagFeature(), NativeTokenFeature()],
 )
 
 basic_fields: List[Field] = [
     output_type_field(3, basic_name),
     AmountField,
     ManaField,
-    NativeTokensCountField,
-    NativeTokens,
     UnlockConditionsCountField,
     basic_unlock_conditions,
     FeaturesCountField,
@@ -55,7 +53,7 @@ def BasicOutput(
     omitFields: bool = False,
 ) -> Schema:
     return Schema(
-        basic_name, basic_summary, basic_fields, tipReference=38, omitFields=omitFields
+        basic_name, basic_summary, basic_fields, tipReference=41, omitFields=omitFields
     )
 
 

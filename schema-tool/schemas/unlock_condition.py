@@ -1,6 +1,6 @@
 from typing import List
 from schemas.common import AVAILABLE_SCHEMAS
-from typedefs.datatype import UInt64, UInt8
+from typedefs.datatype import UInt32, UInt64, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from schemas.address import (
     AccountAddress,
@@ -120,7 +120,7 @@ timelock_unlock_condition_fields: List[Field] = [
     unlock_condition_type_field(2, timelock_unlock_condition_name),
     SimpleField(
         "Slot Index",
-        UInt64(),
+        UInt32(),
         "Slot index starting from which the output can be consumed.",
     ),
 ]
@@ -153,7 +153,7 @@ expiration_unlock_condition_fields: List[Field] = [
     expiration_unlock_condition_return_address,
     SimpleField(
         "Slot Index",
-        UInt64(),
+        UInt32(),
         "Before this slot index, <i>Address Unlock Condition</i> is allowed to unlock the output, after that only the address defined in <i>Return Address</i>.",
     ),
 ]

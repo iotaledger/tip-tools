@@ -9,7 +9,6 @@ from schemas.feature import (
 )
 from schemas.output import output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
-from schemas.native_token import NativeTokensCountField, NativeTokens
 from typedefs.datatype import ByteArray
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.subschema import AtMostOneOfEach
@@ -63,8 +62,6 @@ nft_fields: List[Field] = [
     output_type_field(6, nft_name),
     AmountField,
     ManaField,
-    NativeTokensCountField,
-    NativeTokens,
     nft_id,
     UnlockConditionsCountField,
     nft_unlock_conditions,

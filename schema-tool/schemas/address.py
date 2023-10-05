@@ -206,7 +206,12 @@ address_restricted_capabilities = SimpleField(
 address_restricted_nested_addresses = ComplexField(
     "Address",
     OneOf(),
-    [Ed25519Address(), AccountAddress(), NftAddress(), MultiAddress()],
+    [
+        Ed25519Address(omitFields=True),
+        AccountAddress(omitFields=True),
+        NftAddress(omitFields=True),
+        MultiAddress(omitFields=True),
+    ],
 )
 address_restricted_fields: List[Field] = [
     address_type_field(40, address_restricted_name, article="a"),

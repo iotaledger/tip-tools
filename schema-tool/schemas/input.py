@@ -18,7 +18,7 @@ def input_type_field(type_value: int, name: str, article="a") -> SimpleField:
 utxo_input_name = "UTXO Input"
 utxo_input_fields: List[Field] = [
     input_type_field(0, utxo_input_name),
-    SimpleField("Transaction ID", ByteArray(36), "TODO"),
+    SimpleField("Transaction ID", ByteArray(36), "The identifier of the transaction that created the referenced output."),
     SimpleField(
         "Transaction Output Index",
         UInt16(),

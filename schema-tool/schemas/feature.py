@@ -1,10 +1,23 @@
 from typing import List
 from schemas.block_issuer_key import Ed25519PublicKeyBlockIssuerKey
 from schemas.common import AVAILABLE_SCHEMAS
-from typedefs.datatype import LengthPrefixedArray, UInt16, UInt64, UInt8
+from typedefs.datatype import (
+    ByteArray,
+    LengthPrefixedArray,
+    UInt16,
+    UInt256,
+    UInt64,
+    UInt8,
+)
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
-from schemas.address import AccountAddress, Ed25519Address, NftAddress
+from schemas.address import (
+    AccountAddress,
+    Ed25519Address,
+    MultiAddress,
+    NftAddress,
+    RestrictedAddress,
+)
 from typedefs.subschema import AnyOf, OneOf
 
 MIN_METADATA_LENGTH = 1
@@ -49,6 +62,8 @@ sender_feature_sender = ComplexField(
         Ed25519Address(omitFields=True),
         AccountAddress(omitFields=True),
         NftAddress(omitFields=True),
+        MultiAddress(omitFields=True),
+        RestrictedAddress(omitFields=True),
     ],
 )
 sender_feature_fields: List[Field] = [
@@ -85,6 +100,8 @@ issuer_feature_issuer = ComplexField(
         Ed25519Address(omitFields=True),
         AccountAddress(omitFields=True),
         NftAddress(omitFields=True),
+        MultiAddress(omitFields=True),
+        RestrictedAddress(omitFields=True),
     ],
 )
 issuer_feature_fields: List[Field] = [
@@ -167,6 +184,40 @@ def TagFeature(
 
 AVAILABLE_SCHEMAS.append(TagFeature())
 
+# Native Token Feature
+
+native_token_feature_name = "Native Token Feature"
+native_token_feature_description = (
+    "A feature that carries a user-defined Native Token minted by a Foundry Output."
+)
+native_token_id = SimpleField(
+    "Token ID",
+    ByteArray(38),
+    "Identifier of the native token. Its derivation is defined in <a href='../TIP-0044/tip-0044.md#foundry-output'>TIP-44 (Foundry Output)</a>.",
+)
+native_token_amount = SimpleField(
+    "Amount", UInt256(), "Amount of native tokens of the given <i>Token ID</i>."
+)
+native_token_feature_fields: List[Field] = [
+    feature_type_field(4, native_token_feature_name),
+    native_token_id,
+    native_token_amount,
+]
+
+
+def NativeTokenFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        native_token_feature_name,
+        native_token_feature_description,
+        native_token_feature_fields,
+        tipReference=38,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(NativeTokenFeature())
 
 # Block Issuer Feature
 
@@ -189,7 +240,7 @@ block_issuer_feature_keys = ComplexField(
 )
 
 block_issuer_feature_fields: List[Field] = [
-    feature_type_field(4, block_issuer_feature_name),
+    feature_type_field(5, block_issuer_feature_name),
     block_issuer_feature_expiry_slot,
     block_issuer_feature_keys_count,
     block_issuer_feature_keys,
@@ -215,7 +266,7 @@ AVAILABLE_SCHEMAS.append(BlockIssuerFeature())
 staking_feature_name = "Staking Feature"
 staking_feature_description = "Stakes IOTA coins to become eligible for committee selection, validate the network and receive Mana rewards."
 staking_feature_fields: List[Field] = [
-    feature_type_field(5, staking_feature_name, deposit_weight=DepositWeight.Staking),
+    feature_type_field(6, staking_feature_name, deposit_weight=DepositWeight.Staking),
     SimpleField(
         "Staked Amount",
         UInt64(),

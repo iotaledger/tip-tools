@@ -82,7 +82,7 @@ def AccountUnlock(
         account_unlock_name,
         "Points to the unlock of a consumed Account Output.",
         account_unlock_fields,
-        tipReference=45,
+        tipReference=42,
         omitFields=omitFields,
     )
 
@@ -109,7 +109,7 @@ def NFTUnlock(
         nft_unlock_name,
         "Points to the unlock of a consumed NFT Output.",
         nft_unlock_fields,
-        tipReference=45,
+        tipReference=43,
         omitFields=omitFields,
     )
 
