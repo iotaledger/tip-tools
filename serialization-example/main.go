@@ -25,7 +25,7 @@ var (
 			iotago.WithTimeProviderOptions(genesisTimestamp.Unix(), 10, 13),
 			iotago.WithManaOptions(63, 1, 17, []uint32{10, 20}, 32, 2420916375, 21),
 			iotago.WithSupplyOptions(TestTokenSupply, 0, 0, 0, 0, 0, 0),
-			iotago.WithWorkScoreOptions(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), // all zero except block offset gives all blocks workscore = 1
+			iotago.WithWorkScoreOptions(0, 1, 0, 0, 0, 0, 0, 0, 0, 0), // all zero except block offset gives all blocks workscore = 1
 		),
 	)
 	supportedObjects = []string{
