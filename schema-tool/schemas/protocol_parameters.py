@@ -53,8 +53,8 @@ slots_per_epoch_exponent = SimpleField(
     "Slots Per Epoch Exponent is the number of slots in an epoch expressed as an exponent of 2. (2**SlotsPerEpochExponent) == slots in an epoch.",
 )
 
-staking_unbounding_period = SimpleField(
-    "Staking Unbounding Period",
+staking_unbonding_period = SimpleField(
+    "Staking Unbonding Period",
     UInt32(),
     "Staking Unbonding Period defines the unbonding period in epochs before an account can stop staking.",
 )
@@ -71,76 +71,82 @@ punishment_epochs = SimpleField(
     "The number of epochs worth of Mana that a node is punished with for each additional validation block it issues.",
 )
 
-liveness_threshold = SimpleField(
-    "Liveness Threshold",
-    UInt64(),
-    "Liveness Threshold is used by tip-selection to determine if a block is eligible by evaluating issuingTimes and commitments in its past-cone to Accepted Tangle Time and lastCommittedSlot respectively.",
+liveness_threshold_lower_bound = SimpleField(
+    "Liveness Threshold Lower Bound",
+    UInt16(),
+    "Liveness Threshold Lower Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes and commitments in its past-cone to ATT and lastCommittedSlot respectively.",
+)
+
+liveness_threshold_upper_bound = SimpleField(
+    "Liveness Threshold Lower Bound",
+    UInt16(),
+    "Liveness Threshold Upper Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes and commitments in its past-cone to ATT and lastCommittedSlot respectively.",
 )
 
 min_committable_age = SimpleField(
     "Min Committable Age",
-    UInt64(),
+    UInt32(),
     "Min Committable Age is the minimum age relative to the accepted tangle time slot index that a slot can be committed.",
 )
 
 max_committable_age = SimpleField(
     "Max Committable Age",
-    UInt64(),
+    UInt32(),
     "Max Committable Age is the maximum age for a slot commitment to be included in a block relative to the slot index of the block issuing time.",
 )
 
 epoch_nearing_threshold = SimpleField(
     "Epoch Nearing Threshold",
-    UInt64(),
+    UInt32(),
     "Epoch Nearing Threshold is used by the epoch orchestrator to detect the slot that should trigger a new committee selection for the next and upcoming epoch.",
 )
 
-# rent structure
-vByte_cost = SimpleField(
-    "VByte Cost",
-    UInt32(),
-    "VByte Cost defines the rent of a single virtual byte denoted in IOTA tokens.",
+# rent parameters
+storage_cost = SimpleField(
+    "Storage Cost",
+    UInt64(),
+    "Storage Cost defines the number of IOTA tokens required per unit of storage score.",
 )
-vByte_factor_data = SimpleField(
-    "VByte Factor Data",
+storage_score_factor_data = SimpleField(
+    "Storage Score Factor Data",
     UInt8(),
-    "VByte Factor Data defines the factor to be used for data only fields.",
+    "Storage Score Offset Data defines the factor to be used for data only fields.",
 )
-vByte_factor_key = SimpleField(
-    "VByte Factor Key",
-    UInt8(),
-    "VByte Factor Key defines the factor to be used for key/lookup generating fields.",
+storage_score_offset_output = SimpleField(
+    "Storage Score Offset Output",
+    UInt64(),
+    "Storage Score Offset Output defines the offset to be used for key/lookup generating fields.",
 )
-vByte_factor_block_issuer_key = SimpleField(
-    "VByte Factor Block Issuer Key",
-    UInt8(),
-    "VByte Factor Block Issuer Key defines the factor to be used for block issuer feature public keys.",
+storage_score_offset_Ed25519_block_issuer_key = SimpleField(
+    "Storage Score Offset Ed25519 Block Issuer Key",
+    UInt64(),
+    "Storage Score Offset Ed25519 Block Issuer Key defines the offset to be used for block issuer feature public keys.",
 )
-vByte_factor_staking_feature = SimpleField(
-    "VByte Factor Staking Feature",
-    UInt8(),
-    "VByte Factor Staking Feature defines the factor to be used for staking feature.",
+storage_score_offset_staking_feature = SimpleField(
+    "Storage Score Offset Staking Feature",
+    UInt64(),
+    "Storage Score Offset Staking Feature defines the the offset to be used for staking feature.",
 )
-vByte_factor_delegation = SimpleField(
-    "VByte Factor Delegation",
-    UInt8(),
-    "VByte Factor Delegation defines the factor to be used for delegation output.",
+storage_score_offset_delegation = SimpleField(
+    "Storage Score Offset Delegation",
+    UInt64(),
+    "Storage Score Offset Delegation defines the offset to be used for delegation output.",
 )
 
-RentStructure = ComplexField(
-    "Rent Structure",
+RentParameters = ComplexField(
+    "Rent Parameters",
     OneOf(),
     [
         Schema(
-            "Rent Structure",
-            "Rent Structure defines the rent structure used by a given node/network.",
+            "Rent Parameters",
+            "Rent Parameters defines the rent parameters used by a given node/network.",
             [
-                vByte_cost,
-                vByte_factor_data,
-                vByte_factor_key,
-                vByte_factor_block_issuer_key,
-                vByte_factor_staking_feature,
-                vByte_factor_delegation,
+                storage_cost,
+                storage_score_factor_data,
+                storage_score_offset_output,
+                storage_score_offset_Ed25519_block_issuer_key,
+                storage_score_offset_staking_feature,
+                storage_score_offset_delegation,
             ],
         )
     ],
@@ -152,11 +158,6 @@ data_byte = SimpleField(
 )
 block = SimpleField(
     "Block", UInt32(), "Accounts for work done to process a block in the node software."
-)
-missing_parent = SimpleField(
-    "Missing Parent",
-    UInt32(),
-    "The work score factor to apply when not enough strong parents are present as determined by <code>Min Strong Parents Threshold</code>.",
 )
 input = SimpleField(
     "Input",
@@ -192,13 +193,8 @@ allotment = SimpleField(
 signature_ed25519 = SimpleField(
     "Signature Ed25519", UInt32(), "Accounts for an Ed25519 signature check."
 )
-min_strong_parents_threshold = SimpleField(
-    "Min Strong Parents Threshold",
-    UInt8(),
-    "The minimum number of strong parents needed in a basic block. If not reached, the block's work score increases.",
-)
 
-WorkScoreStructure = ComplexField(
+WorkScoreParameters = ComplexField(
     "Work Score Structure",
     OneOf(),
     [
@@ -208,7 +204,6 @@ WorkScoreStructure = ComplexField(
             [
                 data_byte,
                 block,
-                missing_parent,
                 input,
                 context_input,
                 output,
@@ -217,7 +212,6 @@ WorkScoreStructure = ComplexField(
                 block_issuer,
                 allotment,
                 signature_ed25519,
-                min_strong_parents_threshold,
             ],
         )
     ],
@@ -258,7 +252,7 @@ decay_factors_epochs_sum_exponent = SimpleField(
     "Decay Factor Epochs Sum Exponent is the scaling of Decay Factor Epochs Sum expressed as an exponent of 2.",
 )
 
-ManaStructure = ComplexField(
+ManaParameters = ComplexField(
     "Mana Structure",
     OneOf(),
     [
@@ -309,11 +303,6 @@ scheduler_rate = SimpleField(
     UInt32(),
     "Scheduler Rate is the rate at which the scheduler runs in workscore units per second.",
 )
-min_mana = SimpleField(
-    "Min Mana",
-    UInt64(),
-    "Min Mana is the minimum amount of Mana that an account must have to have a block scheduled.",
-)
 max_buffer_size = SimpleField(
     "Max Buffer Size",
     UInt32(),
@@ -339,7 +328,6 @@ CongestionControlParameters = ComplexField(
                 increase_threshold,
                 decrease_threshold,
                 scheduler_rate,
-                min_mana,
                 max_buffer_size,
                 max_validation_buffer_size,
             ],
@@ -440,17 +428,18 @@ protocol_parameters_fields: List[Field] = [
     version,
     network_name,
     bech32HRP,
-    RentStructure,
-    WorkScoreStructure,
+    RentParameters,
+    WorkScoreParameters,
     token_supply,
     genesis_unix_timestamp,
     slot_duration_in_seconds,
     slots_per_epoch_exponent,
-    ManaStructure,
-    staking_unbounding_period,
+    ManaParameters,
+    staking_unbonding_period,
     validation_blocks_per_slot,
     punishment_epochs,
-    liveness_threshold,
+    liveness_threshold_lower_bound,
+    liveness_threshold_upper_bound,
     min_committable_age,
     max_committable_age,
     epoch_nearing_threshold,
