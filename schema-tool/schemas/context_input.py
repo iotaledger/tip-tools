@@ -19,7 +19,7 @@ commitment_input_name = "Commitment Input"
 commitment_input_fields: List[Field] = [
     context_input_type_field(0, commitment_input_name),
     SimpleField(
-        "Commitment ID", ByteArray(40), "The commitment identifier to reference to."
+        "Commitment ID", ByteArray(36), "The commitment identifier to reference to."
     ),
 ]
 

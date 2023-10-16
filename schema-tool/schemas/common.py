@@ -29,7 +29,7 @@ offset_output_id = SimpleField(
 )
 offset_output_block_id = SimpleField(
     "Block ID (included)",
-    ByteArray(40),
+    ByteArray(36),
     "The ID of the block in which the transaction payload that created this output was included.",
 )
 offset_output_slot_booked = SimpleField(
