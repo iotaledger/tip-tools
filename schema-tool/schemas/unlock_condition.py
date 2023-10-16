@@ -143,7 +143,7 @@ AVAILABLE_SCHEMAS.append(TimelockUnlock())
 # Expiration Unlock Condition
 
 expiration_unlock_condition_name = "Expiration Unlock Condition"
-expiration_unlock_condition_description = "Defines a slot index until which only <i>Address</i>, defined in <i>Address Unlock Condition</i>, is allowed to unlock the output. After the slot index is reached/passed, only <i>Return Address</i> can unlock it."
+expiration_unlock_condition_description = "Defines a slot index until which only the <i>Address</i> defined in the <i>Address Unlock Condition</i> is allowed to unlock the output. After the slot index is reached/passed, only the <i>Return Address</i> can unlock it."
 expiration_unlock_condition_return_address = ComplexField(
     "Return Address", OneOf(), regular_addresses_plus_multi_and_restricted
 )
