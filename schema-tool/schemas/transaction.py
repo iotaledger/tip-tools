@@ -15,8 +15,7 @@ from schemas.unlock import (
 )
 from schemas.tagged_data import TaggedData
 from schemas.allotment import Allotment
-from schemas.input import UTXOInput
-from schemas.context_input import BlockIssuanceCreditInput, CommitmentInput, RewardInput
+from schemas.input import UTXOInput, BlockIssuanceCreditInput, CommitmentInput, RewardInput
 from typedefs.subschema import AnyOf, Embedded, OptAnyOf, OptOneOf
 from typedefs.datatype import LengthPrefixedArray, UInt16, UInt32, UInt64, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
