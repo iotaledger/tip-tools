@@ -74,7 +74,7 @@ account_immutable_features = ComplexField(
 )
 
 account_fields = [
-    output_type_field(4, account_name, article="an"),
+    output_type_field(1, account_name, article="an"),
     AmountField,
     ManaField,
     account_id,

@@ -39,7 +39,7 @@ basic_features = ComplexField(
 )
 
 basic_fields: List[Field] = [
-    output_type_field(3, basic_name),
+    output_type_field(0, basic_name),
     AmountField,
     ManaField,
     UnlockConditionsCountField,

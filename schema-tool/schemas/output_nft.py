@@ -59,7 +59,7 @@ nft_immutable_features = ComplexField(
 )
 
 nft_fields: List[Field] = [
-    output_type_field(6, nft_name),
+    output_type_field(3, nft_name),
     AmountField,
     ManaField,
     nft_id,

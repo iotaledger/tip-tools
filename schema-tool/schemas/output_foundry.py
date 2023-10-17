@@ -93,7 +93,7 @@ foundry_immutable_features = ComplexField(
 )
 
 foundry_fields: List[Field] = [
-    output_type_field(5, foundry_name),
+    output_type_field(2, foundry_name),
     AmountField,
     foundry_serial,
     foundry_token_scheme,

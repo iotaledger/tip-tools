@@ -8,7 +8,6 @@ from schemas.output_nft import NftOutput
 from schemas.output_foundry import FoundryOutput
 from schemas.unlock import (
     SignatureUnlock,
-    EmptyUnlock,
     MultiUnlock,
     AccountUnlock,
     NFTUnlock,
@@ -105,7 +104,7 @@ AVAILABLE_SCHEMAS.append(Transaction())
 
 signed_transaction_name = "Signed Transaction"
 signed_transaction_fields: List[Field] = [
-    payload_type_field(8, signed_transaction_name),
+    payload_type_field(1, signed_transaction_name),
     ComplexField("Transaction", Embedded(), [Transaction(detailsOpen=True)]),
     SimpleField("Unlocks Count", UInt16(), "The number of unlocks following."),
     ComplexField(

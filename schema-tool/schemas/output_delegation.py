@@ -56,7 +56,7 @@ delegation_unlock_conditions = ComplexField(
 )
 
 fields: List[Field] = [
-    output_type_field(7, name, deposit_weight=DepositWeight.Delegation),
+    output_type_field(4, name, deposit_weight=DepositWeight.Delegation),
     AmountField,
     delegated_amount,
     delegation_id,

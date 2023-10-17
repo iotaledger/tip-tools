@@ -10,7 +10,7 @@ from typedefs.field import Field, Schema, SimpleField, TipReference
 
 tagged_data_name = "Tagged Data"
 tagged_data_fields: List[Field] = [
-    payload_type_field(5, f"{tagged_data_name} Payload"),
+    payload_type_field(0, f"{tagged_data_name} Payload"),
     SimpleField(
         "Tag",
         LengthPrefixedArray(UInt8()),
