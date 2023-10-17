@@ -11,8 +11,7 @@ from schemas.feature import (
     StakingFeature,
 )
 from schemas.output import output_type_field
-from schemas.common import AmountField, ManaField
-from schemas.native_token import NativeTokensCountField, NativeTokens
+from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from typedefs.subschema import AtMostOneOfEach
 from schemas.unlock_condition import UnlockConditionsCountField
 from schemas.unlock_condition import (
@@ -38,7 +37,9 @@ account_state_index = SimpleField(
 account_state_metadata = SimpleField(
     "State Metadata",
     LengthPrefixedArray(
-        UInt16(), minLength=MIN_STATE_METADATA_LENGTH, maxLength=MAX_STATE_METADATA_LENGTH
+        UInt16(),
+        minLength=MIN_STATE_METADATA_LENGTH,
+        maxLength=MAX_STATE_METADATA_LENGTH,
     ),
     "Metadata that can only be changed by the state controller. A leading uint16 denotes its length.",
 )
@@ -50,26 +51,32 @@ account_foundry_counter = SimpleField(
 account_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
-    [StateControllerUnlockCondition, GovernorUnlockCondition],
+    [
+        StateControllerUnlockCondition(),
+        GovernorUnlockCondition(),
+    ],
 )
 account_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [SenderFeature, MetadataFeature, BlockIssuerFeature, StakingFeature],
+    [
+        SenderFeature(),
+        MetadataFeature(),
+        BlockIssuerFeature(),
+        StakingFeature(),
+    ],
 )
 
 account_immutable_features = ComplexField(
     "Immutable Features",
     AtMostOneOfEach(),
-    [IssuerFeature, MetadataFeature],
+    [IssuerFeature(), MetadataFeature()],
 )
 
 account_fields = [
     output_type_field(4, account_name, article="an"),
     AmountField,
     ManaField,
-    NativeTokensCountField,
-    NativeTokens,
     account_id,
     account_state_index,
     account_state_metadata,
@@ -82,4 +89,17 @@ account_fields = [
     account_immutable_features,
 ]
 
-AccountOutput = Schema(account_name, account_summary, account_fields)
+
+def AccountOutput(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        account_name,
+        account_summary,
+        account_fields,
+        tipReference=42,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(AccountOutput())

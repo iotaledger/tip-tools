@@ -1,7 +1,7 @@
 import copy
 from typing import List
 from schemas.output import output_type_field
-from schemas.common import AmountField
+from schemas.common import AVAILABLE_SCHEMAS, AmountField
 from typedefs.datatype import ByteArray, UInt64
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -51,7 +51,7 @@ delegation_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockCondition,
+        AddressUnlockCondition(),
     ],
 )
 
@@ -67,4 +67,11 @@ fields: List[Field] = [
     delegation_unlock_conditions,
 ]
 
-NftOutput = Schema(name, summary, fields)
+
+def DelegationOutput(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(name, summary, fields, tipReference=40, omitFields=omitFields)
+
+
+AVAILABLE_SCHEMAS.append(DelegationOutput())

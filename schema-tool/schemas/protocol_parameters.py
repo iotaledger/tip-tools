@@ -1,4 +1,5 @@
 from typing import List
+from schemas.common import AVAILABLE_SCHEMAS
 from schemas.output import output_type_field
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.datatype import UInt64, UInt32, UInt16, UInt8, LengthPrefixedArray
@@ -71,16 +72,16 @@ punishment_epochs = SimpleField(
     "The number of epochs worth of Mana that a node is punished with for each additional validation block it issues.",
 )
 
-liveness_threshold_lower_bound = SimpleField(
-    "Liveness Threshold Lower Bound",
+liveness_threshold_lower_bound_in_seconds = SimpleField(
+    "Liveness Threshold Lower Bound In Seconds",
     UInt16(),
-    "Liveness Threshold Lower Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes and commitments in its past-cone to ATT and lastCommittedSlot respectively.",
+    "Liveness Threshold Lower Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes.",
 )
 
-liveness_threshold_upper_bound = SimpleField(
-    "Liveness Threshold Lower Bound",
+liveness_threshold_upper_bound_in_seconds = SimpleField(
+    "Liveness Threshold Upper Bound In Seconds",
     UInt16(),
-    "Liveness Threshold Upper Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes and commitments in its past-cone to ATT and lastCommittedSlot respectively.",
+    "Liveness Threshold Upper Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes",
 )
 
 min_committable_age = SimpleField(
@@ -101,7 +102,7 @@ epoch_nearing_threshold = SimpleField(
     "Epoch Nearing Threshold is used by the epoch orchestrator to detect the slot that should trigger a new committee selection for the next and upcoming epoch.",
 )
 
-# rent parameters
+# Rent Parameters
 storage_cost = SimpleField(
     "Storage Cost",
     UInt64(),
@@ -110,18 +111,19 @@ storage_cost = SimpleField(
 storage_score_factor_data = SimpleField(
     "Storage Score Factor Data",
     UInt8(),
-    "Storage Score Offset Data defines the factor to be used for data only fields.",
+    "Storage Score Factor Data defines the factor to be used for data only fields.",
 )
 storage_score_offset_output = SimpleField(
     "Storage Score Offset Output",
     UInt64(),
     "Storage Score Offset Output defines the offset to be used for key/lookup generating fields.",
 )
-storage_score_offset_Ed25519_block_issuer_key = SimpleField(
-    "Storage Score Offset Ed25519 Block Issuer Key",
+storage_score_factor_ed25519_block_issuer_key = SimpleField(
+    "Storage Score Ed25519 Block Issuer Key",
     UInt64(),
-    "Storage Score Offset Ed25519 Block Issuer Key defines the offset to be used for block issuer feature public keys.",
+    "Storage Score Ed25519 Block Issuer Key defines the offset to be used for block issuer feature public keys.",
 )
+
 storage_score_offset_staking_feature = SimpleField(
     "Storage Score Offset Staking Feature",
     UInt64(),
@@ -130,7 +132,7 @@ storage_score_offset_staking_feature = SimpleField(
 storage_score_offset_delegation = SimpleField(
     "Storage Score Offset Delegation",
     UInt64(),
-    "Storage Score Offset Delegation defines the offset to be used for delegation output.",
+    "Storage Score Offset Delegation defines the offset to be used for delegation.",
 )
 
 RentParameters = ComplexField(
@@ -139,15 +141,16 @@ RentParameters = ComplexField(
     [
         Schema(
             "Rent Parameters",
-            "Rent Parameters defines the rent parameters used by a given node/network.",
+            "Rent Parameters defines the Rent Parameters used by a given node/network.",
             [
                 storage_cost,
                 storage_score_factor_data,
                 storage_score_offset_output,
-                storage_score_offset_Ed25519_block_issuer_key,
+                storage_score_factor_ed25519_block_issuer_key,
                 storage_score_offset_staking_feature,
                 storage_score_offset_delegation,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -213,6 +216,7 @@ WorkScoreParameters = ComplexField(
                 allotment,
                 signature_ed25519,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -268,6 +272,7 @@ ManaParameters = ComplexField(
                 decay_factors_epochs_sum,
                 decay_factors_epochs_sum_exponent,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -331,6 +336,7 @@ CongestionControlParameters = ComplexField(
                 max_buffer_size,
                 max_validation_buffer_size,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -360,6 +366,7 @@ VersionSignaling = ComplexField(
             "Version Signaling",
             "Version Signaling defines the parameters used by signaling protocol parameters upgrade.",
             [window_size, window_target_ration, activation_offset],
+            detailsOpen=True,
         )
     ],
 )
@@ -418,6 +425,7 @@ RewardsParameters = ComplexField(
                 decay_balancing_constant,
                 pool_coefficient_exponent,
             ],
+            detailsOpen=True,
         )
     ],
 )
@@ -438,8 +446,8 @@ protocol_parameters_fields: List[Field] = [
     staking_unbonding_period,
     validation_blocks_per_slot,
     punishment_epochs,
-    liveness_threshold_lower_bound,
-    liveness_threshold_upper_bound,
+    liveness_threshold_lower_bound_in_seconds,
+    liveness_threshold_upper_bound_in_seconds,
     min_committable_age,
     max_committable_age,
     epoch_nearing_threshold,
@@ -448,4 +456,6 @@ protocol_parameters_fields: List[Field] = [
     RewardsParameters,
 ]
 
-ProtocolParameters = Schema(protocol_parameters_name, None, protocol_parameters_fields)
+ProtocolParameters = Schema(protocol_parameters_name, "The IOTA 2.0 Protocol Parameters.", protocol_parameters_fields)
+
+AVAILABLE_SCHEMAS.append(ProtocolParameters)

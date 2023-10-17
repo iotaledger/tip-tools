@@ -2,6 +2,7 @@ from yattag.doc import Doc
 from yattag.indentation import indent
 from typedefs.field import ComplexField, Schema, SimpleField
 from typedefs.generation_type import GenerationType
+from typedefs.subschema import Embedded
 
 doc, tag, _ = Doc().tagtext()
 # Generates unescaped text.
@@ -11,23 +12,32 @@ asis = doc.asis
 def generateSchemaWithSummary(schema: Schema, genType: GenerationType) -> str:
     if genType == GenerationType.Standalone:
         if schema.summary is not None:
-          with tag("details"):
-            generateSummary(schema)
+            with tag("details"):
+                generateSummary(schema, genType)
         generateSchema(schema)
+
     elif genType == GenerationType.Embedded:
         with tag("details"):
-            generateSummary(schema)
-            generateSchema(schema)
+            if schema.detailsOpen:
+                doc.attr(open="true")
+            generateSummary(schema, genType)
+            if not schema.omitFields:
+                generateSchema(schema)
 
     return indent(doc.getvalue())
 
 
-def generateSummary(schema: Schema):
+def generateSummary(schema: Schema, genType: GenerationType):
     with tag("summary"):
         asis(schema.name)
     if schema.summary is not None:
         with tag("blockquote"):
-            asis(schema.summary)
+            if schema.tipRef is not None and genType == GenerationType.Embedded:
+                summary = schema.summary + " " + schema.definedIn()
+            else:
+                summary = schema.summary
+
+            asis(summary)
 
 
 def generateSchema(schema: Schema):
@@ -60,7 +70,13 @@ def generateSimpleField(field: SimpleField):
 def generateComplexField(field: ComplexField):
     with tag("tr"):
         with tag("td", ("valign", "top")):
-            asis(field.name + " " + str(field.subschema))
+            fieldName = field.name
+            match field.subschema:
+                case Embedded():
+                    pass
+                case _:
+                    fieldName = fieldName + " <code>" + str(field.subschema) + "</code>"
+            asis(fieldName)
         with tag("td", ("colspan", 2)):
             for schema in field.schemas:
                 generateSchemaWithSummary(schema, GenerationType.Embedded)

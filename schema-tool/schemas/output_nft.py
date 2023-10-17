@@ -8,8 +8,7 @@ from schemas.feature import (
     TagFeature,
 )
 from schemas.output import output_type_field
-from schemas.common import AmountField, ManaField
-from schemas.native_token import NativeTokensCountField, NativeTokens
+from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from typedefs.datatype import ByteArray
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.subschema import AtMostOneOfEach
@@ -34,30 +33,35 @@ nft_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
     [
-        AddressUnlockCondition,
-        StorageDepositReturnUnlockCondition,
-        TimelockUnlock,
-        ExpirationUnlockCondition,
+        AddressUnlockCondition(),
+        StorageDepositReturnUnlockCondition(),
+        TimelockUnlock(),
+        ExpirationUnlockCondition(),
     ],
 )
 nft_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
-    [SenderFeature, MetadataFeature, TagFeature],
+    [
+        SenderFeature(),
+        MetadataFeature(),
+        TagFeature(),
+    ],
 )
 
 nft_immutable_features = ComplexField(
     "Immutable Features",
     AtMostOneOfEach(),
-    [IssuerFeature, MetadataFeature],
+    [
+        IssuerFeature(),
+        MetadataFeature(),
+    ],
 )
 
 nft_fields: List[Field] = [
     output_type_field(6, nft_name),
     AmountField,
     ManaField,
-    NativeTokensCountField,
-    NativeTokens,
     nft_id,
     UnlockConditionsCountField,
     nft_unlock_conditions,
@@ -67,4 +71,13 @@ nft_fields: List[Field] = [
     nft_immutable_features,
 ]
 
-NftOutput = Schema(nft_name, nft_summary, nft_fields)
+
+def NftOutput(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        nft_name, nft_summary, nft_fields, tipReference=43, omitFields=omitFields
+    )
+
+
+AVAILABLE_SCHEMAS.append(NftOutput())

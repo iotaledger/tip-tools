@@ -1,4 +1,5 @@
 from typing import List
+from schemas.common import AVAILABLE_SCHEMAS
 from typedefs.datatype import ByteArray, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import Field, Schema, SimpleField
@@ -14,11 +15,16 @@ def block_issuer_key_type_field(type_value: int, name: str, article="a") -> Simp
     )
 
 
-# Block Issuer Key Types
+# Ed25519 Public Key Block Issuer Key
 
-block_issuer_key_ed25519_public_key_name = "Ed25519 Public Key Block Issuer Key"
-block_issuer_key_ed25519_public_key_fields: List[Field] = [
-    block_issuer_key_type_field(0, block_issuer_key_ed25519_public_key_name, article="an"),
+ed25519_public_key_block_issuer_key_name = "Ed25519 Public Key Block Issuer Key"
+ed25519_public_key_block_issuer_key_description = (
+    "A Block Issuer Key backed by an Ed25519 Public Key."
+)
+ed25519_public_key_block_issuer_key_fields: List[Field] = [
+    block_issuer_key_type_field(
+        0, ed25519_public_key_block_issuer_key_name, article="an"
+    ),
     SimpleField(
         "Public Key",
         ByteArray(32),
@@ -26,18 +32,35 @@ block_issuer_key_ed25519_public_key_fields: List[Field] = [
         deposit_weight=DepositWeight.BlockIssuerKey,
     ),
 ]
-BlockIssuerKeyEd25519PublicKey = Schema(
-    block_issuer_key_ed25519_public_key_name,
-    None,
-    block_issuer_key_ed25519_public_key_fields,
-)
 
-block_issuer_key_ed25519_address_name = "Ed25519 Address Block Issuer Key"
-block_issuer_key_ed25519_address_description = (
+
+def Ed25519PublicKeyBlockIssuerKey(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        ed25519_public_key_block_issuer_key_name,
+        ed25519_public_key_block_issuer_key_description,
+        ed25519_public_key_block_issuer_key_fields,
+        tipReference=42,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(Ed25519PublicKeyBlockIssuerKey())
+
+
+# Ed25519 Public Key Hash Block Issuer Key
+
+ed25519_public_key_hash_block_issuer_key_name = (
+    "Ed25519 Public Key Hash Block Issuer Key"
+)
+ed25519_public_key_hash_block_issuer_key_description = (
     "A block issuer key for issuing blocks from implicit accounts."
 )
-block_issuer_key_ed25519_address_fields: List[Field] = [
-    block_issuer_key_type_field(1, block_issuer_key_ed25519_address_name, article="an"),
+ed25519_public_key_hash_block_issuer_key_fields: List[Field] = [
+    block_issuer_key_type_field(
+        1, ed25519_public_key_hash_block_issuer_key_name, article="an"
+    ),
     SimpleField(
         "PubKeyHash",
         ByteArray(32),
@@ -45,8 +68,18 @@ block_issuer_key_ed25519_address_fields: List[Field] = [
         deposit_weight=DepositWeight.BlockIssuerKey,
     ),
 ]
-BlockIssuerKeyEd25519Address = Schema(
-    block_issuer_key_ed25519_address_name,
-    block_issuer_key_ed25519_address_description,
-    block_issuer_key_ed25519_address_fields,
-)
+
+
+def Ed25519PublicKeyHashBlockIssuerKey(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        ed25519_public_key_hash_block_issuer_key_name,
+        ed25519_public_key_hash_block_issuer_key_description,
+        ed25519_public_key_hash_block_issuer_key_fields,
+        tipReference=42,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(Ed25519PublicKeyHashBlockIssuerKey())
