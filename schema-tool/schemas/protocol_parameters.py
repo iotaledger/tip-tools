@@ -54,8 +54,8 @@ slots_per_epoch_exponent = SimpleField(
     "Slots Per Epoch Exponent is the number of slots in an epoch expressed as an exponent of 2. (2**SlotsPerEpochExponent) == slots in an epoch.",
 )
 
-staking_unbounding_period = SimpleField(
-    "Staking Unbounding Period",
+staking_unbonding_period = SimpleField(
+    "Staking Unbonding Period",
     UInt32(),
     "Staking Unbonding Period defines the unbonding period in epochs before an account can stop staking.",
 )
@@ -86,19 +86,19 @@ liveness_threshold_upper_bound_in_seconds = SimpleField(
 
 min_committable_age = SimpleField(
     "Min Committable Age",
-    UInt64(),
+    UInt32(),
     "Min Committable Age is the minimum age relative to the accepted tangle time slot index that a slot can be committed.",
 )
 
 max_committable_age = SimpleField(
     "Max Committable Age",
-    UInt64(),
+    UInt32(),
     "Max Committable Age is the maximum age for a slot commitment to be included in a block relative to the slot index of the block issuing time.",
 )
 
 epoch_nearing_threshold = SimpleField(
     "Epoch Nearing Threshold",
-    UInt64(),
+    UInt32(),
     "Epoch Nearing Threshold is used by the epoch orchestrator to detect the slot that should trigger a new committee selection for the next and upcoming epoch.",
 )
 
@@ -135,7 +135,7 @@ storage_score_offset_delegation = SimpleField(
     "Storage Score Offset Delegation defines the offset to be used for delegation.",
 )
 
-RentStructure = ComplexField(
+RentParameters = ComplexField(
     "Rent Parameters",
     OneOf(),
     [
@@ -197,7 +197,7 @@ signature_ed25519 = SimpleField(
     "Signature Ed25519", UInt32(), "Accounts for an Ed25519 signature check."
 )
 
-WorkScoreStructure = ComplexField(
+WorkScoreParameters = ComplexField(
     "Work Score Structure",
     OneOf(),
     [
@@ -256,7 +256,7 @@ decay_factors_epochs_sum_exponent = SimpleField(
     "Decay Factor Epochs Sum Exponent is the scaling of Decay Factor Epochs Sum expressed as an exponent of 2.",
 )
 
-ManaStructure = ComplexField(
+ManaParameters = ComplexField(
     "Mana Structure",
     OneOf(),
     [
@@ -436,14 +436,14 @@ protocol_parameters_fields: List[Field] = [
     version,
     network_name,
     bech32HRP,
-    RentStructure,
-    WorkScoreStructure,
+    RentParameters,
+    WorkScoreParameters,
     token_supply,
     genesis_unix_timestamp,
     slot_duration_in_seconds,
     slots_per_epoch_exponent,
-    ManaStructure,
-    staking_unbounding_period,
+    ManaParameters,
+    staking_unbonding_period,
     validation_blocks_per_slot,
     punishment_epochs,
     liveness_threshold_lower_bound_in_seconds,
