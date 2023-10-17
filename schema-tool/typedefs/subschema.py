@@ -7,19 +7,25 @@ class Subschema(ABC):
 
     pass
 
+class Embedded(Subschema):
+    """The subschema where the schema is unconditionally embedded."""
+    pass
+
+    def __str__(self) -> str:
+        raise TypeError("Embedded cannot be stringified")
 
 class OneOf(Subschema):
     pass
 
     def __str__(self) -> str:
-        return "<code>oneOf</code>"
+        return "oneOf"
 
 
 class OptOneOf(Subschema):
     pass
 
     def __str__(self) -> str:
-        return "<code>optOneOf</code>"
+        return "optOneOf"
 
 
 @dataclass
@@ -28,7 +34,7 @@ class AnyOf(Subschema):
     maxLength: int
 
     def __str__(self) -> str:
-        return "<code>anyOf</code>"
+        return "anyOf"
 
 
 @dataclass
@@ -37,11 +43,11 @@ class OptAnyOf(Subschema):
     minLength: int = 0
 
     def __str__(self) -> str:
-        return "<code>optAnyOf</code>"
+        return "optAnyOf"
 
 
 class AtMostOneOfEach(Subschema):
     pass
 
     def __str__(self) -> str:
-        return "<code>atMostOneOfEach</code>"
+        return "atMostOneOfEach"

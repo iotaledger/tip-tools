@@ -19,7 +19,7 @@ def block_issuer_key_type_field(type_value: int, name: str, article="a") -> Simp
 
 ed25519_public_key_block_issuer_key_name = "Ed25519 Public Key Block Issuer Key"
 ed25519_public_key_block_issuer_key_description = (
-    "A Block Issuer Key derived from an Ed25519 Public Key."
+    "A Block Issuer Key backed by an Ed25519 Public Key."
 )
 ed25519_public_key_block_issuer_key_fields: List[Field] = [
     block_issuer_key_type_field(

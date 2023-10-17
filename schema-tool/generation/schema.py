@@ -2,6 +2,7 @@ from yattag.doc import Doc
 from yattag.indentation import indent
 from typedefs.field import ComplexField, Schema, SimpleField
 from typedefs.generation_type import GenerationType
+from typedefs.subschema import Embedded
 
 doc, tag, _ = Doc().tagtext()
 # Generates unescaped text.
@@ -69,7 +70,13 @@ def generateSimpleField(field: SimpleField):
 def generateComplexField(field: ComplexField):
     with tag("tr"):
         with tag("td", ("valign", "top")):
-            asis(field.name + " " + str(field.subschema))
+            fieldName = field.name
+            match field.subschema:
+                case Embedded():
+                    pass
+                case _:
+                    fieldName = fieldName + " <code>" + str(field.subschema) + "</code>"
+            asis(fieldName)
         with tag("td", ("colspan", 2)):
             for schema in field.schemas:
                 generateSchemaWithSummary(schema, GenerationType.Embedded)

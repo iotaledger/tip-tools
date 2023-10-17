@@ -18,9 +18,8 @@ from schemas.tagged_data import TaggedData
 from schemas.allotment import Allotment
 from schemas.input import UTXOInput
 from schemas.context_input import BlockIssuanceCreditInput, CommitmentInput, RewardInput
-from typedefs.subschema import AnyOf, OptAnyOf, OptOneOf
-from typedefs.subschema import OneOf
-from typedefs.datatype import UInt16, UInt32, UInt64, UInt8
+from typedefs.subschema import AnyOf, Embedded, OptAnyOf, OptOneOf
+from typedefs.datatype import LengthPrefixedArray, UInt16, UInt32, UInt64, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 
 MIN_INPUTS_COUNT = 1
@@ -55,12 +54,16 @@ transaction_fields: List[Field] = [
         AnyOf(minLength=MIN_INPUTS_COUNT, maxLength=MAX_INPUTS_COUNT),
         [UTXOInput()],
     ),
-    # TODO: Inputs Commitment?
     SimpleField("Allotments Count", UInt16(), "The number of Allotments following."),
     ComplexField(
         "Allotments",
         OptAnyOf(maxLength=MAX_ALLOTMENTS_COUNT),
         [Allotment()],
+    ),
+    SimpleField(
+      "Capabilities",
+      LengthPrefixedArray(UInt8(), minLength=0, maxLength=1),
+      "The capabilities of the transaction.",
     ),
     SimpleField(
         "Payload Length", UInt32(), "The length in bytes of the optional payload."
@@ -93,7 +96,6 @@ def Transaction(
         "A transaction.",
         transaction_fields,
         omitFields=omitFields,
-        tipReference=45,
         detailsOpen=detailsOpen,
     )
 
@@ -104,7 +106,7 @@ AVAILABLE_SCHEMAS.append(Transaction())
 signed_transaction_name = "Signed Transaction"
 signed_transaction_fields: List[Field] = [
     payload_type_field(8, signed_transaction_name),
-    ComplexField("Transaction", OneOf(), [Transaction(detailsOpen=True)]),
+    ComplexField("Transaction", Embedded(), [Transaction(detailsOpen=True)]),
     SimpleField("Unlocks Count", UInt16(), "The number of unlocks following."),
     ComplexField(
         "Unlocks",
