@@ -106,33 +106,32 @@ epoch_nearing_threshold = SimpleField(
 storage_cost = SimpleField(
     "Storage Cost",
     UInt64(),
-    "Storage Cost defines the number of IOTA tokens required per unit of storage score.",
+    "Defines the number of IOTA tokens required per unit of storage score.",
 )
 storage_score_factor_data = SimpleField(
     "Storage Score Factor Data",
     UInt8(),
-    "Storage Score Factor Data defines the factor to be used for data only fields.",
+    "Defines the factor to be used for data only fields.",
 )
 storage_score_offset_output = SimpleField(
     "Storage Score Offset Output",
     UInt64(),
-    "Storage Score Offset Output defines the offset to be used for key/lookup generating fields.",
+    "Defines the offset to be used for key/lookup generating fields.",
 )
-storage_score_factor_ed25519_block_issuer_key = SimpleField(
-    "Storage Score Ed25519 Block Issuer Key",
+storage_score_offset_ed25519_block_issuer_key = SimpleField(
+    "Storage Score Offset Ed25519 Block Issuer Key",
     UInt64(),
-    "Storage Score Ed25519 Block Issuer Key defines the offset to be used for block issuer feature public keys.",
+    "Defines the offset to be used for Ed25519-based block issuer keys.",
 )
-
 storage_score_offset_staking_feature = SimpleField(
     "Storage Score Offset Staking Feature",
     UInt64(),
-    "Storage Score Offset Staking Feature defines the the offset to be used for staking feature.",
+    "Defines the offset to be used for staking feature.",
 )
 storage_score_offset_delegation = SimpleField(
     "Storage Score Offset Delegation",
     UInt64(),
-    "Storage Score Offset Delegation defines the offset to be used for delegation.",
+    "Defines the offset to be used for delegation.",
 )
 
 RentParameters = ComplexField(
@@ -146,7 +145,7 @@ RentParameters = ComplexField(
                 storage_cost,
                 storage_score_factor_data,
                 storage_score_offset_output,
-                storage_score_factor_ed25519_block_issuer_key,
+                storage_score_offset_ed25519_block_issuer_key,
                 storage_score_offset_staking_feature,
                 storage_score_offset_delegation,
             ],
