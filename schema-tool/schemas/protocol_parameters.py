@@ -62,7 +62,7 @@ staking_unbonding_period = SimpleField(
 
 validation_blocks_per_slot = SimpleField(
     "Validation Blocks Per Slot",
-    UInt16(),
+    UInt8(),
     "Validation Blocks Per Slot is the number of validation blocks that each validator should issue each slot.",
 )
 
@@ -197,12 +197,12 @@ signature_ed25519 = SimpleField(
 )
 
 WorkScoreParameters = ComplexField(
-    "Work Score Structure",
+    "Work Score Parameters",
     OneOf(),
     [
         Schema(
-            "Work Score Structure",
-            "Work Score Structure defines the work score structure used by a given node/network.",
+            "Work Score Parameters",
+            "Work Score Parameters defines the work score structure used by a given node/network.",
             [
                 data_byte,
                 block,
@@ -256,12 +256,12 @@ decay_factors_epochs_sum_exponent = SimpleField(
 )
 
 ManaParameters = ComplexField(
-    "Mana Structure",
+    "Mana Parameters",
     OneOf(),
     [
         Schema(
-            "Mana Structure",
-            "Mana Structure defines the parameters used by mana calculation.",
+            "Mana Parameters",
+            "Mana Parameters defines the parameters used by mana calculation.",
             [
                 bits_count,
                 generation_rate,
@@ -371,12 +371,6 @@ VersionSignaling = ComplexField(
 )
 
 # rewards parameters
-
-reward_validation_blocks_per_slot = SimpleField(
-    "Validation Blocks Per Slot",
-    UInt8(),
-    "The number of validation blocks that should be issued by a selected validator per slot during its epoch duties.",
-)
 profit_margin_exponent = SimpleField(
     "Profit Margin Exponent",
     UInt8(),
@@ -416,7 +410,6 @@ RewardsParameters = ComplexField(
             "Rewards Parameters",
             "Rewards Parameters defines the parameters that are used to calculate Mana rewards.",
             [
-                reward_validation_blocks_per_slot,
                 profit_margin_exponent,
                 bootstrapping_duration,
                 mana_share_coefficient,
