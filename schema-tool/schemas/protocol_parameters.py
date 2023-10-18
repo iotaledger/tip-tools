@@ -102,45 +102,45 @@ epoch_nearing_threshold = SimpleField(
     "Epoch Nearing Threshold is used by the epoch orchestrator to detect the slot that should trigger a new committee selection for the next and upcoming epoch.",
 )
 
-# Rent Parameters
+# Storage Score Parameters
 storage_cost = SimpleField(
     "Storage Cost",
     UInt64(),
     "Defines the number of IOTA tokens required per unit of storage score.",
 )
 storage_score_factor_data = SimpleField(
-    "Storage Score Factor Data",
+    "Factor Data",
     UInt8(),
     "Defines the factor to be used for data only fields.",
 )
 storage_score_offset_output = SimpleField(
-    "Storage Score Offset Output",
+    "Offset Output",
     UInt64(),
     "Defines the offset to be used for key/lookup generating fields.",
 )
 storage_score_offset_ed25519_block_issuer_key = SimpleField(
-    "Storage Score Offset Ed25519 Block Issuer Key",
+    "Offset Ed25519 Block Issuer Key",
     UInt64(),
     "Defines the offset to be used for Ed25519-based block issuer keys.",
 )
 storage_score_offset_staking_feature = SimpleField(
-    "Storage Score Offset Staking Feature",
+    "Offset Staking Feature",
     UInt64(),
     "Defines the offset to be used for staking feature.",
 )
 storage_score_offset_delegation = SimpleField(
-    "Storage Score Offset Delegation",
+    "Offset Delegation",
     UInt64(),
     "Defines the offset to be used for delegation.",
 )
 
-RentParameters = ComplexField(
-    "Rent Parameters",
+StorageScoreParameters = ComplexField(
+    "Storage Score Parameters",
     OneOf(),
     [
         Schema(
-            "Rent Parameters",
-            "Rent Parameters defines the Rent Parameters used by a given node/network.",
+            "Storage Score Parameters",
+            "Storage Score Parameters defines the Storage Score Parameters used by a given node/network.",
             [
                 storage_cost,
                 storage_score_factor_data,
@@ -428,7 +428,7 @@ protocol_parameters_fields: List[Field] = [
     version,
     network_name,
     bech32HRP,
-    RentParameters,
+    StorageScoreParameters,
     WorkScoreParameters,
     token_supply,
     genesis_unix_timestamp,
