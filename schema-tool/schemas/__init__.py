@@ -17,4 +17,5 @@ from .signature import *
 from .protocol_parameters import *
 from .transaction import *
 from .input import *
+from .output_id_proof import *
 from .tagged_data import *
