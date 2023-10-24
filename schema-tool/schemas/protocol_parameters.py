@@ -108,27 +108,27 @@ storage_cost = SimpleField(
     UInt64(),
     "Defines the number of IOTA tokens required per unit of storage score.",
 )
-storage_score_factor_data = SimpleField(
+factor_data = SimpleField(
     "Factor Data",
     UInt8(),
     "Defines the factor to be used for data only fields.",
 )
-storage_score_offset_output = SimpleField(
-    "Offset Output",
+offset_output_overhead = SimpleField(
+    "Offset Output Overhead",
     UInt64(),
-    "Defines the offset to be used for key/lookup generating fields.",
+    "Defines the offset to be applied to all outputs for the overhead of handling them in storage.",
 )
-storage_score_offset_ed25519_block_issuer_key = SimpleField(
+offset_ed25519_block_issuer_key = SimpleField(
     "Offset Ed25519 Block Issuer Key",
     UInt64(),
     "Defines the offset to be used for Ed25519-based block issuer keys.",
 )
-storage_score_offset_staking_feature = SimpleField(
+offset_staking_feature = SimpleField(
     "Offset Staking Feature",
     UInt64(),
     "Defines the offset to be used for staking feature.",
 )
-storage_score_offset_delegation = SimpleField(
+offset_delegation = SimpleField(
     "Offset Delegation",
     UInt64(),
     "Defines the offset to be used for delegation.",
@@ -143,11 +143,11 @@ StorageScoreParameters = ComplexField(
             "Storage Score Parameters defines the Storage Score Parameters used by a given node/network.",
             [
                 storage_cost,
-                storage_score_factor_data,
-                storage_score_offset_output,
-                storage_score_offset_ed25519_block_issuer_key,
-                storage_score_offset_staking_feature,
-                storage_score_offset_delegation,
+                factor_data,
+                offset_output_overhead,
+                offset_ed25519_block_issuer_key,
+                offset_staking_feature,
+                offset_delegation,
             ],
             detailsOpen=True,
         )
@@ -244,13 +244,13 @@ decay_factors_exponent = SimpleField(
     UInt8(),
     "Decay Factors Exponent is the scaling of ManaDecayFactors expressed as an exponent of 2.",
 )
-decay_factors_epochs_sum = SimpleField(
-    "Decay Factors Epochs Sum",
+decay_factor_epochs_sum = SimpleField(
+    "Decay Factor Epochs Sum",
     UInt32(),
     "Decay Factor Epochs Sum is an integer approximation of the sum of decay over epochs.",
 )
-decay_factors_epochs_sum_exponent = SimpleField(
-    "Decay Factors Epochs Sum Exponent",
+decay_factor_epochs_sum_exponent = SimpleField(
+    "Decay Factor Epochs Sum Exponent",
     UInt8(),
     "Decay Factor Epochs Sum Exponent is the scaling of Decay Factor Epochs Sum expressed as an exponent of 2.",
 )
@@ -268,8 +268,8 @@ ManaParameters = ComplexField(
                 generation_rate_exponent,
                 decay_factors,
                 decay_factors_exponent,
-                decay_factors_epochs_sum,
-                decay_factors_epochs_sum_exponent,
+                decay_factor_epochs_sum,
+                decay_factor_epochs_sum_exponent,
             ],
             detailsOpen=True,
         )
