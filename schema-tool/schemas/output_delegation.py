@@ -12,7 +12,7 @@ from schemas.unlock_condition import (
 )
 
 name = "Delegation Output"
-summary = "Describes a Delegation Output, which delegates its contained IOTA tokens to a validator."
+summary = "Describes a Delegation Output, which delegates its contained IOTA coins to a validator."
 amount = copy.deepcopy(AmountField)
 amount.deposit_weight = DepositWeight.Delegation
 

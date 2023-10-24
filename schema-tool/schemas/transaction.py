@@ -91,7 +91,7 @@ def Transaction(
 ) -> Schema:
     return Schema(
         transaction_name,
-        "A transaction.",
+        "A transaction without its unlocks.",
         transaction_fields,
         omitFields=omitFields,
         detailsOpen=detailsOpen,
