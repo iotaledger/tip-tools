@@ -14,18 +14,20 @@ import (
 	"github.com/iotaledger/iota.go/v4/builder"
 	"github.com/iotaledger/iota.go/v4/hexutil"
 	"github.com/iotaledger/iota.go/v4/tpkg"
+	loo "github.com/samber/lo"
 )
 
 const (
 	// TestTokenSupply is a test token supply constant.
-	TestTokenSupply        = 2_779_530_283_277_761
-	ProtocolParameters     = "Protocol Parameters"
-	Commitment             = "Commitment"
-	Transaction            = "Transaction"
-	TransactionBasicBlock  = "Transaction Basic Block"
-	TaggedDataBasicBlock   = "TaggedData Basic Block"
-	ValidationBlock        = "Validation Block"
-	TestVectorMultiAddress = "Multi Address"
+	TestTokenSupply       = 2_779_530_283_277_761
+	ProtocolParameters    = "Protocol Parameters"
+	Commitment            = "Commitment"
+	Transaction           = "Transaction"
+	TransactionBasicBlock = "Transaction Basic Block"
+	TaggedDataBasicBlock  = "TaggedData Basic Block"
+	ValidationBlock       = "Validation Block"
+	MultiAddress          = "Multi Address"
+	OutputIdProof         = "Output ID Proof"
 )
 
 var (
@@ -46,7 +48,8 @@ var (
 		TransactionBasicBlock,
 		TaggedDataBasicBlock,
 		ValidationBlock,
-		TestVectorMultiAddress,
+		MultiAddress,
+		OutputIdProof,
 	}
 )
 
@@ -69,8 +72,10 @@ func main() {
 		basicBlockTaggedDataExample()
 	case ValidationBlock:
 		validationBlockExample()
-	case TestVectorMultiAddress:
+	case MultiAddress:
 		multiAddressTestVector()
+	case OutputIdProof:
+		outputIdProof()
 	default:
 		fmt.Println("Usage: go run main.go \"[object name]\"")
 		fmt.Println("Supported object:")
@@ -231,6 +236,101 @@ func multiAddressTestVector() {
 	fmt.Printf("%s\n\n", addrRef.Bech32(iotago.PrefixMainnet))
 }
 
+func outputIdProof() {
+	type outputIDProofExample struct {
+		tx *iotago.Transaction
+	}
+
+	OneMi := iotago.BaseToken(1_000_000)
+	inputIDs := tpkg.RandOutputIDs(1)
+
+	singleOutput := outputIDProofExample{
+		tx: &iotago.Transaction{
+			API: tpkg.TestAPI,
+			TransactionEssence: &iotago.TransactionEssence{
+				CreationSlot: tpkg.RandSlot(),
+				NetworkID:    tpkg.TestNetworkID,
+				Inputs:       inputIDs.UTXOInputs(),
+				Capabilities: iotago.TransactionCapabilitiesBitMask{},
+			},
+			Outputs: loo.RepeatBy(1, func(_ int) iotago.TxEssenceOutput {
+				return &iotago.BasicOutput{
+					Amount: OneMi,
+					Conditions: iotago.BasicOutputUnlockConditions{
+						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					},
+				}
+			}),
+		},
+	}
+
+	fiveOutputs := outputIDProofExample{
+		tx: &iotago.Transaction{
+			API: tpkg.TestAPI,
+			TransactionEssence: &iotago.TransactionEssence{
+				CreationSlot: tpkg.RandSlot(),
+				NetworkID:    tpkg.TestNetworkID,
+				Inputs:       inputIDs.UTXOInputs(),
+				Capabilities: iotago.TransactionCapabilitiesBitMask{},
+			},
+			Outputs: loo.RepeatBy(5, func(_ int) iotago.TxEssenceOutput {
+				return &iotago.BasicOutput{
+					Amount: OneMi,
+					Conditions: iotago.BasicOutputUnlockConditions{
+						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					},
+				}
+			}),
+		},
+	}
+
+	manyOutputs := outputIDProofExample{
+		tx: &iotago.Transaction{
+			API: tpkg.TestAPI,
+			TransactionEssence: &iotago.TransactionEssence{
+				CreationSlot: tpkg.RandSlot(),
+				NetworkID:    tpkg.TestNetworkID,
+				Inputs:       inputIDs.UTXOInputs(),
+				Capabilities: iotago.TransactionCapabilitiesBitMask{},
+			},
+			Outputs: loo.RepeatBy(32, func(_ int) iotago.TxEssenceOutput {
+				return &iotago.BasicOutput{
+					Amount: OneMi,
+					Conditions: iotago.BasicOutputUnlockConditions{
+						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
+					},
+				}
+			}),
+		},
+	}
+
+	fmt.Println("============================ SINGLE OUTPUT ==============================")
+
+	singleOutputProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(singleOutput.tx, 0))
+	printBinary("Transaction (1 Output)", singleOutput.tx)
+	printJson("Output ID Proof (Output Index 0)", singleOutputProof)
+	printBinary("Output ID Proof (Output Index 0)", singleOutputProof)
+
+	fmt.Println("============================ 5 OUTPUTS ==============================")
+
+	fiveOutputsProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(fiveOutputs.tx, 2))
+	printBinary("Transaction (5 Outputs)", manyOutputs.tx)
+	printJson("Output ID Proof (Output Index 2)", fiveOutputsProof)
+	printBinary("Output ID Proof (Output Index 2)", fiveOutputsProof)
+
+	fmt.Println("============================ 32 OUTPUTS ==============================")
+
+	manyOutputsProof0 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx, 0))
+	printBinary("Transaction (32 Outputs)", manyOutputs.tx)
+	printJson("Output ID Proof (Output Index 0)", manyOutputsProof0)
+	printBinary("Output ID Proof (Output Index 0)", manyOutputsProof0)
+
+	manyOutputsProof28 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx, 28))
+	printJson("Output ID Proof (Output Index 28)", manyOutputsProof28)
+	printBinary("Output ID Proof (Output Index 28)", manyOutputsProof28)
+
+}
+
 func prettier(jsonBytes []byte) string {
 	var out bytes.Buffer
 	json.Indent(&out, jsonBytes, "", "  ")
@@ -242,12 +342,20 @@ func jsonify(obj any) string {
 	return prettier(lo.PanicOnErr(api.JSONEncode(obj)))
 }
 
-func printIdentifierTestVector(name string, obj any, id string) {
-	fmt.Printf("%s (json-encoded):\n\n```json\n%s\n```\n\n", name, jsonify(obj))
-	fmt.Printf("%s (binary-encoded):\n\n```\n%s\n```\n\n", name, hexify(obj))
-	fmt.Printf("%s ID:\n\n```\n%s\n```\n", name, id)
-}
-
 func hexify(obj any) string {
 	return hexutil.EncodeHex(lo.PanicOnErr(api.Encode(obj)))
+}
+
+func printJson(name string, obj any) {
+	fmt.Printf("%s (json-encoded):\n\n```json\n%s\n```\n\n", name, jsonify(obj))
+}
+
+func printBinary(name string, obj any) {
+	fmt.Printf("%s (binary-encoded):\n\n```\n%s\n```\n\n", name, hexify(obj))
+}
+
+func printIdentifierTestVector(name string, obj any, id string) {
+	printJson(name, obj)
+	printBinary(name, obj)
+	fmt.Printf("%s ID:\n\n```\n%s\n```\n", name, id)
 }
