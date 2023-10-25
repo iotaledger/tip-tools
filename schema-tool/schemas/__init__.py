@@ -18,4 +18,5 @@ from .protocol_parameters import *
 from .transaction import *
 from .input import *
 from .output_id_proof import *
+from .merkle_tree import *
 from .tagged_data import *
