@@ -15,7 +15,6 @@ output_commitment_proof = ComplexField(
     OneOf(),
     [
         Node(),
-        LeafHash(),
         ValueHash(),
     ],
 )

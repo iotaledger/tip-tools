@@ -60,7 +60,7 @@ AVAILABLE_SCHEMAS.append(ValueHash())
 
 node_name = "Node"
 node_description = (
-    "Contains the hash of the value for which the proof is being computed."
+    "A merkle tree node that contains two child components."
 )
 # Used to avoid having to recursively define the type.
 node_dummy_schema = Schema(
@@ -86,7 +86,7 @@ def Node(
 ) -> Schema:
     node = Schema(
         node_name,
-        "Contains the hash of the value for which the proof is being computed.",
+        node_description,
         node_fields,
         tipReference=45,
         omitFields=omitFields,
