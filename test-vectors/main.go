@@ -28,6 +28,7 @@ const (
 	ValidationBlock       = "Validation Block"
 	MultiAddress          = "Multi Address"
 	OutputIdProof         = "Output ID Proof"
+	RestrictedAddress     = "Restricted Address"
 )
 
 var (
@@ -50,6 +51,7 @@ var (
 		ValidationBlock,
 		MultiAddress,
 		OutputIdProof,
+		RestrictedAddress,
 	}
 )
 
@@ -76,6 +78,8 @@ func main() {
 		multiAddressTestVector()
 	case OutputIdProof:
 		outputIdProof()
+	case RestrictedAddress:
+		restrictedAddresses()
 	default:
 		fmt.Println("Usage: go run main.go \"[object name]\"")
 		fmt.Println("Supported object:")
@@ -328,7 +332,69 @@ func outputIdProof() {
 	manyOutputsProof28 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx, 28))
 	printJson("Output ID Proof (Output Index 28)", manyOutputsProof28)
 	printBinary("Output ID Proof (Output Index 28)", manyOutputsProof28)
+}
 
+func restrictedAddresses() {
+	ed25519PubKey := lo.PanicOnErr(hexutil.DecodeHex("0x6f1581709bb7b1ef030d210db18e3b0ba1c776fba65d8cdaad05415142d189f8"))
+
+	type NamedAddress struct  {
+		name string
+		address iotago.Address
+	}
+
+	namedAddresses := []NamedAddress{
+		{
+			name: "Ed25519 Address",
+			address: iotago.Ed25519AddressFromPubKey(ed25519PubKey),
+		},
+		{
+			name: "Account Address",
+			address: tpkg.RandAccountAddress(),
+		},
+		{
+			name: "NFT Address",
+			address: tpkg.RandNFTAddress(),
+		},
+	}
+
+	capabilities := []iotago.AddressCapabilitiesBitMask{
+		iotago.AddressCapabilitiesBitMaskWithCapabilities(),
+		iotago.AddressCapabilitiesBitMaskWithCapabilities(iotago.WithAddressCanReceiveAnything()),
+		iotago.AddressCapabilitiesBitMaskWithCapabilities(iotago.WithAddressCanReceiveNativeTokens(true)),
+	}
+
+	for _, namedAddress := range namedAddresses {
+		printAddress(namedAddress.name, "Plain", namedAddress.address)
+
+		for i, capability := range capabilities {
+			info := ""
+			switch i {
+			case 0:
+				info = "Every Capability Disallowed"
+			case 1:
+				info = "Every Capability Allowed"
+			case 2:
+				info = "Can receive Native Tokens"
+			}
+
+			restrictedAddress := iotago.RestrictedAddress{
+				Address:             namedAddress.address,
+				AllowedCapabilities: capability,
+			}
+
+			printAddress(fmt.Sprintf("Restricted %s", namedAddress.name), info, &restrictedAddress)
+		}
+	}
+}
+
+func printAddress(name string, info string, addr iotago.Address) {
+	binaryLength := len(lo.PanicOnErr(api.Encode(addr)))
+	hex := hexify(addr)
+	bech32 := addr.Bech32(iotago.PrefixMainnet)
+
+	fmt.Printf("- **%s (%s)**\n", name, info)
+	fmt.Printf("  - Hex-encoded binary serialization (%d bytes): `%s`\n", binaryLength, hex)
+	fmt.Printf("  - Bech32 string: `%s`\n", bech32)
 }
 
 func prettier(jsonBytes []byte) string {
