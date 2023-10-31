@@ -29,9 +29,8 @@ def TaggedData(
 ) -> Schema:
     return Schema(
         tagged_data_name,
-        "Data with optional tag.",
+        "Data with an optional tag. It is defined in <a href='../TIP-0023/tip-0023.md#specification'>TIP-23 (Specification)</a> with the exception of the type value, which must be set to <b>value 0</b> to be compatible with this TIP.",
         tagged_data_fields,
-        tipReference=TipReference(23, "specification"),
         omitFields=omitFields,
     )
 
