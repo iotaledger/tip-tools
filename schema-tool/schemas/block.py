@@ -153,7 +153,7 @@ def ValidationBlockBody(
         validation_block_body_name,
         "The validation block body.",
         [
-            block_body_type(1, basic_block_body_name),
+            block_body_type(1, validation_block_body_name),
             SimpleField(
                 "Strong Parents Count",
                 UInt8(),
