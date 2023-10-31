@@ -16,7 +16,7 @@ from schemas.unlock_condition import UnlockConditionsCountField
 from schemas.unlock_condition import AddressUnlockCondition
 
 account_name = "Account Output"
-account_summary = "Describes an account in the ledger that can be controlled by the state and governance controllers."
+account_summary = "Describes an account in the ledger which can be used to issue blocks or stake for validation."
 account_id = SimpleField(
     "Account ID",
     ByteArray(32),

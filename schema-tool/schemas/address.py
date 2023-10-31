@@ -122,7 +122,7 @@ address_implicit_account_creation_pubkeyhash = SimpleField(
     "The raw bytes of the Implicit Account Creation Address which is the BLAKE2b-256 hash of the Ed25519 public key.",
 )
 address_implicit_account_creation_fields: List[Field] = [
-    address_type_field(24, address_implicit_account_creation_name, article="an"),
+    address_type_field(32, address_implicit_account_creation_name, article="an"),
     address_implicit_account_creation_pubkeyhash,
 ]
 
@@ -173,7 +173,7 @@ address_multi_threshold = SimpleField(
     "The threshold that needs to be reached by the unlocked addresses in order to unlock the Multi Address.",
 )
 address_multi_fields: List[Field] = [
-    address_type_field(32, address_multi_name, article="a"),
+    address_type_field(40, address_multi_name, article="a"),
     address_multi_address_count,
     address_multi_addresses,
     address_multi_threshold,
@@ -214,7 +214,7 @@ address_restricted_nested_addresses = ComplexField(
     ],
 )
 address_restricted_fields: List[Field] = [
-    address_type_field(40, address_restricted_name, article="a"),
+    address_type_field(48, address_restricted_name, article="a"),
     address_restricted_nested_addresses,
     address_restricted_capabilities,
 ]

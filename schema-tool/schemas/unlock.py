@@ -93,7 +93,7 @@ AVAILABLE_SCHEMAS.append(AccountUnlock())
 
 nft_unlock_name = "NFT Unlock"
 nft_unlock_fields: List[Field] = [
-    unlock_type_field(3, nft_unlock_name, article="an"),
+    unlock_type_field(4, nft_unlock_name, article="an"),
     SimpleField(
         "NFT Reference Unlock Index",
         UInt16(),
@@ -120,7 +120,7 @@ AVAILABLE_SCHEMAS.append(NFTUnlock())
 
 empty_unlock_name = "Empty Unlock"
 empty_unlock_fields: List[Field] = [
-    unlock_type_field(5, empty_unlock_name, article="an"),
+    unlock_type_field(6, empty_unlock_name, article="an"),
 ]
 
 
@@ -142,7 +142,7 @@ AVAILABLE_SCHEMAS.append(EmptyUnlock())
 
 multi_unlock_name = "Multi Unlock"
 multi_unlock_fields: List[Field] = [
-    unlock_type_field(4, multi_unlock_name),
+    unlock_type_field(5, multi_unlock_name),
     SimpleField("Unlocks Count", UInt8(), "The number of unlocks following."),
     ComplexField(
         "Unlocks",
