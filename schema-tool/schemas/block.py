@@ -192,7 +192,7 @@ def ValidationBlockBody(
             ),
             SimpleField(
                 "Protocol Parameters Hash",
-                UInt8(),
+                ByteArray(32),
                 "The hash of the protocol parameters for the Highest Supported Version.",
             ),
         ],
