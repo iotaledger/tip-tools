@@ -3,7 +3,7 @@ from typedefs.datatype import ByteArray, UInt64, UInt8
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import Field, Schema, SimpleField
 
-AVAILABLE_SCHEMAS = []
+AVAILABLE_SCHEMAS: List[Schema] = []
 
 
 def payload_type_field(type_value: int, name: str, article="a") -> SimpleField:
