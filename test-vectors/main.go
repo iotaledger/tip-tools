@@ -90,12 +90,7 @@ func main() {
 }
 
 func protocolParameters() {
-	jp, _ := api.JSONEncode(api.ProtocolParameters())
-	fmt.Printf("%s\n", prettier(jp))
-
-	b, _ := api.Encode(api.ProtocolParameters())
-	fmt.Println(b)
-	fmt.Printf("\nProtocol Parameters Hash: %s\n\n", lo.Return1(api.ProtocolParameters().Hash()).ToHex())
+	printIdentifierTestVector("Protocol Parameters", api.ProtocolParameters(), lo.Return1(api.ProtocolParameters().Hash()).ToHex())
 }
 
 func commitmentExample() {
@@ -182,25 +177,25 @@ func basicBlockTxExample() {
 		tpkg.WithAllotmentCount(1),
 	))
 	basicBlock.Payload = signedTx
-	block := tpkg.RandProtocolBlock(basicBlock, api, 100)
-	block.IssuingTime = genesisTimestamp.Add(12 * time.Second)
+	block := tpkg.RandBlock(basicBlock, api, 100)
+	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
 
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func basicBlockTaggedDataExample() {
 	basicBlock := tpkg.RandBasicBlock(api, iotago.PayloadTaggedData)
-	block := tpkg.RandProtocolBlock(basicBlock, api, 100)
-	block.IssuingTime = genesisTimestamp.Add(12 * time.Second)
+	block := tpkg.RandBlock(basicBlock, api, 100)
+	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
 
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func validationBlockExample() {
 	basicBlock := tpkg.RandValidationBlock(api)
-	block := tpkg.RandProtocolBlock(basicBlock, api, 100)
-	block.IssuingTime = genesisTimestamp.Add(12 * time.Second)
-	block.Block.(*iotago.ValidationBlock).ProtocolParametersHash = lo.Return1(api.ProtocolParameters().Hash())
+	block := tpkg.RandBlock(basicBlock, api, 100)
+	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
+	block.Body.(*iotago.ValidationBlockBody).ProtocolParametersHash = lo.Return1(api.ProtocolParameters().Hash())
 
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
@@ -337,22 +332,22 @@ func outputIdProof() {
 func restrictedAddresses() {
 	ed25519PubKey := lo.PanicOnErr(hexutil.DecodeHex("0x6f1581709bb7b1ef030d210db18e3b0ba1c776fba65d8cdaad05415142d189f8"))
 
-	type NamedAddress struct  {
-		name string
+	type NamedAddress struct {
+		name    string
 		address iotago.Address
 	}
 
 	namedAddresses := []NamedAddress{
 		{
-			name: "Ed25519 Address",
+			name:    "Ed25519 Address",
 			address: iotago.Ed25519AddressFromPubKey(ed25519PubKey),
 		},
 		{
-			name: "Account Address",
+			name:    "Account Address",
 			address: tpkg.RandAccountAddress(),
 		},
 		{
-			name: "NFT Address",
+			name:    "NFT Address",
 			address: tpkg.RandNFTAddress(),
 		},
 	}

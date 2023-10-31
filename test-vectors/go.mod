@@ -1,11 +1,11 @@
-module github.com/iotaledger/tip-tools/serialization-example
+module github.com/iotaledger/tip-tools/test-vectors
 
 go 1.21
 
 require (
 	github.com/iotaledger/hive.go/crypto v0.0.0-20231024193930-47c6046e38a8
 	github.com/iotaledger/hive.go/lo v0.0.0-20231024193930-47c6046e38a8
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231026154111-efd63ff4f03d
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231030085047-c52290be6379
 	github.com/samber/lo v1.38.1
 )
 
