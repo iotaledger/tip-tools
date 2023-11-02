@@ -41,7 +41,6 @@ def Ed25519PublicKeyBlockIssuerKey(
         ed25519_public_key_block_issuer_key_name,
         ed25519_public_key_block_issuer_key_description,
         ed25519_public_key_block_issuer_key_fields,
-        tipReference=42,
         omitFields=omitFields,
     )
 
