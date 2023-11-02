@@ -7,7 +7,7 @@ from schemas.feature import (
     SenderFeature,
     TagFeature,
 )
-from schemas.output import output_type_field
+from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from typedefs.datatype import ByteArray
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -59,7 +59,7 @@ nft_immutable_features = ComplexField(
 )
 
 nft_fields: List[Field] = [
-    output_type_field(3, nft_name),
+    output_type_field(OutputType.Nft, nft_name),
     AmountField,
     ManaField,
     nft_id,

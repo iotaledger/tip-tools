@@ -4,6 +4,7 @@ from typedefs.datatype import UInt32, UInt64, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from schemas.address import (
     AccountAddress,
+    AnchorAddress,
     Ed25519Address,
     ImplicitAccountCreationAddress,
     MultiAddress,
@@ -29,6 +30,7 @@ regular_addresses_plus_multi_and_restricted: List[Schema] = [
     Ed25519Address(omitFields=True),
     AccountAddress(omitFields=True),
     NftAddress(omitFields=True),
+    AnchorAddress(omitFields=True),
     MultiAddress(omitFields=True),
     RestrictedAddress(omitFields=True),
 ]
@@ -37,6 +39,7 @@ regular_addresses_plus_multi_and_restricted_and_implicit_account: List[Schema] =
     Ed25519Address(omitFields=True),
     AccountAddress(omitFields=True),
     NftAddress(omitFields=True),
+    AnchorAddress(omitFields=True),
     MultiAddress(omitFields=True),
     RestrictedAddress(omitFields=True),
     ImplicitAccountCreationAddress(omitFields=True),
@@ -176,7 +179,7 @@ AVAILABLE_SCHEMAS.append(ExpirationUnlockCondition())
 # State Controller Address Unlock Condition
 
 state_controller_unlock_condition_name = "State Controller Address Unlock Condition"
-state_controller_unlock_condition_description = "Defines the State Controller Address that owns this output. It can unlock the output with the proper <i>Unlock</i> in a transaction that state transitions the account output."
+state_controller_unlock_condition_description = "Defines the State Controller Address that owns this output. It can unlock the output with the proper <i>Unlock</i> in a transaction that state transitions the anchor output."
 state_controller_unlock_condition_fields: List[Field] = [
     unlock_condition_type_field(4, state_controller_unlock_condition_name),
     ComplexField("Address", OneOf(), regular_addresses_plus_multi_and_restricted),
@@ -191,7 +194,7 @@ def StateControllerUnlockCondition(
         state_controller_unlock_condition_description,
         state_controller_unlock_condition_fields,
         mandatory=True,
-        tipReference=42,
+        tipReference=54,
         omitFields=omitFields,
     )
 
@@ -201,7 +204,7 @@ AVAILABLE_SCHEMAS.append(StateControllerUnlockCondition())
 # Governor Address Unlock Condition
 
 governor_unlock_condition_name = "Governor Address Unlock Condition"
-governor_unlock_condition_description = "Defines the Governor Address that owns this output. It can unlock the output with the proper <i>Unlock</i> in a transaction that governance transitions the account output."
+governor_unlock_condition_description = "Defines the Governor Address that owns this output. It can unlock the output with the proper <i>Unlock</i> in a transaction that governance transitions the anchor output."
 governor_unlock_condition_fields: List[Field] = [
     unlock_condition_type_field(5, governor_unlock_condition_name),
     ComplexField("Address", OneOf(), regular_addresses_plus_multi_and_restricted),
@@ -216,7 +219,7 @@ def GovernorUnlockCondition(
         governor_unlock_condition_description,
         governor_unlock_condition_fields,
         mandatory=True,
-        tipReference=42,
+        tipReference=54,
         omitFields=omitFields,
     )
 

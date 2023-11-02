@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from schemas.common import AVAILABLE_SCHEMAS
@@ -14,11 +15,23 @@ MIN_MULTI_ADDRESSES = 1
 MAX_MULTI_ADDRESSES = 10
 
 
-def address_type_field(type_value: int, name: str, article="a") -> SimpleField:
+class AddressType(Enum):
+    Ed25519 = 0
+    Account = 8
+    Nft = 16
+    Anchor = 24
+    ImplicitAccountCreation = 32
+    Multi = 40
+    Restricted = 48
+
+
+def address_type_field(
+    address_type: AddressType, name: str, article="a"
+) -> SimpleField:
     return SimpleField(
         "Address Type",
         UInt8(),
-        f"Set to <strong>value {type_value}</strong> to denote {article} <i>{name}</i>.",
+        f"Set to <strong>value {address_type.value}</strong> to denote {article} <i>{name}</i>.",
     )
 
 
@@ -32,7 +45,7 @@ address_ed25519_pubkeyhash = SimpleField(
     "The raw bytes of the Ed25519 address which is the BLAKE2b-256 hash of the Ed25519 public key.",
 )
 address_ed25519_fields: List[Field] = [
-    address_type_field(0, address_ed25519_name, article="an"),
+    address_type_field(AddressType.Ed25519, address_ed25519_name, article="an"),
     address_ed25519_pubkeyhash,
 ]
 
@@ -62,7 +75,7 @@ address_account_id = SimpleField(
     "The raw bytes of the <i>Account ID</i> which is the BLAKE2b-256 hash of the Output ID that created it.",
 )
 address_account_fields: List[Field] = [
-    address_type_field(8, address_account_name, article="an"),
+    address_type_field(AddressType.Account, address_account_name, article="an"),
     address_account_id,
 ]
 
@@ -92,7 +105,7 @@ address_nft_id = SimpleField(
     "The raw bytes of the <i>NFT ID</i> which is the BLAKE2b-256 hash of the Output ID that created it.",
 )
 address_nft_fields: List[Field] = [
-    address_type_field(16, address_nft_name, article="an"),
+    address_type_field(AddressType.Nft, address_nft_name, article="an"),
     address_nft_id,
 ]
 
@@ -112,6 +125,36 @@ def NftAddress(
 AVAILABLE_SCHEMAS.append(NftAddress())
 
 
+# Anchor Address
+
+address_anchor_name = "Anchor Address"
+address_anchor_description = "An Address derived from an Anchor ID which can be unlocked by unlocking the corresponding Anchor."
+address_anchor_id = SimpleField(
+    "Anchor ID",
+    ByteArray(32),
+    "The raw bytes of the <i>Anchor ID</i> which is the BLAKE2b-256 hash of the Output ID that created it.",
+)
+address_anchor_fields: List[Field] = [
+    address_type_field(AddressType.Anchor, address_anchor_name, article="an"),
+    address_anchor_id,
+]
+
+
+def AnchorAddress(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        address_anchor_name,
+        address_anchor_description,
+        address_anchor_fields,
+        tipReference=38,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(AnchorAddress())
+
+
 # Implicit Account Creation Address
 
 address_implicit_account_creation_name = "Implicit Account Creation Address"
@@ -122,7 +165,11 @@ address_implicit_account_creation_pubkeyhash = SimpleField(
     "The raw bytes of the Implicit Account Creation Address which is the BLAKE2b-256 hash of the Ed25519 public key.",
 )
 address_implicit_account_creation_fields: List[Field] = [
-    address_type_field(32, address_implicit_account_creation_name, article="an"),
+    address_type_field(
+        AddressType.ImplicitAccountCreation,
+        address_implicit_account_creation_name,
+        article="an",
+    ),
     address_implicit_account_creation_pubkeyhash,
 ]
 
@@ -173,7 +220,7 @@ address_multi_threshold = SimpleField(
     "The threshold that needs to be reached by the unlocked addresses in order to unlock the Multi Address.",
 )
 address_multi_fields: List[Field] = [
-    address_type_field(40, address_multi_name, article="a"),
+    address_type_field(AddressType.Multi, address_multi_name, article="a"),
     address_multi_address_count,
     address_multi_addresses,
     address_multi_threshold,
@@ -214,7 +261,7 @@ address_restricted_nested_addresses = ComplexField(
     ],
 )
 address_restricted_fields: List[Field] = [
-    address_type_field(48, address_restricted_name, article="a"),
+    address_type_field(AddressType.Restricted, address_restricted_name, article="a"),
     address_restricted_nested_addresses,
     address_restricted_capabilities,
 ]

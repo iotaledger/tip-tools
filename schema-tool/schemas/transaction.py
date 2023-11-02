@@ -7,6 +7,7 @@ from schemas.output_delegation import DelegationOutput
 from schemas.output_nft import NftOutput
 from schemas.output_foundry import FoundryOutput
 from schemas.unlock import (
+    AnchorUnlock,
     SignatureUnlock,
     MultiUnlock,
     AccountUnlock,
@@ -113,6 +114,7 @@ signed_transaction_fields: List[Field] = [
             SignatureUnlock(omitFields=True),
             ReferenceUnlock(omitFields=True),
             AccountUnlock(omitFields=True),
+            AnchorUnlock(omitFields=True),
             NFTUnlock(omitFields=True),
             MultiUnlock(omitFields=True),
         ],

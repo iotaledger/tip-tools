@@ -6,7 +6,7 @@ from schemas.feature import (
     SenderFeature,
     TagFeature,
 )
-from schemas.output import output_type_field
+from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from typedefs.field import ComplexField, Field, Schema
 from typedefs.subschema import AtMostOneOfEach
@@ -39,7 +39,7 @@ basic_features = ComplexField(
 )
 
 basic_fields: List[Field] = [
-    output_type_field(0, basic_name),
+    output_type_field(OutputType.Basic, basic_name),
     AmountField,
     ManaField,
     UnlockConditionsCountField,

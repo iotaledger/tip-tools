@@ -5,7 +5,7 @@ from schemas.feature import (
     MetadataFeature,
     NativeTokenFeature,
 )
-from schemas.output import output_type_field
+from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField
 from typedefs.datatype import UInt256, UInt32, UInt8
 from typedefs.field import ComplexField, Field, Schema, SimpleField
@@ -93,7 +93,7 @@ foundry_immutable_features = ComplexField(
 )
 
 foundry_fields: List[Field] = [
-    output_type_field(2, foundry_name),
+    output_type_field(OutputType.Foundry, foundry_name),
     AmountField,
     foundry_serial,
     foundry_token_scheme,

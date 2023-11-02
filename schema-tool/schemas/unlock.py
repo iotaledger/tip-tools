@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 from schemas.common import AVAILABLE_SCHEMAS
 
@@ -8,11 +9,20 @@ from schemas.address import MAX_MULTI_ADDRESSES, MIN_MULTI_ADDRESSES
 from typedefs.subschema import AnyOf, OneOf
 
 
-def unlock_type_field(type_value: int, name: str, article="a") -> SimpleField:
+class UnlockType(Enum):
+    Signature = 0
+    Reference = 1
+    Account = 2
+    Anchor = 3
+    Nft = 4
+    Multi = 5
+    Empty = 6
+
+def unlock_type_field(unlock_type: UnlockType, name: str, article="a") -> SimpleField:
     return SimpleField(
         "Unlock Type",
         UInt8(),
-        f"Set to <strong>value {type_value}</strong> to denote {article} <i>{name}</i>.",
+        f"Set to <strong>value {unlock_type.value}</strong> to denote {article} <i>{name}</i>.",
     )
 
 
@@ -20,7 +30,7 @@ def unlock_type_field(type_value: int, name: str, article="a") -> SimpleField:
 
 signature_unlock_name = "Signature Unlock"
 signature_unlock_fields: List[Field] = [
-    unlock_type_field(0, signature_unlock_name),
+    unlock_type_field(UnlockType.Signature, signature_unlock_name),
     ComplexField("Signature", OneOf(), [Ed25519Signature()]),
 ]
 
@@ -43,7 +53,7 @@ AVAILABLE_SCHEMAS.append(SignatureUnlock())
 
 reference_unlock_name = "Reference Unlock"
 reference_unlock_fields: List[Field] = [
-    unlock_type_field(1, reference_unlock_name),
+    unlock_type_field(UnlockType.Reference, reference_unlock_name),
     SimpleField("Reference", UInt16(), "Represents the index of a previous unlock."),
 ]
 
@@ -66,7 +76,7 @@ AVAILABLE_SCHEMAS.append(ReferenceUnlock())
 
 account_unlock_name = "Account Unlock"
 account_unlock_fields: List[Field] = [
-    unlock_type_field(2, account_unlock_name, article="an"),
+    unlock_type_field(UnlockType.Account, account_unlock_name, article="an"),
     SimpleField(
         "Account Reference Unlock Index",
         UInt16(),
@@ -89,11 +99,38 @@ def AccountUnlock(
 
 AVAILABLE_SCHEMAS.append(AccountUnlock())
 
+# Anchor Unlock
+
+anchor_unlock_name = "Anchor Unlock"
+anchor_unlock_fields: List[Field] = [
+    unlock_type_field(UnlockType.Anchor, anchor_unlock_name, article="an"),
+    SimpleField(
+        "Anchor Reference Unlock Index",
+        UInt16(),
+        "Index of input and unlock corresponding to an Anchor Output.",
+    ),
+]
+
+
+def AnchorUnlock(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        anchor_unlock_name,
+        "Points to the unlock of a consumed Anchor Output.",
+        anchor_unlock_fields,
+        tipReference=54,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(AnchorUnlock())
+
 # NFT Unlock
 
 nft_unlock_name = "NFT Unlock"
 nft_unlock_fields: List[Field] = [
-    unlock_type_field(4, nft_unlock_name, article="an"),
+    unlock_type_field(UnlockType.Nft, nft_unlock_name, article="an"),
     SimpleField(
         "NFT Reference Unlock Index",
         UInt16(),
@@ -120,7 +157,7 @@ AVAILABLE_SCHEMAS.append(NFTUnlock())
 
 empty_unlock_name = "Empty Unlock"
 empty_unlock_fields: List[Field] = [
-    unlock_type_field(6, empty_unlock_name, article="an"),
+    unlock_type_field(UnlockType.Empty, empty_unlock_name, article="an"),
 ]
 
 
@@ -142,7 +179,7 @@ AVAILABLE_SCHEMAS.append(EmptyUnlock())
 
 multi_unlock_name = "Multi Unlock"
 multi_unlock_fields: List[Field] = [
-    unlock_type_field(5, multi_unlock_name),
+    unlock_type_field(UnlockType.Multi, multi_unlock_name),
     SimpleField("Unlocks Count", UInt8(), "The number of unlocks following."),
     ComplexField(
         "Unlocks",
@@ -151,6 +188,7 @@ multi_unlock_fields: List[Field] = [
             SignatureUnlock(omitFields=True),
             ReferenceUnlock(omitFields=True),
             AccountUnlock(omitFields=True),
+            AnchorUnlock(omitFields=True),
             NFTUnlock(omitFields=True),
             EmptyUnlock(omitFields=True),
         ],

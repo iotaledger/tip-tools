@@ -1,6 +1,6 @@
 import copy
 from typing import List
-from schemas.output import output_type_field
+from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField
 from typedefs.datatype import ByteArray, UInt64
 from typedefs.deposit_weight import DepositWeight
@@ -56,7 +56,7 @@ delegation_unlock_conditions = ComplexField(
 )
 
 fields: List[Field] = [
-    output_type_field(4, name, deposit_weight=DepositWeight.Delegation),
+    output_type_field(OutputType.Delegation, name, deposit_weight=DepositWeight.Delegation),
     AmountField,
     delegated_amount,
     delegation_id,

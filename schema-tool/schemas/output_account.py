@@ -9,7 +9,7 @@ from schemas.feature import (
     SenderFeature,
     StakingFeature,
 )
-from schemas.output import output_type_field
+from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
 from typedefs.subschema import AtMostOneOfEach
 from schemas.unlock_condition import UnlockConditionsCountField
@@ -52,7 +52,7 @@ account_immutable_features = ComplexField(
 )
 
 account_fields = [
-    output_type_field(1, account_name, article="an"),
+    output_type_field(OutputType.Account, account_name, article="an"),
     AmountField,
     ManaField,
     account_id,
