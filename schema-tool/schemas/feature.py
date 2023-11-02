@@ -13,6 +13,7 @@ from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from schemas.address import (
     AccountAddress,
+    AnchorAddress,
     Ed25519Address,
     MultiAddress,
     NftAddress,
@@ -62,6 +63,7 @@ sender_feature_sender = ComplexField(
         Ed25519Address(omitFields=True),
         AccountAddress(omitFields=True),
         NftAddress(omitFields=True),
+        AnchorAddress(omitFields=True),
         MultiAddress(omitFields=True),
         RestrictedAddress(omitFields=True),
     ],
@@ -100,6 +102,7 @@ issuer_feature_issuer = ComplexField(
         Ed25519Address(omitFields=True),
         AccountAddress(omitFields=True),
         NftAddress(omitFields=True),
+        AnchorAddress(omitFields=True),
         MultiAddress(omitFields=True),
         RestrictedAddress(omitFields=True),
     ],
