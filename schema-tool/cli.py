@@ -72,14 +72,14 @@ def add_schema_parser(subparsers: argparse._SubParsersAction):
     )
 
     replace_parser.add_argument(
-        schema_name_argument,
-        type=str,
-        help=schema_name_help,
-    )
-    replace_parser.add_argument(
         tips_repo_path_argument,
         type=str,
         help=tips_repo_path_help,
+    )
+    replace_parser.add_argument(
+        schema_name_argument,
+        type=str,
+        help=schema_name_help,
     )
 
     update_parser.add_argument(
