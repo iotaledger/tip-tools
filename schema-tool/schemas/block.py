@@ -161,7 +161,7 @@ def ValidationBlockBody(
             ),
             ComplexField(
                 "Strong Parents",
-                AnyOf(minLength=1, maxLength=8),
+                AnyOf(minLength=1, maxLength=50),
                 [Parent(omitFields=True)],
             ),
             SimpleField(
@@ -170,7 +170,7 @@ def ValidationBlockBody(
                 "The number of blocks following, which are weakly directly approved.",
             ),
             ComplexField(
-                "Weak Parents", OptAnyOf(maxLength=8), [Parent(omitFields=True)]
+                "Weak Parents", OptAnyOf(maxLength=50), [Parent(omitFields=True)]
             ),
             SimpleField(
                 "Shallow Like Parents Count",
@@ -178,12 +178,7 @@ def ValidationBlockBody(
                 "The number of blocks following, which are directly referenced to adjust opinion.",
             ),
             ComplexField(
-                "Shallow Like Parents", OptAnyOf(maxLength=8), [Parent(omitFields=True)]
-            ),
-            SimpleField(
-                "Payload Length",
-                UInt32(),
-                "The length of the following payload in bytes. A length of 0 means no payload will be attached.",
+                "Shallow Like Parents", OptAnyOf(maxLength=50), [Parent(omitFields=True)]
             ),
             SimpleField(
                 "Highest Supported Version",
