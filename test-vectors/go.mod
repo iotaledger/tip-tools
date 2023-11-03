@@ -3,9 +3,9 @@ module github.com/iotaledger/tip-tools/test-vectors
 go 1.21
 
 require (
-	github.com/iotaledger/hive.go/crypto v0.0.0-20231024193930-47c6046e38a8
-	github.com/iotaledger/hive.go/lo v0.0.0-20231024193930-47c6046e38a8
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231030085047-c52290be6379
+	github.com/iotaledger/hive.go/crypto v0.0.0-20231027195901-620bd7470e42
+	github.com/iotaledger/hive.go/lo v0.0.0-20231027195901-620bd7470e42
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231102135316-5d5b735a3d10
 	github.com/samber/lo v1.38.1
 )
 
@@ -16,12 +16,12 @@ require (
 	github.com/ethereum/go-ethereum v1.13.4 // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/iancoleman/orderedmap v0.3.0 // indirect
-	github.com/iotaledger/hive.go/constraints v0.0.0-20231024193930-47c6046e38a8 // indirect
+	github.com/iotaledger/hive.go/constraints v0.0.0-20231027195901-620bd7470e42 // indirect
 	github.com/iotaledger/hive.go/core v1.0.0-rc.3.0.20231019122130-383150822505 // indirect
-	github.com/iotaledger/hive.go/ierrors v0.0.0-20231024193930-47c6046e38a8 // indirect
-	github.com/iotaledger/hive.go/runtime v0.0.0-20231024193930-47c6046e38a8 // indirect
+	github.com/iotaledger/hive.go/ierrors v0.0.0-20231027195901-620bd7470e42 // indirect
+	github.com/iotaledger/hive.go/runtime v0.0.0-20231027195901-620bd7470e42 // indirect
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231019122130-383150822505 // indirect
-	github.com/iotaledger/hive.go/stringify v0.0.0-20231024193930-47c6046e38a8 // indirect
+	github.com/iotaledger/hive.go/stringify v0.0.0-20231027195901-620bd7470e42 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
