@@ -212,6 +212,10 @@ def updateSchemaCommand(
         if schema.tipRef is not None and schema.tipRef.tipNumber == tip_number
     ]
 
+    if len(schemasToReplace) == 0:
+        print(f"No schemas found that are defined in TIP-{tip_number}.")
+        return
+
     replaceSchema(tips_repo_path, tip_number, schemasToReplace)
 
 
