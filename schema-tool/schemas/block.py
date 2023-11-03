@@ -75,7 +75,6 @@ def Parent(
         [
             SimpleField("Block ID", ByteArray(36), "The Block ID of the parent."),
         ],
-        tipReference=46,
         omitFields=omitFields,
     )
 
@@ -101,7 +100,7 @@ def BasicBlockBody(
             ComplexField(
                 "Strong Parents",
                 AnyOf(minLength=1, maxLength=8),
-                [Parent(omitFields=True)],
+                [Parent()],
             ),
             SimpleField(
                 "Weak Parents Count",
@@ -109,7 +108,7 @@ def BasicBlockBody(
                 "The number of blocks following, which are weakly directly approved.",
             ),
             ComplexField(
-                "Weak Parents", OptAnyOf(maxLength=8), [Parent(omitFields=True)]
+                "Weak Parents", OptAnyOf(maxLength=8), [Parent()]
             ),
             SimpleField(
                 "Shallow Like Parents Count",
@@ -117,7 +116,7 @@ def BasicBlockBody(
                 "The number of blocks following, which are directly referenced to adjust opinion.",
             ),
             ComplexField(
-                "Shallow Like Parents", OptAnyOf(maxLength=8), [Parent(omitFields=True)]
+                "Shallow Like Parents", OptAnyOf(maxLength=8), [Parent()]
             ),
             SimpleField(
                 "Payload Length",
@@ -162,7 +161,7 @@ def ValidationBlockBody(
             ComplexField(
                 "Strong Parents",
                 AnyOf(minLength=1, maxLength=50),
-                [Parent(omitFields=True)],
+                [Parent()],
             ),
             SimpleField(
                 "Weak Parents Count",
@@ -170,7 +169,7 @@ def ValidationBlockBody(
                 "The number of blocks following, which are weakly directly approved.",
             ),
             ComplexField(
-                "Weak Parents", OptAnyOf(maxLength=50), [Parent(omitFields=True)]
+                "Weak Parents", OptAnyOf(maxLength=50), [Parent()]
             ),
             SimpleField(
                 "Shallow Like Parents Count",
@@ -178,7 +177,7 @@ def ValidationBlockBody(
                 "The number of blocks following, which are directly referenced to adjust opinion.",
             ),
             ComplexField(
-                "Shallow Like Parents", OptAnyOf(maxLength=50), [Parent(omitFields=True)]
+                "Shallow Like Parents", OptAnyOf(maxLength=50), [Parent()]
             ),
             SimpleField(
                 "Highest Supported Version",

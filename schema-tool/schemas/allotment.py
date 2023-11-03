@@ -28,7 +28,6 @@ def Allotment(
         allotment_name,
         "Allots Mana to the account identified by the contained Account ID.",
         allotment_fields,
-        tipReference=45,
         omitFields=omitFields,
     )
 

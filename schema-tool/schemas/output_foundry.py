@@ -51,7 +51,6 @@ def SimpleTokenScheme(
         simple_token_scheme_name,
         "A Token Scheme which allows for minting and melting Native Tokens up to the maximum supply.",
         simple_token_scheme_fields,
-        tipReference=44,
         omitFields=omitFields,
     )
 
