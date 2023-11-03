@@ -124,7 +124,9 @@ def main():
 
     args = parser.parse_args()
     operation = args.operation
-    schema_operation = args.schema_operation
+    schema_operation = None
+    if hasattr(args, "schema_operation"):
+        schema_operation = args.schema_operation
     args = vars(args)
 
     match operation:
