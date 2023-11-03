@@ -10,7 +10,7 @@ from typing import Optional, Tuple
 # Star import needed for all the structures to be initialized.
 from schemas import *
 from generation.deposit import generateSchemaDeposit
-from generation.schema import GenerationType, generateSchemaWithSummary
+from generation.schema import GenerationType, SchemaGen
 from generation.deposit_test import RunDepositCalculationTests
 
 
@@ -152,7 +152,7 @@ def main():
             parser.print_help()
 
 
-def get_schema(schema_name: str) -> Schema | None:
+def find_schema(schema_name: str) -> Schema | None:
     def find_schema(structure_name):
         for struct in AVAILABLE_SCHEMAS:
             if struct.name == structure_name:
@@ -175,11 +175,11 @@ def generateSchemaCommand(
     generationType: GenerationType,
     dry_run: bool = False,
 ):
-    schema = get_schema(schema_name)
+    schema = find_schema(schema_name)
     if schema is None:
         return
     else:
-        generated: str = generateSchemaWithSummary(schema, generationType)
+        generated: str = SchemaGen().generateSchemaWithSummary(schema, generationType)
         if not dry_run:
             print(generated)
 
@@ -188,15 +188,12 @@ def replaceSchemaCommand(
     schema_name: str,
     tips_repo_path: str,
 ):
-    schema = get_schema(schema_name)
+    schema = find_schema(schema_name)
     if schema is None:
         return
     else:
-        generated: str = generateSchemaWithSummary(schema, GenerationType.Standalone)
         if schema.tipRef is not None:
-            replaceSchema(
-                tips_repo_path, schema.name, schema.tipRef.tipNumber, generated
-            )
+            replaceSchema(tips_repo_path, schema.tipRef.tipNumber, [schema])
         else:
             print("Tip number on schema must be set for replacing.")
 
@@ -207,16 +204,17 @@ def updateSchemaCommand(
 ):
     tip_number: int = int(tip_number_str)
 
-    for schema in AVAILABLE_SCHEMAS:
-        if schema.tipRef is not None and schema.tipRef.tipNumber == tip_number:
-            generated: str = generateSchemaWithSummary(
-                schema, GenerationType.Standalone
-            )
-            replaceSchema(tips_repo_path, schema.name, tip_number, generated)
+    schemasToReplace = [
+        schema
+        for schema in AVAILABLE_SCHEMAS
+        if schema.tipRef is not None and schema.tipRef.tipNumber == tip_number
+    ]
+
+    replaceSchema(tips_repo_path, tip_number, schemasToReplace)
 
 
 def generateDeposit(schema_name: str, dry_run: bool = False):
-    schema = get_schema(schema_name)
+    schema = find_schema(schema_name)
     if schema is None:
         return
     else:
@@ -225,39 +223,55 @@ def generateDeposit(schema_name: str, dry_run: bool = False):
             print(generated)
 
 
-def replaceSchema(tipRepoPath: str, name: str, tip: int, generated: str):
+def replaceSchema(tipRepoPath: str, tip: int, schemas: List[Schema]):
     paddedTipNo = f"{tip:04}"
     tipPath = os.path.join(tipRepoPath, f"tips/TIP-{paddedTipNo}/tip-{paddedTipNo}.md")
 
     if not os.path.exists(tipPath):
         print(
-            f'This schema is defined in TIP-{paddedTipNo}, but path "{tipPath}" does not exist.'
+            f'Cannot update schema(s) in TIP-{paddedTipNo} because path "{tipPath}" does not exist.'
         )
         return
 
     with open(tipPath, "r") as f:
         tip_content = f.read()
 
-    # Match the entire HTML section in which the schema is defined: <details>...</table>.
-    pattern = rf"^<details>\s*<summary>{name}<\/summary>.*?^<\/table>"
+    for schema in schemas:
+        generated: str = SchemaGen().generateSchemaWithSummary(
+            schema, GenerationType.Standalone
+        )
 
-    # - DOTALL so that . also match newlines
-    # - MULTILINE so that ^ matches not just the start of the string but also the start of a line.
-    mat = re.search(pattern, tip_content, flags=re.DOTALL | re.MULTILINE)
+        # Match the entire HTML section in which the schema is defined: <details>...</table>.
+        pattern = rf"^<details>\s*<summary>{schema.name}<\/summary>.*?^<\/table>"
 
-    if mat is None:
-        print(f'Did not find schema "{name}" at the top-level in TIP-{paddedTipNo}.')
-        return
+        # - DOTALL so that . also match newlines
+        # - MULTILINE so that ^ matches not just the start of the string but also the start of a line.
+        mat = re.search(pattern, tip_content, flags=re.DOTALL | re.MULTILINE)
 
-    (start, end) = mat.span()
-    print(f'Replaced schema "{name}" in TIP-{paddedTipNo}.')
+        if mat is None:
+            print(
+                f'Did not find schema "{schema.name}" at the top-level in TIP-{paddedTipNo}.'
+            )
+            continue
 
-    part1 = tip_content[:start]
-    part2 = generated
-    part3 = tip_content[end:]
+        (start, end) = mat.span()
+
+        part1 = tip_content[:start]
+        part2 = generated
+        part3 = tip_content[end:]
+        new_tip_content = part1 + part2 + part3
+
+        schemaIsUpToDate = new_tip_content == tip_content
+
+        tip_content = new_tip_content
+
+        if schemaIsUpToDate:
+            print(f'{schema.name} is up-to-date.')
+        else:
+            print(f'{schema.name} updated.')
 
     with open(tipPath, "w") as f:
-        f.write(part1 + part2 + part3)
+        f.write(tip_content)
 
 
 if __name__ == "__main__":
