@@ -201,6 +201,7 @@ address_multi_nested_addresses = ComplexField(
         Ed25519Address(omitFields=True),
         AccountAddress(omitFields=True),
         NftAddress(omitFields=True),
+        AnchorAddress(omitFields=True),
     ],
 )
 address_weighted = Schema(
