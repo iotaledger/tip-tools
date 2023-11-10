@@ -129,19 +129,40 @@ AVAILABLE_SCHEMAS.append(IssuerFeature())
 
 # Metadata Feature
 
+metadata_entry_fields: List[Field] = [
+    SimpleField(
+        "Key",
+        # Min/Max Length not set. Map defines an overall max byte size.
+        LengthPrefixedArray(UInt8()),
+        "A string which may only consist of ASCII characters. A leading uint8 denotes its length.",
+    ),
+    SimpleField(
+        "Value",
+        # Min/Max Length not set. Map defines an overall max byte size.
+        LengthPrefixedArray(UInt16()),
+        "An array of arbitrary binary data. A leading uint16 denotes its length.",
+    ),
+]
+
+
+metadata_entry = Schema(
+    "Metadata Entry",
+    "A map entry consisting of a string key and an arbitrary byte value.",
+    metadata_entry_fields,
+)
+
 metadata_feature_name = "Metadata Feature"
 metadata_feature_description = (
-    "Defines metadata (arbitrary binary data) that will be stored in the output."
+    "Defines a map of key-value pairs that is stored in the output."
 )
+metadata_entries_count = SimpleField(
+    "Entries Count", UInt8(), "The number of entries in the map."
+)
+metadata_entries = ComplexField("Entries", AnyOf(1, 255), [metadata_entry])
 metadata_feature_fields: List[Field] = [
     feature_type_field(2, metadata_feature_name),
-    SimpleField(
-        "Data",
-        LengthPrefixedArray(
-            UInt16(), minLength=MIN_METADATA_LENGTH, maxLength=MAX_METADATA_LENGTH
-        ),
-        "Binary data. A leading uint16 denotes its length.",
-    ),
+    metadata_entries_count,
+    metadata_entries,
 ]
 
 
@@ -159,12 +180,38 @@ def MetadataFeature(
 
 AVAILABLE_SCHEMAS.append(MetadataFeature())
 
+# State Metadata Feature
+
+state_metadata_feature_name = "State Metadata Feature"
+state_metadata_feature_description = "Defines a map of key-value pairs that is stored in the output, that can only be modified by the State Controller."
+
+state_metadata_feature_fields: List[Field] = [
+    feature_type_field(3, state_metadata_feature_name),
+    metadata_entries_count,
+    metadata_entries,
+]
+
+
+def StateMetadataFeature(
+    omitFields: bool = False,
+) -> Schema:
+    return Schema(
+        state_metadata_feature_name,
+        state_metadata_feature_description,
+        state_metadata_feature_fields,
+        tipReference=42,
+        omitFields=omitFields,
+    )
+
+
+AVAILABLE_SCHEMAS.append(StateMetadataFeature())
+
 # Tag Feature
 
 tag_feature_name = "Tag Feature"
 tag_feature_description = "Defines an indexation tag to which the output can be indexed by additional node plugins."
 tag_feature_fields: List[Field] = [
-    feature_type_field(3, tag_feature_name),
+    feature_type_field(4, tag_feature_name),
     SimpleField(
         "Tag",
         LengthPrefixedArray(UInt8(), minLength=1, maxLength=MAX_TAG_LENGTH),
@@ -202,7 +249,7 @@ native_token_amount = SimpleField(
     "Amount", UInt256(), "Amount of native tokens of the given <i>Token ID</i>."
 )
 native_token_feature_fields: List[Field] = [
-    feature_type_field(4, native_token_feature_name),
+    feature_type_field(5, native_token_feature_name),
     native_token_id,
     native_token_amount,
 ]
@@ -243,7 +290,7 @@ block_issuer_feature_keys = ComplexField(
 )
 
 block_issuer_feature_fields: List[Field] = [
-    feature_type_field(5, block_issuer_feature_name),
+    feature_type_field(6, block_issuer_feature_name),
     block_issuer_feature_expiry_slot,
     block_issuer_feature_keys_count,
     block_issuer_feature_keys,
@@ -269,7 +316,7 @@ AVAILABLE_SCHEMAS.append(BlockIssuerFeature())
 staking_feature_name = "Staking Feature"
 staking_feature_description = "Stakes IOTA coins to become eligible for committee selection, validate the network and receive Mana rewards."
 staking_feature_fields: List[Field] = [
-    feature_type_field(6, staking_feature_name, deposit_weight=DepositWeight.Staking),
+    feature_type_field(7, staking_feature_name, deposit_weight=DepositWeight.Staking),
     SimpleField(
         "Staked Amount",
         UInt64(),
