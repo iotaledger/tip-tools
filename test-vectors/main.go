@@ -36,7 +36,7 @@ var (
 	api              = iotago.V3API(
 		iotago.NewV3ProtocolParameters(
 			iotago.WithNetworkOptions("TestJungle", "tgl"),
-			iotago.WithTimeProviderOptions(genesisTimestamp.Unix(), 10, 13),
+			iotago.WithTimeProviderOptions(0, genesisTimestamp.Unix(), 10, 13),
 			iotago.WithManaOptions(63, 1, 17, []uint32{10, 20}, 32, 2420916375, 21),
 			iotago.WithSupplyOptions(TestTokenSupply, 0, 0, 0, 0, 0, 0),
 			iotago.WithWorkScoreOptions(0, 1, 0, 0, 0, 0, 0, 0, 0, 0), // all zero except block offset gives all blocks workscore = 1
@@ -112,7 +112,7 @@ func txExample() {
 
 	output1 := &iotago.BasicOutput{
 		Amount: 100000,
-		Conditions: iotago.BasicOutputUnlockConditions{
+		UnlockConditions: iotago.BasicOutputUnlockConditions{
 			&iotago.AddressUnlockCondition{
 				Address: addr,
 			},
@@ -125,7 +125,7 @@ func txExample() {
 	output2 := &iotago.AccountOutput{
 		Amount: 100000,
 		Mana:   5000,
-		Conditions: iotago.AccountOutputUnlockConditions{
+		UnlockConditions: iotago.AccountOutputUnlockConditions{
 			&iotago.StateControllerAddressUnlockCondition{
 				Address: addr,
 			},
@@ -134,8 +134,10 @@ func txExample() {
 			},
 		},
 		Features: iotago.AccountOutputFeatures{
-			&iotago.MetadataFeature{
-				Data: tpkg.RandBytes(16),
+			&iotago.StateMetadataFeature{
+				Entries: iotago.StateMetadataFeatureEntries{
+					"hello": []byte("world"),
+				},
 			},
 		},
 	}
@@ -255,7 +257,7 @@ func outputIdProof() {
 			Outputs: loo.RepeatBy(1, func(_ int) iotago.TxEssenceOutput {
 				return &iotago.BasicOutput{
 					Amount: OneMi,
-					Conditions: iotago.BasicOutputUnlockConditions{
+					UnlockConditions: iotago.BasicOutputUnlockConditions{
 						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				}
@@ -275,7 +277,7 @@ func outputIdProof() {
 			Outputs: loo.RepeatBy(5, func(_ int) iotago.TxEssenceOutput {
 				return &iotago.BasicOutput{
 					Amount: OneMi,
-					Conditions: iotago.BasicOutputUnlockConditions{
+					UnlockConditions: iotago.BasicOutputUnlockConditions{
 						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				}
@@ -295,7 +297,7 @@ func outputIdProof() {
 			Outputs: loo.RepeatBy(32, func(_ int) iotago.TxEssenceOutput {
 				return &iotago.BasicOutput{
 					Amount: OneMi,
-					Conditions: iotago.BasicOutputUnlockConditions{
+					UnlockConditions: iotago.BasicOutputUnlockConditions{
 						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
 					},
 				}
