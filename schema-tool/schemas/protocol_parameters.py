@@ -38,7 +38,7 @@ token_supply = SimpleField(
 
 genesis_slot = SimpleField(
     "Genesis Slot",
-    UInt64(),
+    UInt32(),
     "Genesis Slot defines the slot of the genesis.",
 )
 
@@ -110,7 +110,7 @@ epoch_nearing_threshold = SimpleField(
 
 target_committee_size = SimpleField(
     "Target Committee Size",
-    UInt32(),
+    UInt8(),
     "Target Committee Size defines the target size of the committee. If there's fewer candidates the actual committee size could be smaller in a given epoch.",
 )
 
