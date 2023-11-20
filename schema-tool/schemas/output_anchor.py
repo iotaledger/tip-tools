@@ -1,4 +1,4 @@
-from typedefs.datatype import ByteArray, LengthPrefixedArray, UInt16, UInt32
+from typedefs.datatype import ByteArray, UInt32
 from typedefs.field import ComplexField, Schema, SimpleField
 from schemas.feature import (
     MAX_METADATA_LENGTH,
@@ -6,7 +6,7 @@ from schemas.feature import (
     ImmutableFeaturesCountField,
     IssuerFeature,
     MetadataFeature,
-    SenderFeature,
+    StateMetadataFeature,
 )
 from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField, ManaField
@@ -16,9 +16,6 @@ from schemas.unlock_condition import (
     StateControllerUnlockCondition,
     GovernorUnlockCondition,
 )
-
-MIN_STATE_METADATA_LENGTH = 0
-MAX_STATE_METADATA_LENGTH = MAX_METADATA_LENGTH
 
 anchor_name = "Anchor Output"
 anchor_summary = "An anchor in the ledger that can be controlled by the state and governance controllers."
@@ -32,15 +29,6 @@ anchor_state_index = SimpleField(
     UInt32(),
     "A counter that must increase by 1 every time the anchor is state transitioned.",
 )
-anchor_state_metadata = SimpleField(
-    "State Metadata",
-    LengthPrefixedArray(
-        UInt16(),
-        minLength=MIN_STATE_METADATA_LENGTH,
-        maxLength=MAX_STATE_METADATA_LENGTH,
-    ),
-    "Metadata that can only be changed by the state controller. A leading uint16 denotes its length.",
-)
 anchor_unlock_conditions = ComplexField(
     "Unlock Conditions",
     AtMostOneOfEach(),
@@ -53,8 +41,8 @@ anchor_features = ComplexField(
     "Features",
     AtMostOneOfEach(),
     [
-        SenderFeature(),
         MetadataFeature(),
+        StateMetadataFeature()
     ],
 )
 
@@ -70,7 +58,6 @@ anchor_fields = [
     ManaField,
     anchor_id,
     anchor_state_index,
-    anchor_state_metadata,
     UnlockConditionsCountField,
     anchor_unlock_conditions,
     FeaturesCountField,

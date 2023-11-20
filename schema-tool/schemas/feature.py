@@ -199,7 +199,7 @@ def StateMetadataFeature(
         state_metadata_feature_name,
         state_metadata_feature_description,
         state_metadata_feature_fields,
-        tipReference=42,
+        tipReference=54,
         omitFields=omitFields,
     )
 

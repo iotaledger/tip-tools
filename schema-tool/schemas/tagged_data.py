@@ -29,7 +29,7 @@ def TaggedData(
 ) -> Schema:
     return Schema(
         tagged_data_name,
-        "Data with an optional tag.",
+        "Optional Data with an optional Tag.",
         tagged_data_fields,
         tipReference=53,
         omitFields=omitFields,
