@@ -45,7 +45,7 @@ genesis_slot = SimpleField(
 genesis_unix_timestamp = SimpleField(
     "Genesis Unix Timestamp",
     UInt64(),
-    "Genesis Unix Timestamp defines the genesis timestamp at which the slots start to count",
+    "Genesis Unix Timestamp defines the genesis timestamp (in seconds) at which the slots start to count.",
 )
 
 slot_duration_in_seconds = SimpleField(
@@ -79,13 +79,13 @@ punishment_epochs = SimpleField(
 )
 
 liveness_threshold_lower_bound_in_seconds = SimpleField(
-    "Liveness Threshold Lower Bound In Seconds",
+    "Liveness Threshold Lower Bound",
     UInt16(),
     "Liveness Threshold Lower Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes.",
 )
 
 liveness_threshold_upper_bound_in_seconds = SimpleField(
-    "Liveness Threshold Upper Bound In Seconds",
+    "Liveness Threshold Upper Bound",
     UInt16(),
     "Liveness Threshold Upper Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes",
 )
