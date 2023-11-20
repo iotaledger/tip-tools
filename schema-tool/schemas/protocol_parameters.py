@@ -36,10 +36,16 @@ token_supply = SimpleField(
     "Token Supply defines the current token supply on the network.",
 )
 
+genesis_slot = SimpleField(
+    "Genesis Slot",
+    UInt32(),
+    "Genesis Slot defines the slot of the genesis.",
+)
+
 genesis_unix_timestamp = SimpleField(
     "Genesis Unix Timestamp",
     UInt64(),
-    "Genesis Unix Timestamp defines the genesis timestamp at which the slots start to count",
+    "Genesis Unix Timestamp defines the genesis timestamp (in seconds) at which the slots start to count.",
 )
 
 slot_duration_in_seconds = SimpleField(
@@ -73,13 +79,13 @@ punishment_epochs = SimpleField(
 )
 
 liveness_threshold_lower_bound_in_seconds = SimpleField(
-    "Liveness Threshold Lower Bound In Seconds",
+    "Liveness Threshold Lower Bound",
     UInt16(),
     "Liveness Threshold Lower Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes.",
 )
 
 liveness_threshold_upper_bound_in_seconds = SimpleField(
-    "Liveness Threshold Upper Bound In Seconds",
+    "Liveness Threshold Upper Bound",
     UInt16(),
     "Liveness Threshold Upper Bound is used by tip-selection to determine if a block is eligible by evaluating issuingTimes",
 )
@@ -100,6 +106,12 @@ epoch_nearing_threshold = SimpleField(
     "Epoch Nearing Threshold",
     UInt32(),
     "Epoch Nearing Threshold is used by the epoch orchestrator to detect the slot that should trigger a new committee selection for the next and upcoming epoch.",
+)
+
+target_committee_size = SimpleField(
+    "Target Committee Size",
+    UInt8(),
+    "Target Committee Size defines the target size of the committee. If there's fewer candidates the actual committee size could be smaller in a given epoch.",
 )
 
 # Storage Score Parameters
@@ -378,7 +390,7 @@ profit_margin_exponent = SimpleField(
 )
 bootstrapping_duration = SimpleField(
     "Bootstrapping Duration",
-    UInt64(),
+    UInt32(),
     "The length in epochs of the bootstrapping phase.",
 )
 mana_share_coefficient = SimpleField(
@@ -432,6 +444,7 @@ protocol_parameters_fields: List[Field] = [
     WorkScoreParameters,
     ManaParameters,
     token_supply,
+    genesis_slot,
     genesis_unix_timestamp,
     slot_duration_in_seconds,
     slots_per_epoch_exponent,
@@ -446,6 +459,7 @@ protocol_parameters_fields: List[Field] = [
     CongestionControlParameters,
     VersionSignaling,
     RewardsParameters,
+    target_committee_size,
 ]
 
 ProtocolParameters = Schema(protocol_parameters_name, "The IOTA 2.0 Protocol Parameters.", protocol_parameters_fields)
