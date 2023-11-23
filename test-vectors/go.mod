@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/iotaledger/hive.go/crypto v0.0.0-20231110115447-7605386261d2
 	github.com/iotaledger/hive.go/lo v0.0.0-20231110115447-7605386261d2
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231110131407-263d0662856b
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231123102955-eff367396512
 	github.com/samber/lo v1.38.1
 )
 

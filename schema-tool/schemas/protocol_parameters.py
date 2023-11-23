@@ -370,12 +370,12 @@ activation_offset = SimpleField(
 )
 
 VersionSignaling = ComplexField(
-    "Version Signaling",
+    "Version Signaling Parameters",
     OneOf(),
     [
         Schema(
-            "Version Signaling",
-            "Version Signaling defines the parameters used by signaling protocol parameters upgrade.",
+            "Version Signaling Parameters",
+            "Version Signaling Parameters defines the parameters used by signaling protocol parameters upgrade.",
             [window_size, window_target_ration, activation_offset],
             detailsOpen=True,
         )
