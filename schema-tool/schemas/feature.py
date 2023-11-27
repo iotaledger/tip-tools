@@ -6,6 +6,7 @@ from typedefs.datatype import (
     LengthPrefixedArray,
     UInt16,
     UInt256,
+    UInt32,
     UInt64,
     UInt8,
 )
@@ -277,7 +278,7 @@ block_issuer_feature_description = (
 )
 block_issuer_feature_expiry_slot = SimpleField(
     "Expiry Slot",
-    UInt64(),
+    UInt32(),
     "The slot index at which the <i>Block Issuer Feature</i> expires and can be removed.",
 )
 block_issuer_feature_keys_count = SimpleField(
