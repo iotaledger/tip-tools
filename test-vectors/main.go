@@ -2,33 +2,31 @@ package main
 
 import (
 	"bytes"
-	"crypto/ed25519"
 	"encoding/json"
 	"fmt"
 	"os"
 	"time"
 
-	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
 	"github.com/iotaledger/hive.go/lo"
 	iotago "github.com/iotaledger/iota.go/v4"
-	"github.com/iotaledger/iota.go/v4/builder"
 	"github.com/iotaledger/iota.go/v4/hexutil"
 	"github.com/iotaledger/iota.go/v4/tpkg"
+	"github.com/iotaledger/tip-tools/test-vectors/examples"
 	loo "github.com/samber/lo"
 )
 
 const (
 	// TestTokenSupply is a test token supply constant.
-	TestTokenSupply       = 2_779_530_283_277_761
-	ProtocolParameters    = "Protocol Parameters"
-	Commitment            = "Commitment"
-	Transaction           = "Transaction"
-	TransactionBasicBlock = "Transaction Basic Block"
-	TaggedDataBasicBlock  = "TaggedData Basic Block"
-	ValidationBlock       = "Validation Block"
-	MultiAddress          = "Multi Address"
-	OutputIdProof         = "Output ID Proof"
-	RestrictedAddress     = "Restricted Address"
+	TestTokenSupply        = 2_779_530_283_277_761
+	ProtocolParameters     = "Protocol Parameters"
+	CommitmentID           = "Commitment ID"
+	TransactionID          = "Transaction ID"
+	BasicBlockIDTx         = "Basic Block ID Transaction"
+	BasicBlockIDTaggedData = "Basic Block ID Tagged Data"
+	ValidationBlockID      = "Validation Block ID"
+	MultiAddress           = "Multi Address"
+	OutputIdProof          = "Output ID Proof"
+	RestrictedAddress      = "Restricted Address"
 )
 
 var (
@@ -44,11 +42,11 @@ var (
 	)
 	supportedObjects = []string{
 		ProtocolParameters,
-		Commitment,
-		Transaction,
-		TransactionBasicBlock,
-		TaggedDataBasicBlock,
-		ValidationBlock,
+		CommitmentID,
+		TransactionID,
+		BasicBlockIDTx,
+		BasicBlockIDTaggedData,
+		ValidationBlockID,
 		MultiAddress,
 		OutputIdProof,
 		RestrictedAddress,
@@ -64,16 +62,16 @@ func main() {
 	switch name {
 	case ProtocolParameters:
 		protocolParameters()
-	case Commitment:
+	case CommitmentID:
 		commitmentExample()
-	case Transaction:
-		txExample()
-	case TransactionBasicBlock:
-		basicBlockTxExample()
-	case TaggedDataBasicBlock:
-		basicBlockTaggedDataExample()
-	case ValidationBlock:
-		validationBlockExample()
+	case TransactionID:
+		transactionIDExample()
+	case BasicBlockIDTx:
+		basicBlockIDTransactionExample()
+	case BasicBlockIDTaggedData:
+		basicBlockIDTaggedDataExample()
+	case ValidationBlockID:
+		validationBlockIDExample()
 	case MultiAddress:
 		multiAddressTestVector()
 	case OutputIdProof:
@@ -106,99 +104,23 @@ func commitmentExample() {
 	printIdentifierTestVector("Slot Commitment", commitment, commitment.MustID().ToHex())
 }
 
-func txExample() {
-	keyPair := hiveEd25519.GenerateKeyPair()
-	addr := iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
-
-	output1 := &iotago.BasicOutput{
-		Amount: 100000,
-		UnlockConditions: iotago.BasicOutputUnlockConditions{
-			&iotago.AddressUnlockCondition{
-				Address: addr,
-			},
-		},
-		Features: iotago.BasicOutputFeatures{
-			tpkg.RandNativeTokenFeature(),
-		},
-	}
-
-	output2 := &iotago.AccountOutput{
-		Amount: 100000,
-		Mana:   5000,
-		UnlockConditions: iotago.AccountOutputUnlockConditions{
-			&iotago.StateControllerAddressUnlockCondition{
-				Address: addr,
-			},
-			&iotago.GovernorAddressUnlockCondition{
-				Address: addr,
-			},
-		},
-		Features: iotago.AccountOutputFeatures{
-			&iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
-					"hello": []byte("world"),
-				},
-			},
-		},
-	}
-
-	creationSlot := iotago.SlotIndex(1 << 20)
-	tx := lo.PanicOnErr(builder.NewTransactionBuilder(api).
-		AddInput(&builder.TxInput{
-			UnlockTarget: addr,
-			InputID:      tpkg.RandOutputID(0),
-			Input:        output1,
-		}).
-		AddInput(&builder.TxInput{
-			UnlockTarget: addr,
-			InputID:      tpkg.RandOutputID(0),
-			Input:        output2,
-		}).
-		AddOutput(output1).
-		AddOutput(output2).
-		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: iotago.NewCommitmentID(85, tpkg.Rand32ByteArray())}).
-		AddBlockIssuanceCreditInput(&iotago.BlockIssuanceCreditInput{AccountID: tpkg.RandAccountID()}).
-		AddRewardInput(&iotago.RewardInput{Index: 0}, 50).
-		IncreaseAllotment(tpkg.RandAccountID(), tpkg.RandMana(10000)+1).
-		IncreaseAllotment(tpkg.RandAccountID(), tpkg.RandMana(10000)+1).
-		WithTransactionCapabilities(
-			iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanBurnNativeTokens(true)),
-		).
-		SetCreationSlot(creationSlot).
-		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
-
+func transactionIDExample() {
+	tx := examples.SignedTransaction(api)
 	printIdentifierTestVector("Transaction", tx, lo.PanicOnErr(tx.ID()).ToHex())
 }
 
-func basicBlockTxExample() {
-	basicBlock := tpkg.RandBasicBlock(api, iotago.PayloadSignedTransaction)
-	signedTx := tpkg.RandSignedTransactionWithTransaction(api, tpkg.RandTransactionWithOptions(
-		api,
-		tpkg.WithUTXOInputCount(2),
-		tpkg.WithOutputCount(2),
-		tpkg.WithAllotmentCount(1),
-	))
-	basicBlock.Payload = signedTx
-	block := tpkg.RandBlock(basicBlock, api, 100)
-	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
-
+func basicBlockIDTransactionExample() {
+	block := examples.BasicBlockWithTransaction(api, examples.SignedTransaction(api))
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
-func basicBlockTaggedDataExample() {
-	basicBlock := tpkg.RandBasicBlock(api, iotago.PayloadTaggedData)
-	block := tpkg.RandBlock(basicBlock, api, 100)
-	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
-
+func basicBlockIDTaggedDataExample() {
+	block := examples.BasicBlockWithTransaction(api, tpkg.RandTaggedData([]byte("tag"), 15))
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
-func validationBlockExample() {
-	basicBlock := tpkg.RandValidationBlock(api)
-	block := tpkg.RandBlock(basicBlock, api, 100)
-	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
-	block.Body.(*iotago.ValidationBlockBody).ProtocolParametersHash = lo.Return1(api.ProtocolParameters().Hash())
-
+func validationBlockIDExample() {
+	block := examples.ValidationBlock(api)
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
@@ -414,7 +336,7 @@ func printJson(name string, obj any) {
 }
 
 func printBinary(name string, obj any) {
-	fmt.Printf("%s (binary-encoded):\n\n```\n%s\n```\n\n", name, hexify(obj))
+	fmt.Printf("%s (hex-encoded binary serialization):\n\n```\n%s\n```\n\n", name, hexify(obj))
 }
 
 func printIdentifierTestVector(name string, obj any, id string) {
