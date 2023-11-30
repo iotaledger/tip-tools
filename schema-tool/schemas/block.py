@@ -1,4 +1,5 @@
 from typing import List
+from schemas.candidacy_announcement import CandidacyAnnouncement
 from schemas.common import AVAILABLE_SCHEMAS
 from schemas.signature import Ed25519Signature
 from schemas.tagged_data import TaggedData
@@ -107,17 +108,13 @@ def BasicBlockBody(
                 UInt8(),
                 "The number of blocks following, which are weakly directly approved.",
             ),
-            ComplexField(
-                "Weak Parents", OptAnyOf(maxLength=8), [Parent()]
-            ),
+            ComplexField("Weak Parents", OptAnyOf(maxLength=8), [Parent()]),
             SimpleField(
                 "Shallow Like Parents Count",
                 UInt8(),
                 "The number of blocks following, which are directly referenced to adjust opinion.",
             ),
-            ComplexField(
-                "Shallow Like Parents", OptAnyOf(maxLength=8), [Parent()]
-            ),
+            ComplexField("Shallow Like Parents", OptAnyOf(maxLength=8), [Parent()]),
             SimpleField(
                 "Payload Length",
                 UInt32(),
@@ -126,7 +123,11 @@ def BasicBlockBody(
             ComplexField(
                 "Payload",
                 OptOneOf(),
-                [SignedTransaction(omitFields=True), TaggedData(omitFields=True)],
+                [
+                    SignedTransaction(omitFields=True),
+                    TaggedData(omitFields=True),
+                    CandidacyAnnouncement(omitFields=True),
+                ],
             ),
             SimpleField(
                 "Max Burned Mana",
@@ -168,17 +169,13 @@ def ValidationBlockBody(
                 UInt8(),
                 "The number of blocks following, which are weakly directly approved.",
             ),
-            ComplexField(
-                "Weak Parents", OptAnyOf(maxLength=50), [Parent()]
-            ),
+            ComplexField("Weak Parents", OptAnyOf(maxLength=50), [Parent()]),
             SimpleField(
                 "Shallow Like Parents Count",
                 UInt8(),
                 "The number of blocks following, which are directly referenced to adjust opinion.",
             ),
-            ComplexField(
-                "Shallow Like Parents", OptAnyOf(maxLength=50), [Parent()]
-            ),
+            ComplexField("Shallow Like Parents", OptAnyOf(maxLength=50), [Parent()]),
             SimpleField(
                 "Highest Supported Version",
                 UInt8(),
