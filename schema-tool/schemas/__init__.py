@@ -22,3 +22,4 @@ from .block import *
 from .output_id_proof import *
 from .merkle_tree import *
 from .tagged_data import *
+from .candidacy_announcement import *
