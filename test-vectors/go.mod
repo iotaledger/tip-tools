@@ -6,6 +6,7 @@ require (
 	github.com/iotaledger/hive.go/crypto v0.0.0-20231127134220-90b88e35bdb2
 	github.com/iotaledger/hive.go/lo v0.0.0-20231127134220-90b88e35bdb2
 	github.com/iotaledger/iota.go/v4 v4.0.0-20231124103306-ad44904e2b86
+	github.com/itchyny/json2yaml v0.1.4
 	github.com/samber/lo v1.38.1
 )
 

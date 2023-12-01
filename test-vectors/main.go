@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/iotaledger/hive.go/lo"
@@ -12,6 +14,7 @@ import (
 	"github.com/iotaledger/iota.go/v4/hexutil"
 	"github.com/iotaledger/iota.go/v4/tpkg"
 	"github.com/iotaledger/tip-tools/test-vectors/examples"
+	"github.com/itchyny/json2yaml"
 	loo "github.com/samber/lo"
 )
 
@@ -23,6 +26,7 @@ const (
 	TransactionID          = "Transaction ID"
 	BasicBlockIDTx         = "Basic Block ID Transaction"
 	BasicBlockIDTaggedData = "Basic Block ID Tagged Data"
+	BasicBlockIDNoPayload  = "Basic Block ID No Payload"
 	ValidationBlockID      = "Validation Block ID"
 	MultiAddress           = "Multi Address"
 	OutputIdProof          = "Output ID Proof"
@@ -46,11 +50,14 @@ var (
 		TransactionID,
 		BasicBlockIDTx,
 		BasicBlockIDTaggedData,
+		BasicBlockIDNoPayload,
 		ValidationBlockID,
 		MultiAddress,
 		OutputIdProof,
 		RestrictedAddress,
 	}
+
+	isYaml = false
 )
 
 func main() {
@@ -58,6 +65,10 @@ func main() {
 		return
 	}
 	name := os.Args[1]
+
+	if len(os.Args) >= 3 {
+		isYaml, _ = strconv.ParseBool(os.Args[2])
+	}
 
 	switch name {
 	case ProtocolParameters:
@@ -70,6 +81,8 @@ func main() {
 		basicBlockIDTransactionExample()
 	case BasicBlockIDTaggedData:
 		basicBlockIDTaggedDataExample()
+	case BasicBlockIDNoPayload:
+		basicBlockIDNoPayloadExample()
 	case ValidationBlockID:
 		validationBlockIDExample()
 	case MultiAddress:
@@ -107,6 +120,21 @@ func commitmentExample() {
 func transactionIDExample() {
 	tx := examples.SignedTransaction(api)
 	printIdentifierTestVector("Transaction", tx, lo.PanicOnErr(tx.ID()).ToHex())
+}
+
+func basicBlockIDNoPayloadExample() {
+	basicBlock := &iotago.BasicBlockBody{
+		API:                api,
+		StrongParents:      tpkg.SortedRandBlockIDs(3),
+		WeakParents:        iotago.BlockIDs{},
+		ShallowLikeParents: iotago.BlockIDs{},
+		MaxBurnedMana:      1000,
+	}
+
+	block := tpkg.RandBlock(basicBlock, api, 100)
+	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
+
+	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func basicBlockIDTransactionExample() {
@@ -233,6 +261,7 @@ func outputIdProof() {
 	printBinary("Transaction (1 Output)", singleOutput.tx)
 	printJson("Output ID Proof (Output Index 0)", singleOutputProof)
 	printBinary("Output ID Proof (Output Index 0)", singleOutputProof)
+	printYaml("Output ID Proof (Output Index 0)", singleOutputProof)
 
 	fmt.Println("============================ 5 OUTPUTS ==============================")
 
@@ -240,6 +269,7 @@ func outputIdProof() {
 	printBinary("Transaction (5 Outputs)", manyOutputs.tx)
 	printJson("Output ID Proof (Output Index 2)", fiveOutputsProof)
 	printBinary("Output ID Proof (Output Index 2)", fiveOutputsProof)
+	printYaml("Output ID Proof (Output Index 2)", fiveOutputsProof)
 
 	fmt.Println("============================ 32 OUTPUTS ==============================")
 
@@ -247,6 +277,7 @@ func outputIdProof() {
 	printBinary("Transaction (32 Outputs)", manyOutputs.tx)
 	printJson("Output ID Proof (Output Index 0)", manyOutputsProof0)
 	printBinary("Output ID Proof (Output Index 0)", manyOutputsProof0)
+	printYaml("Output ID Proof (Output Index 0)", manyOutputsProof0)
 
 	manyOutputsProof28 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx, 28))
 	printJson("Output ID Proof (Output Index 28)", manyOutputsProof28)
@@ -335,11 +366,23 @@ func printJson(name string, obj any) {
 	fmt.Printf("%s (json-encoded):\n\n```json\n%s\n```\n\n", name, jsonify(obj))
 }
 
+func printYaml(name string, obj any) {
+	reader := strings.NewReader(jsonify(obj))
+	var yamlBytes strings.Builder
+	json2yaml.Convert(&yamlBytes, reader)
+
+	fmt.Printf("%s (yaml-encoded):\n\n```yaml\n%s\n```\n\n", name, yamlBytes.String())
+}
+
 func printBinary(name string, obj any) {
 	fmt.Printf("%s (hex-encoded binary serialization):\n\n```\n%s\n```\n\n", name, hexify(obj))
 }
 
 func printIdentifierTestVector(name string, obj any, id string) {
+	if isYaml {
+		printYaml(name, obj)
+	}
+
 	printJson(name, obj)
 	printBinary(name, obj)
 	fmt.Printf("%s ID:\n\n```\n%s\n```\n", name, id)
