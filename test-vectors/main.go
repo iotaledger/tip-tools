@@ -11,6 +11,7 @@ import (
 
 	"github.com/iotaledger/hive.go/lo"
 	iotago "github.com/iotaledger/iota.go/v4"
+	apipkg "github.com/iotaledger/iota.go/v4/api"
 	"github.com/iotaledger/iota.go/v4/hexutil"
 	"github.com/iotaledger/iota.go/v4/tpkg"
 	"github.com/iotaledger/tip-tools/test-vectors/examples"
@@ -31,6 +32,7 @@ const (
 	MultiAddress           = "Multi Address"
 	OutputIdProof          = "Output ID Proof"
 	RestrictedAddress      = "Restricted Address"
+	InfoResponse           = "Info Response"
 )
 
 var (
@@ -55,6 +57,7 @@ var (
 		MultiAddress,
 		OutputIdProof,
 		RestrictedAddress,
+		InfoResponse,
 	}
 
 	isYaml = false
@@ -91,6 +94,8 @@ func main() {
 		outputIdProof()
 	case RestrictedAddress:
 		restrictedAddresses()
+	case InfoResponse:
+		infoResponse()
 	default:
 		fmt.Println("Usage: go run main.go \"[object name]\"")
 		fmt.Println("Supported object:")
@@ -335,6 +340,47 @@ func restrictedAddresses() {
 			printAddress(fmt.Sprintf("Restricted %s", namedAddress.name), info, &restrictedAddress)
 		}
 	}
+}
+
+// core API responses
+func infoResponse() {
+	response := &apipkg.InfoResponse{
+		Name:    "test",
+		Version: "2.0.0",
+		Status: &apipkg.InfoResNodeStatus{
+			IsHealthy:                   false,
+			AcceptedTangleTime:          time.Unix(1690879505, 0).UTC(),
+			RelativeAcceptedTangleTime:  time.Unix(1690879505, 0).UTC(),
+			ConfirmedTangleTime:         time.Unix(1690879505, 0).UTC(),
+			RelativeConfirmedTangleTime: time.Unix(1690879505, 0).UTC(),
+			LatestCommitmentID:          tpkg.RandCommitmentID(),
+			LatestFinalizedSlot:         1,
+			LatestAcceptedBlockSlot:     2,
+			LatestConfirmedBlockSlot:    3,
+			PruningEpoch:                4,
+		},
+		Metrics: &apipkg.InfoResNodeMetrics{
+			BlocksPerSecond:          1.1,
+			ConfirmedBlocksPerSecond: 2.2,
+			ConfirmationRate:         3.3,
+		},
+		ProtocolParameters: []*apipkg.InfoResProtocolParameters{
+			{
+				StartEpoch: 0,
+				Parameters: api.ProtocolParameters(),
+			},
+		},
+		BaseToken: &apipkg.InfoResBaseToken{
+			Name:         "Shimmer",
+			TickerSymbol: "SMR",
+			Unit:         "SMR",
+			Subunit:      "glow",
+			Decimals:     6,
+		},
+		Features: []string{"test"},
+	}
+
+	printYaml("Info Response", response)
 }
 
 func printAddress(name string, info string, addr iotago.Address) {
