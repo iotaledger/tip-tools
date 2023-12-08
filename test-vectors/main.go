@@ -38,11 +38,9 @@ const (
 var (
 	genesisTimestamp = time.Unix(1695275822, 0) // 2023-09-21 13:57:02 +0800 CST
 	api              = iotago.V3API(
-		iotago.NewV3ProtocolParameters(
+		iotago.NewV3SnapshotProtocolParameters(
 			iotago.WithNetworkOptions("TestJungle", "tgl"),
 			iotago.WithTimeProviderOptions(0, genesisTimestamp.Unix(), 10, 13),
-			iotago.WithManaOptions(63, 1, 17, []uint32{10, 20}, 32, 2420916375, 21),
-			iotago.WithSupplyOptions(TestTokenSupply, 0, 0, 0, 0, 0, 0),
 			iotago.WithWorkScoreOptions(0, 1, 0, 0, 0, 0, 0, 0, 0, 0), // all zero except block offset gives all blocks workscore = 1
 		),
 	)
@@ -106,7 +104,7 @@ func main() {
 }
 
 func protocolParameters() {
-	printIdentifierTestVector("Protocol Parameters", api.ProtocolParameters(), lo.Return1(api.ProtocolParameters().Hash()).ToHex())
+	printIdentifierTestVector("Protocol Parameters", tpkg.ZeroCostV3TestProtocolParameters, lo.Return1(tpkg.ZeroCostV3TestProtocolParameters.Hash()).ToHex())
 }
 
 func commitmentExample() {
@@ -202,7 +200,7 @@ func outputIdProof() {
 
 	singleOutput := outputIDProofExample{
 		tx: &iotago.Transaction{
-			API: tpkg.TestAPI,
+			API: api,
 			TransactionEssence: &iotago.TransactionEssence{
 				CreationSlot: tpkg.RandSlot(),
 				NetworkID:    tpkg.TestNetworkID,
@@ -222,7 +220,7 @@ func outputIdProof() {
 
 	fiveOutputs := outputIDProofExample{
 		tx: &iotago.Transaction{
-			API: tpkg.TestAPI,
+			API: api,
 			TransactionEssence: &iotago.TransactionEssence{
 				CreationSlot: tpkg.RandSlot(),
 				NetworkID:    tpkg.TestNetworkID,
@@ -242,7 +240,7 @@ func outputIdProof() {
 
 	manyOutputs := outputIDProofExample{
 		tx: &iotago.Transaction{
-			API: tpkg.TestAPI,
+			API: api,
 			TransactionEssence: &iotago.TransactionEssence{
 				CreationSlot: tpkg.RandSlot(),
 				NetworkID:    tpkg.TestNetworkID,

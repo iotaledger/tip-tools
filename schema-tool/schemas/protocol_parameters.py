@@ -114,6 +114,12 @@ target_committee_size = SimpleField(
     "Target Committee Size defines the target size of the committee. If there's fewer candidates the actual committee size could be smaller in a given epoch.",
 )
 
+chain_switching_threshold = SimpleField(
+    "Chain Switching Treshold",
+    UInt8(),
+    "Chain Switching Treshold defines the number of heavier slots that a chain needs to be ahead of the current chain to be considered for switching.",
+)
+
 # Storage Score Parameters
 storage_cost = SimpleField(
     "Storage Cost",
@@ -266,6 +272,11 @@ decay_factor_epochs_sum_exponent = SimpleField(
     UInt8(),
     "Decay Factor Epochs Sum Exponent is the scaling of Decay Factor Epochs Sum expressed as an exponent of 2.",
 )
+annual_decay_factor_percentage = SimpleField(
+    "Annual Decay Factor Percentage",
+    UInt8(),
+    "Annual Decay Factor Percentage is the decay factor for 1 year.",
+)
 
 ManaParameters = ComplexField(
     "Mana Parameters",
@@ -282,6 +293,7 @@ ManaParameters = ComplexField(
                 decay_factors_exponent,
                 decay_factor_epochs_sum,
                 decay_factor_epochs_sum_exponent,
+                annual_decay_factor_percentage,
             ],
             detailsOpen=True,
         )
@@ -460,6 +472,7 @@ protocol_parameters_fields: List[Field] = [
     VersionSignaling,
     RewardsParameters,
     target_committee_size,
+    chain_switching_threshold,
 ]
 
 ProtocolParameters = Schema(protocol_parameters_name, "The IOTA 2.0 Protocol Parameters.", protocol_parameters_fields)
