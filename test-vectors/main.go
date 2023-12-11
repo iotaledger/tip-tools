@@ -44,6 +44,7 @@ var (
 			iotago.WithWorkScoreOptions(0, 1, 0, 0, 0, 0, 0, 0, 0, 0), // all zero except block offset gives all blocks workscore = 1
 		),
 	)
+	zeroCostApi      = iotago.V3API(tpkg.ZeroCostV3TestProtocolParameters)
 	supportedObjects = []string{
 		ProtocolParameters,
 		CommitmentID,
@@ -141,17 +142,21 @@ func basicBlockIDNoPayloadExample() {
 }
 
 func basicBlockIDTransactionExample() {
-	block := examples.BasicBlockWithTransaction(api, examples.SignedTransaction(api))
+	block := examples.BasicBlockWithPayload(zeroCostApi, examples.SignedTransaction(zeroCostApi))
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func basicBlockIDTaggedDataExample() {
-	block := examples.BasicBlockWithTransaction(api, tpkg.RandTaggedData([]byte("tag"), 15))
+	taggedData := iotago.TaggedData{
+		Tag: lo.PanicOnErr(hexutil.DecodeHex("0x746167")),
+		Data: lo.PanicOnErr(hexutil.DecodeHex("0x6c754128356c071e5549764a48427b")),
+	}
+	block := examples.BasicBlockWithPayload(zeroCostApi, &taggedData)
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func validationBlockIDExample() {
-	block := examples.ValidationBlock(api)
+	block := examples.ValidationBlock(zeroCostApi)
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
