@@ -14,7 +14,7 @@ def CandidacyAnnouncement(
 ) -> Schema:
     return Schema(
         candidacy_announcement_name,
-        "Indicates candidacy for committee selection.",
+        "Signals candidacy for committee selection for the epoch after the one in which it is issued.",
         candidacy_announcement_fields,
         tipReference=40,
         omitFields=omitFields,
