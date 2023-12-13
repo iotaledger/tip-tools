@@ -3,6 +3,7 @@ package examples
 import (
 	"crypto/ed25519"
 	"math/big"
+	"time"
 
 	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
 	"github.com/iotaledger/hive.go/lo"
@@ -107,6 +108,7 @@ func BasicBlockWithPayload(api iotago.API, payload iotago.ApplicationPayload) *i
 		Payload(payload).
 		SlotCommitmentID(commitmentID).
 		LatestFinalizedSlot(500).
+		IssuingTime(api.TimeProvider().GenesisTime().Add(30*time.Second)).
 		Sign(
 			issuerID,
 			keyPair.PrivateKey[:],
@@ -115,8 +117,6 @@ func BasicBlockWithPayload(api iotago.API, payload iotago.ApplicationPayload) *i
 }
 
 func ValidationBlock(api iotago.API) *iotago.Block {
-	keyPair := hiveEd25519.GenerateKeyPair()
-
 	return lo.PanicOnErr(builder.NewValidationBlockBuilder(api).
 		StrongParents(
 			iotago.BlockIDs{
@@ -132,6 +132,7 @@ func ValidationBlock(api iotago.API) *iotago.Block {
 		LatestFinalizedSlot(500).
 		HighestSupportedVersion(api.ProtocolParameters().Version()).
 		ProtocolParametersHash(lo.PanicOnErr(api.ProtocolParameters().Hash())).
+		IssuingTime(api.TimeProvider().GenesisTime().Add(30*time.Second)).
 		Sign(issuerID, keyPair.PrivateKey[:]).
 		Build())
 }

@@ -39,12 +39,10 @@ var (
 	genesisTimestamp = time.Unix(1695275822, 0) // 2023-09-21 13:57:02 +0800 CST
 	api              = iotago.V3API(
 		iotago.NewV3SnapshotProtocolParameters(
-			iotago.WithNetworkOptions("TestJungle", "tgl"),
+			// Fix the genesis timestamp so we have a consistent protocol parameters hash for the test vectors.
 			iotago.WithTimeProviderOptions(0, genesisTimestamp.Unix(), 10, 13),
-			iotago.WithWorkScoreOptions(0, 1, 0, 0, 0, 0, 0, 0, 0, 0), // all zero except block offset gives all blocks workscore = 1
 		),
 	)
-	zeroCostApi      = iotago.V3API(tpkg.ZeroCostV3TestProtocolParameters)
 	supportedObjects = []string{
 		ProtocolParameters,
 		CommitmentID,
@@ -105,15 +103,18 @@ func main() {
 }
 
 func protocolParameters() {
-	printIdentifierTestVector("Protocol Parameters", tpkg.ZeroCostV3TestProtocolParameters, lo.Return1(tpkg.ZeroCostV3TestProtocolParameters.Hash()).ToHex())
+	printIdentifierTestVector("Protocol Parameters", api.ProtocolParameters(), lo.Return1(api.ProtocolParameters().Hash()).ToHex())
 }
 
 func commitmentExample() {
+	previousCommitmentID := iotago.MustCommitmentIDFromHexString("0x5f400a6621684e7b260f353b3937113c153c387c5c2f7110463a2f1b2f1c392a581e192d")
+	rootsID := iotago.MustIdentifierFromHexString("0x533543553e75065c0c115c220624400b02693c6177284b4f1b7748610c515968")
+
 	commitment := iotago.Commitment{
 		ProtocolVersion:      api.Version(),
 		Slot:                 18,
-		PreviousCommitmentID: tpkg.RandCommitmentInput().CommitmentID,
-		RootsID:              tpkg.RandCommitmentInput().CommitmentID.Identifier(),
+		PreviousCommitmentID: previousCommitmentID,
+		RootsID:              rootsID,
 		CumulativeWeight:     89,
 		ReferenceManaCost:    144,
 	}
@@ -142,21 +143,21 @@ func basicBlockIDNoPayloadExample() {
 }
 
 func basicBlockIDTransactionExample() {
-	block := examples.BasicBlockWithPayload(zeroCostApi, examples.SignedTransaction(zeroCostApi))
+	block := examples.BasicBlockWithPayload(api, examples.SignedTransaction(api))
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func basicBlockIDTaggedDataExample() {
 	taggedData := iotago.TaggedData{
-		Tag: lo.PanicOnErr(hexutil.DecodeHex("0x746167")),
+		Tag:  lo.PanicOnErr(hexutil.DecodeHex("0x746167")),
 		Data: lo.PanicOnErr(hexutil.DecodeHex("0x6c754128356c071e5549764a48427b")),
 	}
-	block := examples.BasicBlockWithPayload(zeroCostApi, &taggedData)
+	block := examples.BasicBlockWithPayload(api, &taggedData)
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
 func validationBlockIDExample() {
-	block := examples.ValidationBlock(zeroCostApi)
+	block := examples.ValidationBlock(api)
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
 
