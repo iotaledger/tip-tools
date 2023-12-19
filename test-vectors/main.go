@@ -215,7 +215,7 @@ func outputIdProof() {
 	fmt.Println("============================ SINGLE OUTPUT ==============================")
 
 	singleOutputProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(singleOutput.tx.Transaction, 0))
-	printBinary("Transaction (1 Output)", singleOutput.tx)
+	printBinary("Signed Transaction (1 Output)", singleOutput.tx)
 	printJson("Output ID Proof (Output Index 0)", singleOutputProof)
 	printBinary("Output ID Proof (Output Index 0)", singleOutputProof)
 	if isYaml {
@@ -235,7 +235,7 @@ func outputIdProof() {
 	fmt.Println("============================ 32 OUTPUTS ==============================")
 
 	manyOutputsProof0 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx.Transaction, 0))
-	printBinary("Transaction (32 Outputs)", manyOutputs.tx)
+	printBinary("Signed Transaction (32 Outputs)", manyOutputs.tx)
 	printJson("Output ID Proof (Output Index 0)", manyOutputsProof0)
 	printBinary("Output ID Proof (Output Index 0)", manyOutputsProof0)
 	if isYaml {
