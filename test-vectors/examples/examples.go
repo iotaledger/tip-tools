@@ -2,11 +2,15 @@ package examples
 
 import (
 	"crypto/ed25519"
+	"fmt"
 	"math/big"
 	"time"
 
 	hiveEd25519 "github.com/iotaledger/hive.go/crypto/ed25519"
 	"github.com/iotaledger/hive.go/lo"
+	"github.com/iotaledger/iota-crypto-demo/pkg/bip32path"
+	"github.com/iotaledger/iota-crypto-demo/pkg/slip10"
+	"github.com/iotaledger/iota-crypto-demo/pkg/slip10/eddsa"
 	iotago "github.com/iotaledger/iota.go/v4"
 	"github.com/iotaledger/iota.go/v4/builder"
 	"github.com/iotaledger/iota.go/v4/hexutil"
@@ -22,6 +26,7 @@ var (
 		PrivateKey: privateKey,
 		PublicKey:  privateKey.Public(),
 	}
+	OneIOTA = iotago.BaseToken(1_000_000)
 )
 
 func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
@@ -135,4 +140,49 @@ func ValidationBlock(api iotago.API) *iotago.Block {
 		IssuingTime(api.TimeProvider().GenesisTime().Add(30*time.Second)).
 		Sign(issuerID, keyPair.PrivateKey[:]).
 		Build())
+}
+
+func SignedTransactionOutputIdProof(api iotago.API, outputCount uint8) *iotago.SignedTransaction {
+	addr := iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
+	seed := lo.PanicOnErr(hexutil.DecodeHex("0x394821f8f257e0a502f21ac7ee57530bb9dc29fe12ff3936f925b835a2976804"))
+	slip10Path := "44'/4218'/0'/0'/0/%d"
+
+	deriveAddress := func(addressIndex uint8) *iotago.Ed25519Address {
+		curve := eddsa.Ed25519()
+		path := lo.PanicOnErr(bip32path.ParsePath(fmt.Sprintf(slip10Path, addressIndex)))
+		key := lo.PanicOnErr(slip10.DeriveKeyFromPath(seed, curve, path))
+		public, _ := key.Key.(eddsa.Seed).Ed25519Key()
+		return iotago.Ed25519AddressFromPubKey(ed25519.PublicKey(public))
+	}
+
+	tx := builder.NewTransactionBuilder(api).
+		AddInput(&builder.TxInput{
+			UnlockTarget: addr,
+			InputID:      iotago.MustOutputIDFromHexString("0xf09d3cd648a7246c7c1b2ba2f9182465ae5742b78c592392b4b455ab8ed71952000000000000"),
+			Input: &iotago.BasicOutput{
+				Amount: 1000 * OneIOTA,
+			},
+		})
+
+	for idx := uint8(0); idx <= outputCount; idx++ {
+		tx.AddOutput(
+			&iotago.BasicOutput{
+				Amount: OneIOTA,
+				UnlockConditions: iotago.BasicOutputUnlockConditions{
+					&iotago.AddressUnlockCondition{
+						Address: deriveAddress(idx),
+					},
+				},
+			},
+		)
+	}
+
+	signedTx := lo.PanicOnErr(tx.
+		WithTransactionCapabilities(
+			iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
+		).
+		SetCreationSlot(iotago.SlotIndex(1 << 20)).
+		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
+
+	return signedTx
 }

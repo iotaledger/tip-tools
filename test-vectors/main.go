@@ -16,7 +16,6 @@ import (
 	"github.com/iotaledger/iota.go/v4/tpkg"
 	"github.com/iotaledger/tip-tools/test-vectors/examples"
 	"github.com/itchyny/json2yaml"
-	loo "github.com/samber/lo"
 )
 
 const (
@@ -94,7 +93,7 @@ func main() {
 	case InfoResponse:
 		infoResponse()
 	default:
-		fmt.Println("Usage: go run main.go \"[object name]\"")
+		fmt.Println("Usage: go run main.go \"[object name]\" [isYaml]")
 		fmt.Println("Supported object:")
 		for _, o := range supportedObjects {
 			fmt.Println("\t -", o)
@@ -198,97 +197,52 @@ func multiAddressTestVector() {
 
 func outputIdProof() {
 	type outputIDProofExample struct {
-		tx *iotago.Transaction
+		tx *iotago.SignedTransaction
 	}
 
-	OneMi := iotago.BaseToken(1_000_000)
-	inputIDs := tpkg.RandOutputIDs(1)
-
 	singleOutput := outputIDProofExample{
-		tx: &iotago.Transaction{
-			API: api,
-			TransactionEssence: &iotago.TransactionEssence{
-				CreationSlot: tpkg.RandSlot(),
-				NetworkID:    tpkg.TestNetworkID,
-				Inputs:       inputIDs.UTXOInputs(),
-				Capabilities: iotago.TransactionCapabilitiesBitMask{},
-			},
-			Outputs: loo.RepeatBy(1, func(_ int) iotago.TxEssenceOutput {
-				return &iotago.BasicOutput{
-					Amount: OneMi,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					},
-				}
-			}),
-		},
+		tx: examples.SignedTransactionOutputIdProof(api, 1),
 	}
 
 	fiveOutputs := outputIDProofExample{
-		tx: &iotago.Transaction{
-			API: api,
-			TransactionEssence: &iotago.TransactionEssence{
-				CreationSlot: tpkg.RandSlot(),
-				NetworkID:    tpkg.TestNetworkID,
-				Inputs:       inputIDs.UTXOInputs(),
-				Capabilities: iotago.TransactionCapabilitiesBitMask{},
-			},
-			Outputs: loo.RepeatBy(5, func(_ int) iotago.TxEssenceOutput {
-				return &iotago.BasicOutput{
-					Amount: OneMi,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					},
-				}
-			}),
-		},
+		tx: examples.SignedTransactionOutputIdProof(api, 5),
 	}
 
 	manyOutputs := outputIDProofExample{
-		tx: &iotago.Transaction{
-			API: api,
-			TransactionEssence: &iotago.TransactionEssence{
-				CreationSlot: tpkg.RandSlot(),
-				NetworkID:    tpkg.TestNetworkID,
-				Inputs:       inputIDs.UTXOInputs(),
-				Capabilities: iotago.TransactionCapabilitiesBitMask{},
-			},
-			Outputs: loo.RepeatBy(32, func(_ int) iotago.TxEssenceOutput {
-				return &iotago.BasicOutput{
-					Amount: OneMi,
-					UnlockConditions: iotago.BasicOutputUnlockConditions{
-						&iotago.AddressUnlockCondition{Address: tpkg.RandEd25519Address()},
-					},
-				}
-			}),
-		},
+		tx: examples.SignedTransactionOutputIdProof(api, 32),
 	}
 
 	fmt.Println("============================ SINGLE OUTPUT ==============================")
 
-	singleOutputProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(singleOutput.tx, 0))
+	singleOutputProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(singleOutput.tx.Transaction, 0))
 	printBinary("Transaction (1 Output)", singleOutput.tx)
 	printJson("Output ID Proof (Output Index 0)", singleOutputProof)
 	printBinary("Output ID Proof (Output Index 0)", singleOutputProof)
-	printYaml("Output ID Proof (Output Index 0)", singleOutputProof)
+	if isYaml {
+		printYaml("Output ID Proof (Output Index 0)", singleOutputProof)
+	}
 
 	fmt.Println("============================ 5 OUTPUTS ==============================")
 
-	fiveOutputsProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(fiveOutputs.tx, 2))
-	printBinary("Transaction (5 Outputs)", manyOutputs.tx)
+	fiveOutputsProof := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(fiveOutputs.tx.Transaction, 2))
+	printBinary("Signed Transaction (5 Outputs)", fiveOutputs.tx)
 	printJson("Output ID Proof (Output Index 2)", fiveOutputsProof)
 	printBinary("Output ID Proof (Output Index 2)", fiveOutputsProof)
-	printYaml("Output ID Proof (Output Index 2)", fiveOutputsProof)
+	if isYaml {
+		printYaml("Output ID Proof (Output Index 2)", fiveOutputsProof)
+	}
 
 	fmt.Println("============================ 32 OUTPUTS ==============================")
 
-	manyOutputsProof0 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx, 0))
+	manyOutputsProof0 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx.Transaction, 0))
 	printBinary("Transaction (32 Outputs)", manyOutputs.tx)
 	printJson("Output ID Proof (Output Index 0)", manyOutputsProof0)
 	printBinary("Output ID Proof (Output Index 0)", manyOutputsProof0)
-	printYaml("Output ID Proof (Output Index 0)", manyOutputsProof0)
+	if isYaml {
+		printYaml("Output ID Proof (Output Index 0)", manyOutputsProof0)
+	}
 
-	manyOutputsProof28 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx, 28))
+	manyOutputsProof28 := lo.PanicOnErr(iotago.OutputIDProofFromTransaction(manyOutputs.tx.Transaction, 28))
 	printJson("Output ID Proof (Output Index 28)", manyOutputsProof28)
 	printBinary("Output ID Proof (Output Index 28)", manyOutputsProof28)
 }
