@@ -12,6 +12,13 @@ def input_type_field(type_value: int, name: str, article="a") -> SimpleField:
         f"Set to <strong>value {type_value}</strong> to denote {article} <i>{name}</i>.",
     )
 
+def context_input_type_field(type_value: int, name: str, article="a") -> SimpleField:
+    return SimpleField(
+        "Context Input Type",
+        UInt8(),
+        f"Set to <strong>value {type_value}</strong> to denote {article} <i>{name}</i>.",
+    )
+
 
 # UTXO Input
 
@@ -45,7 +52,7 @@ AVAILABLE_SCHEMAS.append(UTXOInput())
 
 commitment_input_name = "Commitment Input"
 commitment_input_fields: List[Field] = [
-    input_type_field(1, commitment_input_name),
+    context_input_type_field(0, commitment_input_name),
     SimpleField(
         "Commitment ID", ByteArray(36), "The commitment identifier to reference to."
     ),
@@ -70,7 +77,7 @@ AVAILABLE_SCHEMAS.append(CommitmentInput())
 
 block_issuance_credit_input_name = "Block Issuance Credit Input"
 block_issuance_credit_input_fields: List[Field] = [
-    input_type_field(2, block_issuance_credit_input_name),
+    context_input_type_field(1, block_issuance_credit_input_name),
     SimpleField(
         "Account ID",
         ByteArray(32),
@@ -97,7 +104,7 @@ AVAILABLE_SCHEMAS.append(BlockIssuanceCreditInput())
 
 reward_input_name = "Reward Input"
 reward_input_fields: List[Field] = [
-    input_type_field(3, reward_input_name),
+    context_input_type_field(2, reward_input_name),
     SimpleField(
         "Index",
         UInt16(),
