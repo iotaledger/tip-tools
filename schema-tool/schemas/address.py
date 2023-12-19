@@ -11,7 +11,7 @@ from typedefs.datatype import (
 from typedefs.field import ComplexField, Field, Schema, SimpleField
 from typedefs.subschema import AnyOf, OneOf
 
-MIN_MULTI_ADDRESSES = 1
+MIN_MULTI_ADDRESSES = 2
 MAX_MULTI_ADDRESSES = 10
 
 
