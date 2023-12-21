@@ -1,11 +1,12 @@
 import copy
 from typing import List
+from schemas.address import AccountAddress
 from schemas.output import OutputType, output_type_field
 from schemas.common import AVAILABLE_SCHEMAS, AmountField
 from typedefs.datatype import ByteArray, UInt64
 from typedefs.deposit_weight import DepositWeight
 from typedefs.field import ComplexField, Field, Schema, SimpleField
-from typedefs.subschema import AtMostOneOfEach
+from typedefs.subschema import AtMostOneOfEach, OneOf
 from schemas.unlock_condition import (
     AddressUnlockCondition,
     UnlockConditionsCountField,
@@ -28,12 +29,7 @@ delegation_id = SimpleField(
     "Unique identifier of the Delegation Output, which is the BLAKE2b-256 hash of the <i>Output ID</i> that created it.",
     deposit_weight=DepositWeight.Delegation,
 )
-validator_address = SimpleField(
-    "Validator Address",
-    ByteArray(32),
-    "The <i>Account Address</i> of the validator to which this output is delegating.",
-    deposit_weight=DepositWeight.Delegation,
-)
+validator_address = ComplexField("Validator Address", OneOf(), [AccountAddress()])
 start_epoch = SimpleField(
     "Start Epoch",
     UInt64(),
