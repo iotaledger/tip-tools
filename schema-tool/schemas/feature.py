@@ -135,7 +135,7 @@ metadata_entry_fields: List[Field] = [
         "Key",
         # Min/Max Length not set. Map defines an overall max byte size.
         LengthPrefixedArray(UInt8()),
-        "A string which may only consist of ASCII characters. A leading uint8 denotes its length.",
+        "A string which may only consist of printable ASCII characters. A leading uint8 denotes its length.",
     ),
     SimpleField(
         "Value",
