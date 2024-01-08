@@ -115,16 +115,16 @@ target_committee_size = SimpleField(
 )
 
 chain_switching_threshold = SimpleField(
-    "Chain Switching Treshold",
+    "Chain Switching Threshold",
     UInt8(),
-    "Chain Switching Treshold defines the number of heavier slots that a chain needs to be ahead of the current chain to be considered for switching.",
+    "Chain Switching Threshold defines the number of heavier slots that a chain needs to be ahead of the current chain to be considered for switching.",
 )
 
 # Storage Score Parameters
 storage_cost = SimpleField(
     "Storage Cost",
     UInt64(),
-    "Defines the number of IOTA tokens required per unit of storage score.",
+    "Defines the number of IOTA coins required per unit of storage score.",
 )
 factor_data = SimpleField(
     "Factor Data",
