@@ -127,16 +127,7 @@ func transactionIDExample() {
 }
 
 func basicBlockIDNoPayloadExample() {
-	basicBlock := &iotago.BasicBlockBody{
-		API:                api,
-		StrongParents:      tpkg.SortedRandBlockIDs(3),
-		WeakParents:        iotago.BlockIDs{},
-		ShallowLikeParents: iotago.BlockIDs{},
-		MaxBurnedMana:      1000,
-	}
-
-	block := tpkg.RandBlock(basicBlock, api, 100)
-	block.Header.IssuingTime = genesisTimestamp.Add(12 * time.Second)
+	block := examples.BasicBlockWithoutPayload(api)
 
 	printIdentifierTestVector("Block", block, block.MustID().ToHex())
 }
