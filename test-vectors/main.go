@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/iotaledger/hive.go/lo"
+	"github.com/iotaledger/hive.go/serializer/v2/serix"
 	iotago "github.com/iotaledger/iota.go/v4"
 	apipkg "github.com/iotaledger/iota.go/v4/api"
 	"github.com/iotaledger/iota.go/v4/hexutil"
@@ -32,6 +33,12 @@ const (
 	OutputIdProof          = "Output ID Proof"
 	RestrictedAddress      = "Restricted Address"
 	InfoResponse           = "Info Response"
+	StorageScoreDelegation = "Storage Score Delegation"
+	StorageScoreBasic      = "Storage Score Basic"
+	StorageScoreAccount    = "Storage Score Account"
+	StorageScoreNFT        = "Storage Score NFT"
+	StorageScoreFoundry    = "Storage Score Foundry"
+	StorageScoreAnchor     = "Storage Score Anchor"
 )
 
 var (
@@ -40,6 +47,8 @@ var (
 		iotago.NewV3SnapshotProtocolParameters(
 			// Fix the genesis timestamp so we have a consistent protocol parameters hash for the test vectors.
 			iotago.WithTimeProviderOptions(0, genesisTimestamp.Unix(), 10, 13),
+			// Set non-zero values so we can produce meaningful work score test vectors.
+			iotago.WithWorkScoreOptions(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
 		),
 	)
 	supportedObjects = []string{
@@ -54,6 +63,12 @@ var (
 		OutputIdProof,
 		RestrictedAddress,
 		InfoResponse,
+		StorageScoreDelegation,
+		StorageScoreBasic,
+		StorageScoreAccount,
+		StorageScoreNFT,
+		StorageScoreFoundry,
+		StorageScoreAnchor,
 	}
 
 	isYaml = false
@@ -92,6 +107,18 @@ func main() {
 		restrictedAddresses()
 	case InfoResponse:
 		infoResponse()
+	case StorageScoreDelegation:
+		storageScoreDelegation()
+	case StorageScoreBasic:
+		storageScoreBasic()
+	case StorageScoreAccount:
+		storageScoreAccount()
+	case StorageScoreNFT:
+		storageScoreNFT()
+	case StorageScoreFoundry:
+		storageScoreFoundry()
+	case StorageScoreAnchor:
+		storageScoreAnchor()
 	default:
 		fmt.Println("Usage: go run main.go \"[object name]\" [isYaml]")
 		fmt.Println("Supported object:")
@@ -102,7 +129,7 @@ func main() {
 }
 
 func protocolParameters() {
-	printIdentifierTestVector("Protocol Parameters", api.ProtocolParameters(), lo.Return1(api.ProtocolParameters().Hash()).ToHex())
+	printIdentifierAndWorkScoreTestVector("Protocol Parameters", api.ProtocolParameters(), lo.Return1(api.ProtocolParameters().Hash()).ToHex(), false)
 }
 
 func commitmentExample() {
@@ -118,23 +145,24 @@ func commitmentExample() {
 		ReferenceManaCost:    144,
 	}
 
-	printIdentifierTestVector("Slot Commitment", commitment, commitment.MustID().ToHex())
+	printIdentifierAndWorkScoreTestVector("Slot Commitment", commitment, commitment.MustID().ToHex(), false)
 }
 
 func transactionIDExample() {
 	tx := examples.SignedTransaction(api)
-	printIdentifierTestVector("Transaction", tx, lo.PanicOnErr(tx.ID()).ToHex())
+	printIdentifierAndWorkScoreTestVector("Transaction", tx, lo.PanicOnErr(tx.ID()).ToHex(), false)
 }
 
 func basicBlockIDNoPayloadExample() {
 	block := examples.BasicBlockWithoutPayload(api)
 
-	printIdentifierTestVector("Block", block, block.MustID().ToHex())
+	printIdentifierAndWorkScoreTestVector("Block", block, block.MustID().ToHex(), true)
 }
 
 func basicBlockIDTransactionExample() {
 	block := examples.BasicBlockWithPayload(api, examples.SignedTransaction(api))
-	printIdentifierTestVector("Block", block, block.MustID().ToHex())
+
+	printIdentifierAndWorkScoreTestVector("Block", block, block.MustID().ToHex(), true)
 }
 
 func basicBlockIDTaggedDataExample() {
@@ -143,12 +171,12 @@ func basicBlockIDTaggedDataExample() {
 		Data: lo.PanicOnErr(hexutil.DecodeHex("0x6c754128356c071e5549764a48427b")),
 	}
 	block := examples.BasicBlockWithPayload(api, &taggedData)
-	printIdentifierTestVector("Block", block, block.MustID().ToHex())
+	printIdentifierAndWorkScoreTestVector("Block", block, block.MustID().ToHex(), true)
 }
 
 func validationBlockIDExample() {
 	block := examples.ValidationBlock(api)
-	printIdentifierTestVector("Block", block, block.MustID().ToHex())
+	printIdentifierAndWorkScoreTestVector("Block", block, block.MustID().ToHex(), false)
 }
 
 // Used in TIP-52.
@@ -332,6 +360,42 @@ func infoResponse() {
 	printYaml("Info Response", response)
 }
 
+func storageScoreDelegation() {
+	delegationOutput := examples.DelegationOutputStorageScore()
+	delegationScore := delegationOutput.StorageScore(api.StorageScoreStructure(), nil)
+	printStorageScoreTestVector("Delegation Output", delegationOutput, delegationScore)
+}
+
+func storageScoreBasic() {
+	basicOutput := examples.BasicOutputStorageScore()
+	basicScore := basicOutput.StorageScore(api.StorageScoreStructure(), nil)
+	printStorageScoreTestVector("Basic Output", basicOutput, basicScore)
+}
+
+func storageScoreAccount() {
+	accountOutput := examples.AccountOutputStorageScore()
+	accountScore := accountOutput.StorageScore(api.StorageScoreStructure(), nil)
+	printStorageScoreTestVector("Account Output", accountOutput, accountScore)
+}
+
+func storageScoreNFT() {
+	nftOutput := examples.NFTOutputStorageScore()
+	nftScore := nftOutput.StorageScore(api.StorageScoreStructure(), nil)
+	printStorageScoreTestVector("NFT Output", nftOutput, nftScore)
+}
+
+func storageScoreFoundry() {
+	foundryOutput := examples.FoundryOutputStorageScore()
+	foundryScore := foundryOutput.StorageScore(api.StorageScoreStructure(), nil)
+	printStorageScoreTestVector("Foundry Output", foundryOutput, foundryScore)
+}
+
+func storageScoreAnchor() {
+	anchorOutput := examples.AnchorOutputStorageScore()
+	anchorScore := anchorOutput.StorageScore(api.StorageScoreStructure(), nil)
+	printStorageScoreTestVector("Anchor Output", anchorOutput, anchorScore)
+}
+
 func printAddress(name string, info string, addr iotago.Address) {
 	binaryLength := len(lo.PanicOnErr(api.Encode(addr)))
 	hex := hexify(addr)
@@ -350,11 +414,11 @@ func prettier(jsonBytes []byte) string {
 }
 
 func jsonify(obj any) string {
-	return prettier(lo.PanicOnErr(api.JSONEncode(obj)))
+	return prettier(lo.PanicOnErr(api.JSONEncode(obj, serix.WithValidation())))
 }
 
 func hexify(obj any) string {
-	return hexutil.EncodeHex(lo.PanicOnErr(api.Encode(obj)))
+	return hexutil.EncodeHex(lo.PanicOnErr(api.Encode(obj, serix.WithValidation())))
 }
 
 func printJson(name string, obj any) {
@@ -373,7 +437,7 @@ func printBinary(name string, obj any) {
 	fmt.Printf("%s (hex-encoded binary serialization):\n\n```\n%s\n```\n\n", name, hexify(obj))
 }
 
-func printIdentifierTestVector(name string, obj any, id string) {
+func printIdentifierAndWorkScoreTestVector(name string, obj any, id string, printWorkScore bool) {
 	if isYaml {
 		printYaml(name, obj)
 	}
@@ -381,4 +445,16 @@ func printIdentifierTestVector(name string, obj any, id string) {
 	printJson(name, obj)
 	printBinary(name, obj)
 	fmt.Printf("%s ID:\n\n```\n%s\n```\n", name, id)
+
+	if printWorkScore {
+		workScore := lo.PanicOnErr(obj.(*iotago.Block).WorkScore())
+		fmt.Printf("\n%s Work Score: `%d`.\n", name, workScore)
+	}
+
+}
+
+func printStorageScoreTestVector(name string, obj any, storageScore iotago.StorageScore) {
+	printJson(name, obj)
+	printBinary(name, obj)
+	fmt.Printf("%s Storage Score: `%d`.\n", name, storageScore)
 }

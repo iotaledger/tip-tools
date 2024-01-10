@@ -14,10 +14,11 @@ import (
 	iotago "github.com/iotaledger/iota.go/v4"
 	"github.com/iotaledger/iota.go/v4/builder"
 	"github.com/iotaledger/iota.go/v4/hexutil"
+	"github.com/iotaledger/iota.go/v4/tpkg"
 )
 
 var (
-	commitmentID = iotago.MustCommitmentIDFromHexString("0x3a1e3b617060146e0362361a4b752833186108395f3b2b3d3e6c655e287d70767ea58d2a")
+	commitmentID = iotago.MustCommitmentIDFromHexString("0x3a1e3b617060146e0362361a4b752833186108395f3b2b3d3e6c655e287d707601000000")
 	issuerID     = iotago.MustAccountIDFromHexString("0x17432c5a7a672503480241125e3952414a7a320441080c624c264b004e09614a")
 	privateKey   = lo.Return1(hiveEd25519.PrivateKeyFromBytes(lo.PanicOnErr(hexutil.DecodeHex(
 		"0x9396e0257e40961ae310777a3d12d3fe1f6811eeb073d169d538d50753c68eb82daefbcbadd044da470acd2f7fcf6fcb04b873cc801e7ee408018e1dfa0257ac",
@@ -26,12 +27,16 @@ var (
 		PrivateKey: privateKey,
 		PublicKey:  privateKey.Public(),
 	}
-	OneIOTA = iotago.BaseToken(1_000_000)
+	addr            = iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
+	pubkey1         = lo.PanicOnErr(hexutil.DecodeHex("0x9e05a32eafedefd40298e24ad4f8c334580187f7e9afbd9da13b5ba4007dd1b5"))
+	blockIssuerKey1 = &iotago.Ed25519PublicKeyBlockIssuerKey{PublicKey: hiveEd25519.PublicKey(pubkey1)}
+	pubkey2         = lo.PanicOnErr(hexutil.DecodeHex("0xa504844f7a0df2c5101d31696593b309040f8660d41035aba508f24c00668b21"))
+	blockIssuerKey2 = &iotago.Ed25519PublicKeyBlockIssuerKey{PublicKey: hiveEd25519.PublicKey(pubkey2)}
+	OneIOTA         = iotago.BaseToken(1_000_000)
+	OneMana         = iotago.Mana(1_000_000)
 )
 
 func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
-	addr := iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
-
 	output1 := &iotago.BasicOutput{
 		Amount: 100000,
 		UnlockConditions: iotago.BasicOutputUnlockConditions{
@@ -50,7 +55,7 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 	}
 
 	output2 := &iotago.AccountOutput{
-		Amount: 100000,
+		Amount: 100_000,
 		Mana:   5000,
 		UnlockConditions: iotago.AccountOutputUnlockConditions{
 			&iotago.AddressUnlockCondition{
@@ -62,6 +67,16 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 				Entries: iotago.StateMetadataFeatureEntries{
 					"hello": []byte("world"),
 				},
+			},
+			&iotago.BlockIssuerFeature{
+				ExpirySlot:      iotago.MaxSlotIndex,
+				BlockIssuerKeys: iotago.NewBlockIssuerKeys(blockIssuerKey1, blockIssuerKey2),
+			},
+			&iotago.StakingFeature{
+				StakedAmount: 10_000,
+				FixedCost:    400,
+				StartEpoch:   0,
+				EndEpoch:     iotago.MaxEpochIndex,
 			},
 		},
 	}
@@ -93,7 +108,7 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 		WithTransactionCapabilities(
 			iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanBurnNativeTokens(true)),
 		).
-		SetCreationSlot(iotago.SlotIndex(1 << 20)).
+		SetCreationSlot(commitmentID.Index() + api.ProtocolParameters().MinCommittableAge()).
 		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
 
 	return tx
@@ -112,8 +127,8 @@ func BasicBlockWithPayload(api iotago.API, payload iotago.ApplicationPayload) *i
 		MaxBurnedMana(864).
 		Payload(payload).
 		SlotCommitmentID(commitmentID).
-		LatestFinalizedSlot(500).
-		IssuingTime(api.TimeProvider().GenesisTime().Add(30*time.Second)).
+		LatestFinalizedSlot(commitmentID.Index()-1).
+		IssuingTime(api.TimeProvider().GenesisTime().Add(120*time.Second)).
 		Sign(
 			issuerID,
 			keyPair.PrivateKey[:],
@@ -158,7 +173,7 @@ func ValidationBlock(api iotago.API) *iotago.Block {
 		LatestFinalizedSlot(500).
 		HighestSupportedVersion(api.ProtocolParameters().Version()).
 		ProtocolParametersHash(lo.PanicOnErr(api.ProtocolParameters().Hash())).
-		IssuingTime(api.TimeProvider().GenesisTime().Add(30*time.Second)).
+		IssuingTime(api.TimeProvider().GenesisTime().Add(120*time.Second)).
 		Sign(issuerID, keyPair.PrivateKey[:]).
 		Build())
 }
@@ -202,8 +217,139 @@ func SignedTransactionOutputIdProof(api iotago.API, outputCount uint8) *iotago.S
 		WithTransactionCapabilities(
 			iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
 		).
-		SetCreationSlot(iotago.SlotIndex(1 << 20)).
+		SetCreationSlot(commitmentID.Index() + api.ProtocolParameters().MinCommittableAge()).
 		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
 
 	return signedTx
+}
+
+func DelegationOutputStorageScore() *iotago.DelegationOutput {
+	validatorAddress := iotago.AccountAddress(issuerID)
+	delegationID := iotago.DelegationID(lo.PanicOnErr(hexutil.DecodeHex("0x08b987baffaacb9da156734275ee01a42a35fe06653823be654821a7ddf92380")))
+
+	delegationOutput := builder.NewDelegationOutputBuilder(
+		&validatorAddress,
+		addr,
+		200*OneIOTA,
+	).
+		StartEpoch(30).
+		EndEpoch(50).
+		DelegatedAmount(500 * OneIOTA).
+		DelegationID(delegationID).
+		MustBuild()
+
+	return delegationOutput
+}
+
+func BasicOutputStorageScore() *iotago.BasicOutput {
+	nativeTokenID := iotago.NativeTokenID(lo.PanicOnErr(hexutil.DecodeHex("0x083ef5555d65ba314fb1680147da0d54b08cecfd9a728bdcf5f1ebda1fedb9f852435d8d1000")))
+
+	basicOutput := builder.NewBasicOutputBuilder(
+		addr,
+		200*OneIOTA,
+	).
+		Mana(555 * OneMana).
+		Tag([]byte("storage_score")).
+		Metadata(iotago.MetadataFeatureEntries{
+			"iota": []byte("2.0"),
+		}).
+		Timelock(999).
+		NativeToken(&iotago.NativeTokenFeature{
+			ID:     nativeTokenID,
+			Amount: big.NewInt(42),
+		}).
+		MustBuild()
+
+	return basicOutput
+}
+
+func AccountOutputStorageScore() *iotago.AccountOutput {
+	accountID := iotago.MustAccountIDFromHexString("0xe8494fe353f99783d3771c78798e1e839e649310513770fc6dc974fe53cf1a86")
+
+	accountOutput := builder.NewAccountOutputBuilder(
+		addr,
+		200*OneIOTA,
+	).
+		Mana(333*OneMana).
+		AccountID(accountID).
+		ImmutableMetadata(iotago.MetadataFeatureEntries{
+			"iota": []byte("2.0"),
+		}).
+		BlockIssuer(iotago.NewBlockIssuerKeys(
+			blockIssuerKey1,
+			blockIssuerKey2,
+		), 888).
+		ImmutableSender(addr).
+		Staking(150*OneIOTA, 400, 25, iotago.MaxEpochIndex).
+		MustBuild()
+
+	return accountOutput
+}
+
+func NFTOutputStorageScore() *iotago.NFTOutput {
+	accountAddress := iotago.AccountAddress(issuerID)
+
+	nftOutput := builder.NewNFTOutputBuilder(
+		&accountAddress,
+		421*OneIOTA,
+	).
+		Metadata(iotago.MetadataFeatureEntries{
+			"iota": []byte("2.0"),
+		}).
+		StorageDepositReturn(addr, 4*OneIOTA).
+		ImmutableMetadata(iotago.MetadataFeatureEntries{
+			"nft": []byte("iota"),
+		}).
+		NFTID(tpkg.RandNFTID()).
+		MustBuild()
+
+	return nftOutput
+}
+
+func FoundryOutputStorageScore() *iotago.FoundryOutput {
+	accountAddress := iotago.AccountAddress(issuerID)
+	tokenScheme := &iotago.SimpleTokenScheme{
+		MintedTokens:  big.NewInt(40000),
+		MeltedTokens:  big.NewInt(10000),
+		MaximumSupply: big.NewInt(50000),
+	}
+
+	nativeTokenID := lo.PanicOnErr(iotago.FoundryIDFromAddressAndSerialNumberAndTokenScheme(&accountAddress, 0, tokenScheme.Type()))
+
+	foundryOutput := builder.NewFoundryOutputBuilder(
+		&accountAddress,
+		tokenScheme,
+		420*OneIOTA,
+	).
+		Metadata(iotago.MetadataFeatureEntries{
+			"iota": []byte("2.00000000000000000000000000000000000000000000"),
+		}).
+		NativeToken(&iotago.NativeTokenFeature{
+			ID:     nativeTokenID,
+			Amount: big.NewInt(42000),
+		}).
+		MustBuild()
+
+	return foundryOutput
+}
+
+func AnchorOutputStorageScore() *iotago.AnchorOutput {
+	accountAddress := iotago.AccountAddress(issuerID)
+
+	anchorOutput := builder.NewAnchorOutputBuilder(
+		&accountAddress,
+		&accountAddress,
+		420*OneIOTA,
+	).
+		Metadata(iotago.MetadataFeatureEntries{
+			"iota": []byte("2.0"),
+		}).
+		ImmutableMetadata(iotago.MetadataFeatureEntries{
+			"iota": []byte("2.0"),
+		}).
+		Mana(42).
+		Sender(addr).
+		MustBuild()
+
+	return anchorOutput
 }
