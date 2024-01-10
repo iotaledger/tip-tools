@@ -5,10 +5,10 @@ go 1.21
 require (
 	github.com/iotaledger/hive.go/crypto v0.0.0-20231219105941-542b1b724494
 	github.com/iotaledger/hive.go/lo v0.0.0-20231219105941-542b1b724494
+	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231219095137-dd4674b3226e
 	github.com/iotaledger/iota-crypto-demo v0.0.0-20231208171603-786bb32fdb00
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231219130133-667f32aa821d
+	github.com/iotaledger/iota.go/v4 v4.0.0-20240110125330-72d323e3e81b
 	github.com/itchyny/json2yaml v0.1.4
-	github.com/samber/lo v1.38.1
 )
 
 require (
@@ -22,12 +22,10 @@ require (
 	github.com/iotaledger/hive.go/core v1.0.0-rc.3.0.20231219095137-dd4674b3226e // indirect
 	github.com/iotaledger/hive.go/ierrors v0.0.0-20231219105941-542b1b724494 // indirect
 	github.com/iotaledger/hive.go/runtime v0.0.0-20231219105941-542b1b724494 // indirect
-	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231219095137-dd4674b3226e // indirect
 	github.com/iotaledger/hive.go/stringify v0.0.0-20231219105941-542b1b724494 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c // indirect
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
 	golang.org/x/sys v0.15.0 // indirect
 )
