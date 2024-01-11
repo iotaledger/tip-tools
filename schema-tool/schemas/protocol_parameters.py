@@ -425,6 +425,11 @@ pool_coefficient_exponent = SimpleField(
     UInt8(),
     "Pool Coefficient Exponent is the exponent used for shifting operation in the pool rewards calculations.",
 )
+retention_period = SimpleField(
+    "Retention Period",
+    UInt16(),
+    "Retention Period is the number of epochs for which rewards are retained",
+)
 
 RewardsParameters = ComplexField(
     "Rewards Parameters",
@@ -440,6 +445,7 @@ RewardsParameters = ComplexField(
                 decay_balancing_constant_exponent,
                 decay_balancing_constant,
                 pool_coefficient_exponent,
+                retention_period,
             ],
             detailsOpen=True,
         )
