@@ -39,6 +39,7 @@ const (
 	StorageScoreNFT        = "Storage Score NFT"
 	StorageScoreFoundry    = "Storage Score Foundry"
 	StorageScoreAnchor     = "Storage Score Anchor"
+	Mana                   = "Mana"
 )
 
 var (
@@ -69,6 +70,7 @@ var (
 		StorageScoreNFT,
 		StorageScoreFoundry,
 		StorageScoreAnchor,
+		Mana,
 	}
 
 	isYaml = false
@@ -119,6 +121,8 @@ func main() {
 		storageScoreFoundry()
 	case StorageScoreAnchor:
 		storageScoreAnchor()
+	case Mana:
+		mana()
 	default:
 		fmt.Println("Usage: go run main.go \"[object name]\" [isYaml]")
 		fmt.Println("Supported object:")
@@ -394,6 +398,111 @@ func storageScoreAnchor() {
 	anchorOutput := examples.AnchorOutputStorageScore()
 	anchorScore := anchorOutput.StorageScore(api.StorageScoreStructure(), nil)
 	printStorageScoreTestVector("Anchor Output", anchorOutput, anchorScore)
+}
+
+type manaDecayTV struct {
+	Mana          iotago.Mana       `serix:""`
+	CreationEpoch iotago.EpochIndex `serix:""`
+	TargetEpoch   iotago.EpochIndex `serix:""`
+	DecayedMana   iotago.Mana       `serix:""`
+}
+
+type manaGenerationTV struct {
+	Amount                  iotago.BaseToken `serix:""`
+	OutputCreationSlot      iotago.SlotIndex `serix:""`
+	TransactionCreationSlot iotago.SlotIndex `serix:""`
+	PotentialMana           iotago.Mana      `serix:""`
+}
+
+func mana() {
+	// Mana Bits Count: 53.
+	// Max Mana Value: 2^53 - 1 = 9_007_199_254_740_991.
+
+	mana1 := 25_000 * examples.OneMana
+	mana2 := 9_000_000_000 * examples.OneMana
+
+	tokens1 := 1000 * examples.OneIOTA
+	tokens2 := 800_000_000_000 * examples.OneIOTA
+
+	generationTvs := []manaGenerationTV{
+		{
+			Amount:                  tokens1,
+			OutputCreationSlot:      1,
+			TransactionCreationSlot: 10000,
+		},
+		{
+			Amount:                  tokens1,
+			OutputCreationSlot:      9000,
+			TransactionCreationSlot: 10000,
+		},
+		{
+			Amount:                  tokens2,
+			OutputCreationSlot:      1,
+			TransactionCreationSlot: 10000,
+		},
+		{
+			Amount:                  tokens2,
+			OutputCreationSlot:      9000,
+			TransactionCreationSlot: 10000,
+		},
+	}
+
+	printManaGenerationTestVector(generationTvs)
+
+	decayTvs := []manaDecayTV{
+		{
+			Mana:          mana1,
+			CreationEpoch: 1,
+			TargetEpoch:   1000,
+		},
+		{
+			Mana:          mana1,
+			CreationEpoch: 900,
+			TargetEpoch:   1000,
+		},
+		{
+			Mana:          mana2,
+			CreationEpoch: 1,
+			TargetEpoch:   1000,
+		},
+		{
+			Mana:          mana2,
+			CreationEpoch: 900,
+			TargetEpoch:   1000,
+		},
+	}
+
+	printManaDecayTestVector(decayTvs)
+}
+
+func printManaGenerationTestVector(genTvs []manaGenerationTV) {
+	for i, genTv := range genTvs {
+		generated := lo.PanicOnErr(api.ManaDecayProvider().GenerateManaAndDecayBySlots(genTv.Amount, genTv.OutputCreationSlot, genTv.TransactionCreationSlot))
+		genTvs[i].PotentialMana = generated
+	}
+
+	// Helper for serialization since serix cannot serialize JSON arrays.
+	type genTestVectors struct {
+		TestVectors []manaGenerationTV `serix:""`
+	}
+
+	json := jsonify(genTestVectors{TestVectors: genTvs})
+	fmt.Printf("```json\n%s\n```\n\n", json)
+}
+
+func printManaDecayTestVector(decayTvs []manaDecayTV) {
+	for i, decayTv := range decayTvs {
+		decayed := lo.PanicOnErr(api.ManaDecayProvider().DecayManaByEpochs(decayTv.Mana, decayTv.CreationEpoch, decayTv.TargetEpoch))
+		decayTvs[i].DecayedMana = decayed
+	}
+
+	// Helper for serialization since serix cannot serialize JSON arrays.
+	type decayTestVectors struct {
+		TestVectors []manaDecayTV `serix:""`
+	}
+
+	json := jsonify(decayTestVectors{TestVectors: decayTvs})
+	fmt.Printf("```json\n%s\n```\n\n", json)
 }
 
 func printAddress(name string, info string, addr iotago.Address) {
