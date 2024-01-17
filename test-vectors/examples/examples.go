@@ -223,6 +223,56 @@ func SignedTransactionOutputIdProof(api iotago.API, outputCount uint8) *iotago.S
 	return signedTx
 }
 
+func SignedTransactionOutputMana(api iotago.API) (iotago.OutputID, *iotago.BasicOutput, *iotago.SignedTransaction) {
+	// Pick a commitment that is further away from the genesis to properly test mana decay.
+	manaCommitmentID := iotago.MustCommitmentIDFromHexString("0x3a1e3b617060146e0362361a4b752833186108395f3b2b3d3e6c655e287d7076364b4c00")
+	inputID := iotago.MustOutputIDFromHexString("0xf09d3cd648a7246c7c1b2ba2f9182465ae5742b78c592392b4b455ab8ed71950050000000000")
+
+	input := &iotago.BasicOutput{
+		Amount: 100000,
+		Mana:   4000,
+		UnlockConditions: iotago.BasicOutputUnlockConditions{
+			&iotago.AddressUnlockCondition{
+				Address: addr,
+			},
+		},
+		Features: iotago.BasicOutputFeatures{},
+	}
+	inputCreationSlot := inputID.Slot()
+	txCreationSlot := manaCommitmentID.Index() + api.ProtocolParameters().MinCommittableAge()
+	potentialMana := lo.PanicOnErr(iotago.PotentialMana(api.ManaDecayProvider(), api.StorageScoreStructure(), input, inputCreationSlot, txCreationSlot))
+
+	storedMana := lo.PanicOnErr(api.ManaDecayProvider().DecayManaBySlots(input.Mana, inputCreationSlot, txCreationSlot))
+
+	output := &iotago.BasicOutput{
+		Amount: 100000,
+		Mana:   potentialMana,
+		UnlockConditions: iotago.BasicOutputUnlockConditions{
+			&iotago.AddressUnlockCondition{
+				Address: addr,
+			},
+		},
+		Features: iotago.BasicOutputFeatures{},
+	}
+
+	tx := lo.PanicOnErr(builder.NewTransactionBuilder(api).
+		AddInput(&builder.TxInput{
+			UnlockTarget: addr,
+			InputID:      inputID,
+			Input:        input,
+		}).
+		AddOutput(output).
+		AddCommitmentInput(&iotago.CommitmentInput{CommitmentID: manaCommitmentID}).
+		IncreaseAllotment(
+			iotago.MustAccountIDFromHexString("0x476820096e7038107d071a4e473f1e295f346e2d0824263e5e3e7d004f6b6915"),
+			storedMana,
+		).
+		SetCreationSlot(manaCommitmentID.Index() + api.ProtocolParameters().MinCommittableAge()).
+		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
+
+	return inputID, input, tx
+}
+
 func DelegationOutputStorageScore() *iotago.DelegationOutput {
 	validatorAddress := iotago.AccountAddress(issuerID)
 	delegationID := iotago.DelegationID(lo.PanicOnErr(hexutil.DecodeHex("0x08b987baffaacb9da156734275ee01a42a35fe06653823be654821a7ddf92380")))

@@ -40,6 +40,7 @@ const (
 	StorageScoreFoundry    = "Storage Score Foundry"
 	StorageScoreAnchor     = "Storage Score Anchor"
 	Mana                   = "Mana"
+	OutputMana             = "Output Mana"
 )
 
 var (
@@ -71,6 +72,7 @@ var (
 		StorageScoreFoundry,
 		StorageScoreAnchor,
 		Mana,
+		OutputMana,
 	}
 
 	isYaml = false
@@ -123,6 +125,8 @@ func main() {
 		storageScoreAnchor()
 	case Mana:
 		mana()
+	case OutputMana:
+		outputMana()
 	default:
 		fmt.Println("Usage: go run main.go \"[object name]\" [isYaml]")
 		fmt.Println("Supported object:")
@@ -503,6 +507,17 @@ func printManaDecayTestVector(decayTvs []manaDecayTV) {
 
 	json := jsonify(decayTestVectors{TestVectors: decayTvs})
 	fmt.Printf("```json\n%s\n```\n\n", json)
+}
+
+func outputMana() {
+	inputID, input, tx := examples.SignedTransactionOutputMana(api)
+	printJson("Transaction", tx)
+	printBinary("Transaction", tx)
+
+	inputName := fmt.Sprintf("Input with Output ID: `%s` (= creation slot %d)", inputID.ToHex(), inputID.Slot())
+
+	printJson(inputName, input)
+	printBinary(inputName, input)
 }
 
 func printAddress(name string, info string, addr iotago.Address) {
