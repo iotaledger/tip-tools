@@ -63,8 +63,8 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 			},
 		},
 		Features: iotago.AccountOutputFeatures{
-			&iotago.StateMetadataFeature{
-				Entries: iotago.StateMetadataFeatureEntries{
+			&iotago.MetadataFeature{
+				Entries: iotago.MetadataFeatureEntries{
 					"hello": []byte("world"),
 				},
 			},
@@ -329,7 +329,7 @@ func AccountOutputStorageScore() *iotago.AccountOutput {
 			blockIssuerKey1,
 			blockIssuerKey2,
 		), 888).
-		ImmutableSender(addr).
+		Sender(addr).
 		Staking(150*OneIOTA, 400, 25, iotago.MaxEpochIndex).
 		MustBuild()
 
@@ -358,18 +358,20 @@ func NFTOutputStorageScore() *iotago.NFTOutput {
 
 func FoundryOutputStorageScore() *iotago.FoundryOutput {
 	accountAddress := iotago.AccountAddress(issuerID)
+	serialNumber := uint32(1)
 	tokenScheme := &iotago.SimpleTokenScheme{
 		MintedTokens:  big.NewInt(40000),
 		MeltedTokens:  big.NewInt(10000),
 		MaximumSupply: big.NewInt(50000),
 	}
 
-	nativeTokenID := lo.PanicOnErr(iotago.FoundryIDFromAddressAndSerialNumberAndTokenScheme(&accountAddress, 0, tokenScheme.Type()))
+	nativeTokenID := lo.PanicOnErr(iotago.FoundryIDFromAddressAndSerialNumberAndTokenScheme(&accountAddress, serialNumber, tokenScheme.Type()))
 
 	foundryOutput := builder.NewFoundryOutputBuilder(
 		&accountAddress,
-		tokenScheme,
 		420*OneIOTA,
+		serialNumber,
+		tokenScheme,
 	).
 		Metadata(iotago.MetadataFeatureEntries{
 			"iota": []byte("2.00000000000000000000000000000000000000000000"),
@@ -398,7 +400,6 @@ func AnchorOutputStorageScore() *iotago.AnchorOutput {
 			"iota": []byte("2.0"),
 		}).
 		Mana(42).
-		Sender(addr).
 		MustBuild()
 
 	return anchorOutput
