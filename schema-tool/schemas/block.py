@@ -132,7 +132,7 @@ def BasicBlockBody(
             SimpleField(
                 "Max Burned Mana",
                 UInt64(),
-                "The amount of Mana the Account identified by <code>Issuer ID</code> is at most willing to burn for this block. The actual Mana deducted from this Account's Block Issuance Credit may be lower than the value of this field which is the product of the block's work score and the RMC (Reference Mana Cost) from the block's slot commitment, identified by the <code>Slot Commitment ID</code>. Therefore, for the calculation of this field, the block issuer should also use the RMC value from the same commitment.",
+                "The amount of Mana the Account identified by <code>Issuer ID</code> is at most willing to burn for this block. The actual Mana deducted from this Account's Block Issuance Credit may be lower than the value of this field which is the product of the <a href=\"#work-score-2\">basic block's work score</a> and the RMC (Reference Mana Cost) from the block's slot commitment, identified by the <code>Slot Commitment ID</code>. Therefore, for the calculation of this field, the block issuer should use the RMC value from the same commitment.",
             ),
         ],
         tipReference=TipReference(46, "basic-block"),
