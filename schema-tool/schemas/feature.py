@@ -1,5 +1,5 @@
 from typing import List
-from schemas.block_issuer_key import Ed25519PublicKeyBlockIssuerKey
+from schemas.block_issuer_key import Ed25519PublicKeyHashBlockIssuerKey
 from schemas.common import AVAILABLE_SCHEMAS
 from typedefs.datatype import (
     ByteArray,
@@ -287,7 +287,7 @@ block_issuer_feature_keys_count = SimpleField(
 block_issuer_feature_keys = ComplexField(
     "Block Issuer Keys",
     AnyOf(MIN_BLOCK_ISSUER_KEYS, MAX_BLOCK_ISSUER_KEYS),
-    [Ed25519PublicKeyBlockIssuerKey()],
+    [Ed25519PublicKeyHashBlockIssuerKey()],
 )
 
 block_issuer_feature_fields: List[Field] = [
