@@ -274,7 +274,7 @@ AVAILABLE_SCHEMAS.append(NativeTokenFeature())
 
 block_issuer_feature_name = "Block Issuer Feature"
 block_issuer_feature_description = (
-    "Contains the public keys used to verify block signatures."
+    "Contains the keys with which the account can create block signatures."
 )
 block_issuer_feature_expiry_slot = SimpleField(
     "Expiry Slot",

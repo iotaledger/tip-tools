@@ -40,7 +40,7 @@ def address_type_field(
 address_ed25519_name = "Ed25519 Address"
 address_ed25519_description = "An Address derived from an Ed25519 Public Key."
 address_ed25519_pubkeyhash = SimpleField(
-    "PubKeyHash",
+    "Pub Key Hash",
     ByteArray(32),
     "The raw bytes of the Ed25519 address which is the BLAKE2b-256 hash of the Ed25519 public key.",
 )
@@ -160,7 +160,7 @@ AVAILABLE_SCHEMAS.append(AnchorAddress())
 address_implicit_account_creation_name = "Implicit Account Creation Address"
 address_implicit_account_creation_description = "Defines an address on which an <i>Implicit Account</i> is created when it receives a Basic Output."
 address_implicit_account_creation_pubkeyhash = SimpleField(
-    "PubKeyHash",
+    "Pub Key Hash",
     ByteArray(32),
     "The raw bytes of the Implicit Account Creation Address which is the BLAKE2b-256 hash of the Ed25519 public key.",
 )

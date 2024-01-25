@@ -27,7 +27,7 @@ ed25519_public_key_hash_block_issuer_key_fields: List[Field] = [
         0, ed25519_public_key_hash_block_issuer_key_name, article="an"
     ),
     SimpleField(
-        "PubKeyHash",
+        "Pub Key Hash",
         ByteArray(32),
         "The raw bytes of the BLAKE2b-256 hash of the corresponding Ed25519 public key.",
         deposit_weight=DepositWeight.BlockIssuerKey,
