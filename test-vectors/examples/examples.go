@@ -29,9 +29,9 @@ var (
 	}
 	addr            = iotago.Ed25519AddressFromPubKey(keyPair.PublicKey[:])
 	pubkey1         = lo.PanicOnErr(hexutil.DecodeHex("0x9e05a32eafedefd40298e24ad4f8c334580187f7e9afbd9da13b5ba4007dd1b5"))
-	blockIssuerKey1 = &iotago.Ed25519PublicKeyBlockIssuerKey{PublicKey: hiveEd25519.PublicKey(pubkey1)}
+	blockIssuerKey1 = iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(hiveEd25519.PublicKey(pubkey1))
 	pubkey2         = lo.PanicOnErr(hexutil.DecodeHex("0xa504844f7a0df2c5101d31696593b309040f8660d41035aba508f24c00668b21"))
-	blockIssuerKey2 = &iotago.Ed25519PublicKeyBlockIssuerKey{PublicKey: hiveEd25519.PublicKey(pubkey2)}
+	blockIssuerKey2 = iotago.Ed25519PublicKeyHashBlockIssuerKeyFromPublicKey(hiveEd25519.PublicKey(pubkey2))
 	OneIOTA         = iotago.BaseToken(1_000_000)
 	OneMana         = iotago.Mana(1_000_000)
 )

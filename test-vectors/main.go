@@ -362,7 +362,6 @@ func infoResponse() {
 			Subunit:      "glow",
 			Decimals:     6,
 		},
-		Features: []string{"test"},
 	}
 
 	printYaml("Info Response", response)
