@@ -44,15 +44,16 @@ const (
 )
 
 var (
-	genesisTimestamp = time.Unix(1695275822, 0) // 2023-09-21 13:57:02 +0800 CST
-	api              = iotago.V3API(
-		iotago.NewV3SnapshotProtocolParameters(
-			// Fix the genesis timestamp so we have a consistent protocol parameters hash for the test vectors.
-			iotago.WithTimeProviderOptions(0, genesisTimestamp.Unix(), 10, 13),
-			// Set non-zero values so we can produce meaningful work score test vectors.
-			iotago.WithWorkScoreOptions(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-		),
-	)
+	initApi = func() iotago.API {
+		protoParams := &iotago.V3ProtocolParameters{}
+		err := tpkg.ZeroCostTestAPI.JSONDecode([]byte(examples.ProtocolParametersJSON), protoParams, serix.WithValidation())
+		if err != nil {
+			panic(err)
+		}
+
+		return iotago.V3API(protoParams)
+	}
+	api = initApi()
 	supportedObjects = []string{
 		ProtocolParameters,
 		CommitmentID,
