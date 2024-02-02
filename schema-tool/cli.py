@@ -23,6 +23,7 @@ class Commands(Enum):
 class SchemaCommands(Enum):
     GENERATE = "generate"
     REPLACE = "replace"
+    LINKS = "links"
     UPDATE = "update"
 
 
@@ -56,6 +57,10 @@ def add_schema_parser(subparsers: argparse._SubParsersAction):
         SchemaCommands.UPDATE.value,
         help="Replaces all the existing schema tables in the TIP with the newly created ones. The path to TIP repo and the TIP number must be given. All the schemas defined in that TIP will be updated.",
     )
+    links_parser = schema_subparsers.add_parser(
+        SchemaCommands.LINKS.value,
+        help="Replaces all links to local TIPs with links to the TIPs hosted on GitHub, subject to a hardcoded whitelist of unmerged TIPs.",
+    )
 
     generate_parser.add_argument(
         schema_name_argument,
@@ -88,6 +93,17 @@ def add_schema_parser(subparsers: argparse._SubParsersAction):
         help=tips_repo_path_help,
     )
     update_parser.add_argument(
+        tip_number_argument,
+        type=str,
+        help=tip_number_help,
+    )
+
+    links_parser.add_argument(
+        tips_repo_path_argument,
+        type=str,
+        help=tips_repo_path_help,
+    )
+    links_parser.add_argument(
         tip_number_argument,
         type=str,
         help=tip_number_help,
@@ -144,6 +160,10 @@ def main():
                     )
                 case SchemaCommands.UPDATE.value:
                     updateSchemaCommand(
+                        args[tips_repo_path_argument], args[tip_number_argument]
+                    )
+                case SchemaCommands.LINKS.value:
+                    replaceLinksCommand(
                         args[tips_repo_path_argument], args[tip_number_argument]
                     )
         case Commands.DEPOSIT.value:
@@ -219,6 +239,14 @@ def updateSchemaCommand(
     replaceSchema(tips_repo_path, tip_number, schemasToReplace)
 
 
+def replaceLinksCommand(
+    tips_repo_path: str,
+    tip_number_str: str,
+):
+    tip_number: int = int(tip_number_str)
+    replaceRelativeLinks(tips_repo_path, tip_number)
+
+
 def generateDeposit(schema_name: str, dry_run: bool = False):
     schema = find_schema(schema_name)
     if schema is None:
@@ -272,9 +300,51 @@ def replaceSchema(tipRepoPath: str, tip: int, schemas: List[Schema]):
         tip_content = new_tip_content
 
         if schemaIsUpToDate:
-            print(f'{schema.name} is up-to-date.')
+            print(f"{schema.name} is up-to-date.")
         else:
-            print(f'{schema.name} updated.')
+            print(f"{schema.name} updated.")
+
+    with open(tipPath, "w") as f:
+        f.write(tip_content)
+
+
+def replaceRelativeLinks(tipRepoPath: str, tip: int):
+    # The TIP numbers for which the relative links are expanded to GitHub links.
+    # Should contain those TIPs that are currently unmerged / have a PR open.
+    REPLACE_FOR_TIPS = [38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 53, 54]
+
+    paddedTipNo = f"{tip:04}"
+    tipPath = os.path.join(tipRepoPath, f"tips/TIP-{paddedTipNo}/tip-{paddedTipNo}.md")
+
+    if not os.path.exists(tipPath):
+        print(
+            f'Cannot update links in TIP-{paddedTipNo} because path "{tipPath}" does not exist.'
+        )
+        return
+
+    with open(tipPath, "r") as f:
+        tip_content = f.read()
+
+    pattern = r"\.\.\/TIP-(\d+)\/tip-\d+\.md(#[\w-]+)?"
+
+    def replace(match) -> str:
+        matchTipNumber = int(match.group(1))
+        paddedMatchTipNumber = f"{matchTipNumber:04}"
+
+        if matchTipNumber not in REPLACE_FOR_TIPS:
+            return match.group(0)
+
+        updatedLink = f"https://github.com/iotaledger/tips/blob/tip{matchTipNumber}/tips/TIP-{paddedMatchTipNumber}/tip-{paddedMatchTipNumber}.md"
+
+        fragment = match.group(2)
+        if fragment is not None:
+            updatedLink = f"{updatedLink}{fragment}"
+
+        print(f"Link to TIP-{paddedMatchTipNumber} updated ({updatedLink}).")
+
+        return updatedLink
+
+    tip_content = re.sub(pattern, replace, tip_content)
 
     with open(tipPath, "w") as f:
         f.write(tip_content)
