@@ -331,7 +331,7 @@ def replaceRelativeLinks(tipRepoPath: str, tip: int):
         matchTipNumber = int(match.group(1))
         paddedMatchTipNumber = f"{matchTipNumber:04}"
 
-        if matchTipNumber not in REPLACE_FOR_TIPS:
+        if matchTipNumber == tip or matchTipNumber not in REPLACE_FOR_TIPS:
             return match.group(0)
 
         updatedLink = f"https://github.com/iotaledger/tips/blob/tip{matchTipNumber}/tips/TIP-{paddedMatchTipNumber}/tip-{paddedMatchTipNumber}.md"
