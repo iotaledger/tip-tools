@@ -405,20 +405,20 @@ bootstrapping_duration = SimpleField(
     UInt32(),
     "The length in epochs of the bootstrapping phase.",
 )
-mana_share_coefficient = SimpleField(
-    "Mana Share Coefficient",
-    UInt64(),
-    "Mana Share Coefficient is the coefficient used for calculation of initial rewards.",
-)
-decay_balancing_constant_exponent = SimpleField(
-    "Decay Balancing Constant Exponent",
+reward_to_generation_ratio = SimpleField(
+    "Reward To Generation Ratio",
     UInt8(),
-    "Decay Balancing Constant Exponent is the exponent used for calculation of the initial reward.",
+    "Reward To Generation Ratio is the ratio of the final rewards rate to the generation rate of Mana.",
 )
-decay_balancing_constant = SimpleField(
-    "Decay Balancing Constant",
+initial_target_rewards_rate = SimpleField(
+    "Initial Target Rewards Rate",
     UInt64(),
-    "Decay Balancing Constant is an integer approximation calculated based on chosen DecayBalancingConstantExponent.",
+    "Initial Target Rewards Rate is the rate of Mana rewards at the start of the bootstrapping phase.",
+)
+final_target_rewards_rate = SimpleField(
+    "Final Target Rewards Rate",
+    UInt64(),
+    "Final Target Rewards Rate is the rate of Mana rewards after the bootstrapping phase.",
 )
 pool_coefficient_exponent = SimpleField(
     "Pool Coefficient Exponent",
@@ -441,9 +441,9 @@ RewardsParameters = ComplexField(
             [
                 profit_margin_exponent,
                 bootstrapping_duration,
-                mana_share_coefficient,
-                decay_balancing_constant_exponent,
-                decay_balancing_constant,
+                reward_to_generation_ratio,
+                initial_target_rewards_rate,
+                final_target_rewards_rate,
                 pool_coefficient_exponent,
                 retention_period,
             ],
