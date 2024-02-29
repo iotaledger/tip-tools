@@ -81,7 +81,7 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 		},
 	}
 
-	tx := lo.PanicOnErr(builder.NewTransactionBuilder(api).
+	tx := lo.PanicOnErr(builder.NewTransactionBuilder(api, iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      iotago.MustOutputIDFromHexString("0xf09d3cd648a7246c7c1b2ba2f9182465ae5742b78c592392b4b455ab8ed71952000000000000"),
@@ -109,7 +109,7 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 			iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanBurnNativeTokens(true)),
 		).
 		SetCreationSlot(commitmentID.Index() + api.ProtocolParameters().MinCommittableAge()).
-		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
+		Build())
 
 	return tx
 }
@@ -191,7 +191,7 @@ func SignedTransactionOutputIdProof(api iotago.API, outputCount uint8) *iotago.S
 		return iotago.Ed25519AddressFromPubKey(ed25519.PublicKey(public))
 	}
 
-	tx := builder.NewTransactionBuilder(api).
+	tx := builder.NewTransactionBuilder(api, iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      iotago.MustOutputIDFromHexString("0xf09d3cd648a7246c7c1b2ba2f9182465ae5742b78c592392b4b455ab8ed71952000000000000"),
@@ -218,7 +218,7 @@ func SignedTransactionOutputIdProof(api iotago.API, outputCount uint8) *iotago.S
 			iotago.TransactionCapabilitiesBitMaskWithCapabilities(iotago.WithTransactionCanDoAnything()),
 		).
 		SetCreationSlot(commitmentID.Index() + api.ProtocolParameters().MinCommittableAge()).
-		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
+		Build())
 
 	return signedTx
 }
@@ -255,7 +255,7 @@ func SignedTransactionOutputMana(api iotago.API) (iotago.OutputID, *iotago.Basic
 		Features: iotago.BasicOutputFeatures{},
 	}
 
-	tx := lo.PanicOnErr(builder.NewTransactionBuilder(api).
+	tx := lo.PanicOnErr(builder.NewTransactionBuilder(api, iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})).
 		AddInput(&builder.TxInput{
 			UnlockTarget: addr,
 			InputID:      inputID,
@@ -268,7 +268,7 @@ func SignedTransactionOutputMana(api iotago.API) (iotago.OutputID, *iotago.Basic
 			storedMana,
 		).
 		SetCreationSlot(manaCommitmentID.Index() + api.ProtocolParameters().MinCommittableAge()).
-		Build(iotago.NewInMemoryAddressSigner(iotago.AddressKeys{Address: addr, Keys: ed25519.PrivateKey(keyPair.PrivateKey[:])})))
+		Build())
 
 	return inputID, input, tx
 }

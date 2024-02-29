@@ -455,9 +455,9 @@ var (
 	"rewardsParameters": {
 		"profitMarginExponent": 8,
 		"bootstrappingDuration": 1079,
-		"manaShareCoefficient": "2",
-		"decayBalancingConstantExponent": 8,
-		"decayBalancingConstant": "1",
+		"rewardToGenerationRatio": 2,
+		"initialTargetRewardsRate": "8",
+		"finalTargetRewardsRate": "1",
 		"poolCoefficientExponent": 11,
 		"retentionPeriod": 384
 	},
