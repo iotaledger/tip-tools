@@ -115,6 +115,9 @@ func SignedTransaction(api iotago.API) *iotago.SignedTransaction {
 }
 
 func BasicBlockWithPayload(api iotago.API, payload iotago.ApplicationPayload) *iotago.Block {
+	payloadWorkScore := lo.PanicOnErr(payload.WorkScore(api.ProtocolParameters().WorkScoreParameters()))
+	manaCost := lo.PanicOnErr(iotago.ManaCost(api.ProtocolParameters().CongestionControlParameters().MinReferenceManaCost, payloadWorkScore))
+
 	return lo.PanicOnErr(builder.NewBasicBlockBuilder(api).
 		StrongParents(iotago.BlockIDs{
 			iotago.MustBlockIDFromHexString("0x27e0461873f37040c9e59c35ad8a106fa1b94f5ec9ef89499b31904f9a3de59be58dd44a"),
@@ -124,7 +127,7 @@ func BasicBlockWithPayload(api iotago.API, payload iotago.ApplicationPayload) *i
 			iotago.MustBlockIDFromHexString("0xba75a143de4ac932986fbe7b1d78f639bc6ee8aee10d510d41572851530be884778052aa"),
 			iotago.MustBlockIDFromHexString("0xea5315941f4337752905599710b55e64018c71f4d8f299d0636d50484d05e6ac5667b503"),
 		}).
-		MaxBurnedMana(864).
+		MaxBurnedMana(manaCost).
 		Payload(payload).
 		SlotCommitmentID(commitmentID).
 		LatestFinalizedSlot(commitmentID.Index()-1).
