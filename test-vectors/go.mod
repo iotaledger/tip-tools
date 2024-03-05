@@ -9,7 +9,7 @@ require (
 	github.com/iotaledger/hive.go/lo v0.0.0-20240216135101-261e99d9d84a
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20240216135101-261e99d9d84a
 	github.com/iotaledger/iota-crypto-demo v0.0.0-20240216103559-27ca8dffd1e7
-	github.com/iotaledger/iota.go/v4 v4.0.0-20240228144210-48e711a00e85
+	github.com/iotaledger/iota.go/v4 v4.0.0-20240301102753-b06fbda11e05
 	github.com/itchyny/json2yaml v0.1.4
 )
 
